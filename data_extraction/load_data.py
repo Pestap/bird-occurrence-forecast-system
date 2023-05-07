@@ -18,9 +18,10 @@ def extract_rows_by_column_value(df, column_name: str, column_value: str):
     return df_species_rows
 
 
+def load_data(columns_to_extract, filter_column_name, filter_column_value, filepath='../data/ebd_PL_relJan-2023/ebd_PL_relJan-2023.txt'):
+    df = load_from_file(filepath)
+    df_needed_rows = extract_rows_by_column_value(df, filter_column_name, filter_column_value)
+    df_needed_cols = extract_columns(df_needed_rows, columns_to_extract)
 
-df = load_from_file('../data/ebd_PL_relJan-2023/ebd_PL_relJan-2023.txt')
-df2 = extract_rows_by_column_value(df, 'SCIENTIFIC NAME', 'Ardea alba')
+    return df_needed_cols
 
-print(df2)
-input()
