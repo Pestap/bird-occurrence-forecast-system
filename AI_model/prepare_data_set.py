@@ -12,15 +12,33 @@ def handle_same_place_same_time(df):
     df = df[['OBSERVATION COUNT', 'WEEK OF YEAR', 'YEAR', 'COUNTY']]
 
 
-    df=df.groupby(['COUNTY', 'YEAR', 'WEEK OF YEAR'])['OBSERVATION COUNT'].mean()
+    df = df.groupby(['COUNTY', 'YEAR', 'WEEK OF YEAR'])['OBSERVATION COUNT'].mean().reset_index()
     print("Grouped")
     return df
 
 def divide_by_county(df):
 
+    grouped = df.groupby(df.COUNTY)
+    print(grouped)
+    groups = []
+    # ew. list comp
+    for g in grouped.groups:
+        groups.append(grouped.get_group(g))
+
+    for group in groups:
+        group.sort_values(['YEAR', 'WEEK OF YEAR'], ascending=[True, True], inplace=True)
+
+
+    return groups
+
+
 def create_sets(test_size):
 
-    df = load_from_file('../data/ebd_PL_relJan-2023/ebd_PL_relJan-2023.txt')
+    #df = load_from_file('../data/ebd_PL_relJan-2023/ebd_PL_relJan-2023.txt')
+    df = load_from_file('../data/test.csv')
+    df = handle_same_place_same_time(df)
+    groups = divide_by_county(df)
+
 
 
     # target attribute
@@ -33,15 +51,10 @@ def create_sets(test_size):
     x = pd.DataFrame(x_s)
 
 
-
-
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=test_size, shuffle=True)
 
     return x_train, x_test, y_train, y_test
 
 
 
-df = load_from_file('../data/test.csv')
-df = handle_same_place_same_time(df)
-
-input()
+create_sets(0.2)
