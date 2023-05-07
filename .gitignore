@@ -1,2 +1,7 @@
 data/*
 !data/data.md
+
+
+## Data_extraction
+data_extraction/.idea
+data_extraction/venv
