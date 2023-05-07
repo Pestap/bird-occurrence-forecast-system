@@ -5,3 +5,5 @@ data/*
 ## Data_extraction
 data_extraction/.idea
 data_extraction/venv
+AI_model/venv
+AI_model/.idea

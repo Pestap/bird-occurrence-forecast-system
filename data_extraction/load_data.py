@@ -22,6 +22,6 @@ def load_data(columns_to_extract, filter_column_name, filter_column_value, filep
     df = load_from_file(filepath)
     df_needed_rows = extract_rows_by_column_value(df, filter_column_name, filter_column_value)
     df_needed_cols = extract_columns(df_needed_rows, columns_to_extract)
-
+    print("Loaded data")
     return df_needed_cols
 
