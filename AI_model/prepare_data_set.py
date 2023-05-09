@@ -35,11 +35,11 @@ def divide_by_county(df):
 def create_sets(test_size):
 
     #df = load_from_file('../data/ebd_PL_relJan-2023/ebd_PL_relJan-2023.txt')
-    df = load_from_file('../data/test.csv')
+    df = load_from_file('../data/ardea_alba.csv')
     df = handle_same_place_same_time(df)
     groups = divide_by_county(df)
 
-
+    model_x = groups[2]
 
     # target attribute
     y = df.iloc[:, 1]

@@ -1,27 +1,34 @@
 import pandas as pd
 
 
+# Loads data from file (eBird file)
 def load_from_file(filepath: str):
     df = pd.read_csv(filepath, sep="\t", dtype=str)
     return df
 
 
-def extract_columns(df, column_names):
-    df_only_cols_from_list = df[column_names]
-    return df_only_cols_from_list
+# Extract the columns needed
+def extract_columns(df, column_names=['SCIENTIFIC NAME', 'OBSERVATION COUNT', 'LATITUDE', 'LONGITUDE', 'OBSERVATION DATE']):
+    # extract the columns specified in the list
+    df = df[column_names]
+    return df
 
 
+# extract the rows needed, filtering by specified column name
 def extract_rows_by_column_value(df, column_name: str, column_value: str):
 
-    df_species_rows = df[df[column_name] == column_value]
+    # get only the needed rows
+    df = df[df[column_name] == column_value]
 
-    return df_species_rows
+    return df
 
 
-def load_data(columns_to_extract, filter_column_name, filter_column_value, filepath='../data/ebd_PL_relJan-2023/ebd_PL_relJan-2023.txt'):
+# Function for the whole process of loading and extracting needed data
+def load_data(columns_to_extract, filter_column_name, filter_column_value,
+              filepath='../data/ebd_PL_relJan-2023/ebd_PL_relJan-2023.txt'):
     df = load_from_file(filepath)
-    df_needed_rows = extract_rows_by_column_value(df, filter_column_name, filter_column_value)
-    df_needed_cols = extract_columns(df_needed_rows, columns_to_extract)
+    df = extract_rows_by_column_value(df, filter_column_name, filter_column_value)
+    df= extract_columns(df, columns_to_extract)
     print("Loaded data")
-    return df_needed_cols
+    return df
 
