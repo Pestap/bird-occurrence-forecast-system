@@ -4,21 +4,61 @@ from sklearn import preprocessing
 
 def load_from_file(filepath: str):
     df = pd.read_csv(filepath, sep=";")
+    df['OBSERVATION COUNT'].replace({-100: 1}, inplace=True)
     print("Loaded from file")
+
+    type_dict = {'SCIENTIFIC NAME': str, 'OBSERVATION COUNT': int, 'LATITUDE': float, 'LONGITUDE': float,
+             'OBSERVATION DATE': 'datetime64[s]', 'YEAR': int, 'WEEK OF YEAR': int, 'COUNTY': str, 'STATE': str}
+
+    for col_name, type_name in type_dict.items():
+        df[col_name] = df[col_name].astype(type_name)
+
+
     return df
 
 
 def handle_same_place_same_time(df):
-    df = df[['OBSERVATION COUNT', 'WEEK OF YEAR', 'YEAR', 'COUNTY']]
 
+    df['MONTH'] = df.apply(lambda row: row['OBSERVATION DATE'].month, axis=1)
 
-    df = df.groupby(['COUNTY', 'YEAR', 'WEEK OF YEAR'])['OBSERVATION COUNT'].mean().reset_index()
+    for i in range(len(df)):
+        if df.loc[i, 'OBSERVATION COUNT'] == -100:
+            df.loc[i, 'OBSERVATION COUNT'] = average(df,df.loc[i, 'MONTH'], df.loc[i, 'YEAR'])
+
+    df = df[['OBSERVATION COUNT', 'WEEK OF YEAR', 'YEAR', 'STATE']]
+    df = df.groupby(['STATE', 'YEAR', 'WEEK OF YEAR'])['OBSERVATION COUNT'].mean().reset_index()
     print("Grouped")
     return df
 
+
+def average(df, month, year):
+    sum_year = 0
+    count_year = 0
+
+    sum_month = 0
+    count_month = 0
+
+    for i in range(len(df)):
+        if df.loc[i, 'YEAR'] == year and df.loc[i, 'OBSERVATION_COUNT'] != -100:
+
+            sum_year += df.loc[i, 'OBSERVATION COUNT']
+            count_year += 1
+
+            if df.loc[i, 'MONTH'] == month:
+                sum_month += df.loc[i, 'OBSERVATION COUNT']
+                count_month += 1
+
+    if count_month != 0:
+        return sum_month/count_month
+    elif count_year != 0:
+        return sum_year/count_year
+    else:
+        return 1
+
+
 def divide_by_county(df):
 
-    grouped = df.groupby(df.COUNTY)
+    grouped = df.groupby(df.STATE)
     print(grouped)
     groups = []
     # ew. list comp
@@ -27,7 +67,6 @@ def divide_by_county(df):
 
     for group in groups:
         group.sort_values(['YEAR', 'WEEK OF YEAR'], ascending=[True, True], inplace=True)
-
 
     return groups
 
@@ -39,8 +78,8 @@ def create_sets(test_size):
     df = handle_same_place_same_time(df)
     groups = divide_by_county(df)
 
-    model_x = groups[2]
-
+    #model_x = groups[2]
+    df.sort_values(['YEAR', 'WEEK OF YEAR'], ascending=[True, True], inplace=True)
     # target attribute
     y = df.iloc[:, 1]
     x = df.iloc[:, [2, 3, 5, 6]]
@@ -51,7 +90,7 @@ def create_sets(test_size):
     x = pd.DataFrame(x_s)
 
 
-    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=test_size, shuffle=True)
+    x_train, x_test, y_train, y_test = x.head(int(len(df.index)) - 1000), x.tail(1000),  y.head(int(len(df.index)) - 1000), y.tail(1000)
 
     return x_train, x_test, y_train, y_test
 
