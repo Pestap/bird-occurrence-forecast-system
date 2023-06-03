@@ -25,8 +25,8 @@ def handle_same_place_same_time(df):
         if df.loc[i, 'OBSERVATION COUNT'] == -100:
             df.loc[i, 'OBSERVATION COUNT'] = average(df,df.loc[i, 'MONTH'], df.loc[i, 'YEAR'])
 
-    df = df[['OBSERVATION COUNT', 'WEEK OF YEAR', 'YEAR', 'STATE']]
-    df = df.groupby(['STATE', 'YEAR', 'WEEK OF YEAR'])['OBSERVATION COUNT'].mean().reset_index()
+    df = df[['OBSERVATION COUNT', 'MONTH', 'YEAR', 'STATE']]
+    df = df.groupby(['STATE', 'YEAR', 'MONTH'])['OBSERVATION COUNT'].mean().reset_index()
     print("Grouped")
     return df
 
@@ -56,7 +56,7 @@ def average(df, month, year):
         return 1
 
 
-def divide_by_county(df):
+def divide_by_state(df):
 
     grouped = df.groupby(df.STATE)
     print(grouped)
@@ -66,9 +66,46 @@ def divide_by_county(df):
         groups.append(grouped.get_group(g))
 
     for group in groups:
-        group.sort_values(['YEAR', 'WEEK OF YEAR'], ascending=[True, True], inplace=True)
+        group.sort_values(['YEAR', 'MONTH'], ascending=[True, True], inplace=True)
+        group.reset_index(inplace=True)
 
-    return groups
+
+    groups_with_zeroes = []
+    # add zeroes
+    for group in groups:
+        year_months_dict = {}
+        # get years and months present
+        for i in range(len(group)):
+            if group.loc[i, 'YEAR'] in year_months_dict:
+                if not group.loc[i, 'MONTH'] in year_months_dict[group.loc[i, 'YEAR']]:
+                    year_months_dict[group.loc[i, 'YEAR']].append(group.loc[i, 'MONTH'])
+            else:
+                year_months_dict[group.loc[i, 'YEAR']] = [group.loc[i, 'MONTH']]
+
+        first_year = group.loc[0, 'YEAR']
+        for i in range(first_year, 2023):
+            if i in year_months_dict:
+                # iterate through months
+                for j in range(1,13):
+                    if j not in year_months_dict[i]:
+                        row = pd.DataFrame({'STATE': [group.loc[0, 'STATE']], 'YEAR': [i], 'MONTH': [j], 'OBSERVATION COUNT': [0.0]})
+                        group = pd.concat([group, row], ignore_index=True)
+                        #group.loc[len(group)] = {'STATE': group.loc[0, 'STATE'], 'YEAR': i, 'MONTH': j, 'OBSERVATION COUNT': 0}
+            else:
+                for j in range(1,13):
+                    #group = group.append({'STATE': group.loc[0, 'STATE'], 'YEAR': i, 'MONTH': j, 'OBSERVATION COUNT': 0}, ignore_index=True)
+                    row = pd.DataFrame(
+                        {'STATE': [group.loc[0, 'STATE']], 'YEAR': [i], 'MONTH': [j], 'OBSERVATION COUNT': [0.0]})
+                    group = pd.concat([group, row], ignore_index=True)
+                    pass
+
+
+        group.sort_values(['YEAR', 'MONTH'], ascending=[True, True], inplace=True)
+        groups_with_zeroes.append(group)
+
+
+
+    return groups_with_zeroes
 
 
 def create_sets(test_size):
@@ -76,10 +113,10 @@ def create_sets(test_size):
     #df = load_from_file('../data/ebd_PL_relJan-2023/ebd_PL_relJan-2023.txt')
     df = load_from_file('../data/ardea_alba.csv')
     df = handle_same_place_same_time(df)
-    groups = divide_by_county(df)
+    groups = divide_by_state(df)
 
     #model_x = groups[2]
-    df.sort_values(['YEAR', 'WEEK OF YEAR'], ascending=[True, True], inplace=True)
+    #df.sort_values(['YEAR', 'MONTH', 'WEEK'], ascending=[True, True], inplace=True)
     # target attribute
     y = df.iloc[:, 1]
     x = df.iloc[:, [2, 3, 5, 6]]
