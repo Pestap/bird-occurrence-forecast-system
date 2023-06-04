@@ -67,8 +67,7 @@ def divide_by_state(df):
 
     for group in groups:
         group.sort_values(['YEAR', 'MONTH'], ascending=[True, True], inplace=True)
-        group.reset_index(inplace=True)
-
+        group.reset_index(inplace=True, drop=True)
 
     groups_with_zeroes = []
     # add zeroes
@@ -101,7 +100,7 @@ def divide_by_state(df):
 
 
         group.sort_values(['YEAR', 'MONTH'], ascending=[True, True], inplace=True)
-        group.reset_index(inplace=True)
+        group.reset_index(inplace=True, drop=True)
         groups_with_zeroes.append(group)
 
 
