@@ -24,5 +24,5 @@ def visualize_prediction_results(dates, train, test, predict, x_tick_interval=12
     plt.plot(dates[:split_index], train[0])
     plt.plot(dates[split_index:], test[0], color="red")
     plt.plot(dates[split_index:], predict[0], color="green")
-    #plt.xticks(dates[0::x_tick_interval], rotation=45)
+    plt.xticks(dates[0::x_tick_interval], rotation=45)
     plt.show()
