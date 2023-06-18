@@ -108,29 +108,18 @@ def divide_by_state(df):
     return groups_with_zeroes
 
 
-def create_sets(test_size):
+def create_groups():
 
     #df = load_from_file('../data/ebd_PL_relJan-2023/ebd_PL_relJan-2023.txt')
     df = load_from_file('../data/ardea_alba.csv')
     df = handle_same_place_same_time(df)
     groups = divide_by_state(df)
 
-    #model_x = groups[2]
-    #df.sort_values(['YEAR', 'MONTH', 'WEEK'], ascending=[True, True], inplace=True)
-    # target attribute
-    y = df.iloc[:, 1]
-    x = df.iloc[:, [2, 3, 5, 6]]
-
-    x_numpy = x.values
-    scaler = preprocessing.MinMaxScaler()
-    x_s = scaler.fit_transform(x_numpy)
-    x = pd.DataFrame(x_s)
-
-
-    x_train, x_test, y_train, y_test = x.head(int(len(df.index)) - 1000), x.tail(1000),  y.head(int(len(df.index)) - 1000), y.tail(1000)
-
-    return x_train, x_test, y_train, y_test
+    group_tuples = []
+    for group in groups:
+        group_tuples.append((group.loc[0, 'STATE'], group))
 
 
 
-create_sets(0.2)
+    return group_tuples
+
