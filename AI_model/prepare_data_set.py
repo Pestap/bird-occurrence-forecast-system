@@ -119,7 +119,5 @@ def create_groups():
     for group in groups:
         group_tuples.append((group.loc[0, 'STATE'], group))
 
-
-
     return group_tuples
 
