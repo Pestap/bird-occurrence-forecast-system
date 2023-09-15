@@ -1,6 +1,7 @@
 from enum import Enum
 
-class States(Enum):
+
+class State(Enum):
     DOLNOSLASKIE = 1
     KUJAWSKO_POMORSKIE = 2
     LUBELSKIE = 3
