@@ -3,7 +3,7 @@ from models.species_model import SpeciesModel
 from models.states import State
 
 
-class ArdeaAlbaModel(SpeciesModel):
+class CiconiaCiconiaModel(SpeciesModel):
     def get_autoregression_models(self) -> list[AutoregressionModel]:
         return [
             AutoregressionModel(State.DOLNOSLASKIE, 0),
