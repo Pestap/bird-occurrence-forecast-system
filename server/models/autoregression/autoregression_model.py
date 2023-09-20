@@ -1,4 +1,4 @@
-from models.states import State
+from server.models.states import State
 
 
 class AutoregressionModel:

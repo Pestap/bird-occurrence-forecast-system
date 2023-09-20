@@ -1,6 +1,6 @@
-from models.autoregression.autoregression_model import AutoregressionModel
-from models.specie import Specie
-from models.states import State
+from server.models.autoregression.autoregression_model import AutoregressionModel
+from server.models.specie import Specie
+from server.models.states import State
 
 
 class ArdeaAlba(Specie):
