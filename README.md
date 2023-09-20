@@ -8,5 +8,5 @@
 Moduł AI_model - predykcja
 Moduł Data - dane potrzebne do działania 
 Moduł data_extraction - pobieranie i wstępna obróbka danych
-Moduł models 
+Moduł server - backend
 Modul Ui

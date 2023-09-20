@@ -53,6 +53,9 @@ def autoreg(dates, group, split, lags=24):
 
     group_df_len = group.shape[0]
     split_index = math.floor(split * group_df_len)
+    split_index = group_df_len - split - 1
+
+
 
     train_group = group.iloc[:split_index]
     train_group_dates = dates.iloc[:split_index]

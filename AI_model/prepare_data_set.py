@@ -108,10 +108,10 @@ def divide_by_state(df):
     return groups_with_zeroes
 
 
-def create_groups():
+def create_groups(filename='../data/ardea_alba.csv'):
 
     #df = load_from_file('../data/ebd_PL_relJan-2023/ebd_PL_relJan-2023.txt')
-    df = load_from_file('../data/ardea_alba.csv')
+    df = load_from_file(filename)
     df = handle_same_place_same_time(df)
     groups = divide_by_state(df)
 

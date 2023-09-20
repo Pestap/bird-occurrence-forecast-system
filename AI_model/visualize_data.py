@@ -19,10 +19,17 @@ def draw_plot(x, y, x_tick_interval=12):
     plt.show()
 
 
-def visualize_prediction_results(dates, train, test, predict, x_tick_interval=12):
+def visualize_prediction_results(dates, train, test, predict, state, months,show, x_tick_interval=12):
     split_index = train[0].shape[0]
-    plt.plot(dates[:split_index], train[0])
-    plt.plot(dates[split_index:], test[0], color="red")
-    plt.plot(dates[split_index:], predict[0], color="green")
+    plt.plot(dates[:split_index], train[0], label='Dane treningowe')
+    plt.plot(dates[split_index:], test[0], color="red", label='Dane testowe')
+    plt.plot(dates[split_index:], predict[0], color="green", label="Predykcja")
     plt.xticks(dates[0::x_tick_interval], rotation=45)
-    plt.show()
+
+    plt.title(state.capitalize() + " (lags = " +str(months)  +")")
+    plt.xlabel("Data obserwacji")
+    plt.ylabel("Średnia liczba zaobserwowanych osobników")
+    plt.legend()
+    plt.grid()
+    if show:
+        plt.show()
