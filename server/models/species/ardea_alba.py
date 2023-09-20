@@ -1,9 +1,20 @@
 from server.models.autoregression.autoregression_model import AutoregressionModel
 from server.models.specie import Specie
-from server.models.states import State
+from server.models.enums import State, Model
 
 
 class ArdeaAlba(Specie):
+    def get_info(self):
+        description = "Ardea Alba desc"
+        habitat = "Ardea Alba habitat"
+
+        dict = {"description": description,
+                "habitat": habitat}
+        return dict
+
+    def get_available_models(self):
+        return [Model.AUTOREGRESSION.name]
+
     def get_autoregression_models(self) -> list[AutoregressionModel]:
         return [
             AutoregressionModel(State.DOLNOSLASKIE, 34),

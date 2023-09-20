@@ -18,3 +18,7 @@ class State(Enum):
     WARMINSKO_MAZURSKIE = 14
     WIELKOPOLSKIE = 15
     ZACHODNIOPOMORSKIE = 16
+
+
+class Model(Enum):
+    AUTOREGRESSION = 1

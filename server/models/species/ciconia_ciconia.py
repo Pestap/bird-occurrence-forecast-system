@@ -1,9 +1,17 @@
 from server.models.autoregression.autoregression_model import AutoregressionModel
 from server.models.specie import Specie
-from server.models.states import State
+from server.models.enums import State
 
 
 class CiconiaCiconia(Specie):
+    def get_info(self):
+        description = "Ciconia ciconia desc"
+        habitat = "Ciconia habitat"
+
+        dict = {"description": description,
+                "habitat": habitat}
+        return dict
+
     def get_autoregression_models(self) -> list[AutoregressionModel]:
         return [
 
