@@ -1,7 +1,7 @@
 from abc import abstractmethod
 
 
-class SpeciesModel:
+class Specie:
 
     @abstractmethod
     def get_autoregression_models(self):

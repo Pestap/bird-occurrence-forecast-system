@@ -1,11 +1,13 @@
 from models.autoregression.autoregression_model import AutoregressionModel
-from models.species_model import SpeciesModel
+from models.specie import Specie
 from models.states import State
 
 
-class CiconiaCiconiaModel(SpeciesModel):
+class CiconiaCiconia(Specie):
     def get_autoregression_models(self) -> list[AutoregressionModel]:
         return [
+
+            # TODO: Test models for ciconia_ciconia.csv
             AutoregressionModel(State.DOLNOSLASKIE, 0),
             AutoregressionModel(State.KUJAWSKO_POMORSKIE, 0),
             AutoregressionModel(State.LUBELSKIE, 0),
