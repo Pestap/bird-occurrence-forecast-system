@@ -13,15 +13,21 @@ def get_species():
 
 
 def get_specie_info(specie_name):
-    return species[specie_name].get_info()
+    try:
+        return species[specie_name].get_info()
+    except KeyError:
+        return None
 
 
 def get_specie_models(specie_name):
-    print(species[specie_name].get_available_models())
-    return species[specie_name].get_available_models()
+    try:
+        return species[specie_name].get_available_models()
+    except KeyError:
+        return None
 
 
 def predict_specie_with_model(specie_name, model, date_from, date_to):
-
-    return species[specie_name].predict(model, date_from, date_to)
-
+    try:
+        return species[specie_name].predict(model, date_from, date_to)
+    except KeyError:
+        return None
