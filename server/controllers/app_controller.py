@@ -51,15 +51,19 @@ def predict_specie_with_model(specie_name, model):
     Date format
     """
 
-    date_from_datetime = datetime.strptime(request.args.get("from"), '%Y-%m-%d')
-    date_to_datetime = datetime.strptime(request.args.get("to"), '%Y-%m-%d')
+    try:
+        date_from_datetime = datetime.strptime(request.args.get("from"), '%Y-%m-%d')
+        date_to_datetime = datetime.strptime(request.args.get("to"), '%Y-%m-%d')
 
-    if date_from_datetime > date_to_datetime:
-        return Response("Invalid data range", status=400)
+        # Check if dates are correct
+        if date_from_datetime > date_to_datetime:
+            return Response("Invalid data range, (from after to)", status=400)
 
-    response = app_service.predict_specie_with_model(specie_name, model, date_from_datetime, date_to_datetime)
+        response = app_service.predict_specie_with_model(specie_name, model, date_from_datetime, date_to_datetime)
 
-    if response is not None:
-        return jsonify(response)
+        if response is not None:
+            return jsonify(response)
 
-    return Response("Invalid specie name", status=400)
+        return Response("Invalid specie name", status=400)
+    except ValueError:
+        return Response("Invalid date format, try using YYYY-MM-DD", status=400)
