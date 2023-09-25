@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Response
 
 from server.services import app_service
 
@@ -45,7 +45,7 @@ def predict_specie_with_model(specie_name, model):
     date_to_datetime = datetime.strptime(request.args.get("to"), '%Y-%m-%d')
 
     if date_from_datetime > date_to_datetime:
-        return '400'
+        return Response("Invalid data range", status=400)
 
 
     return jsonify(app_service.predict_specie_with_model(specie_name, model, date_from_datetime, date_to_datetime))
