@@ -1,4 +1,4 @@
-
+from datetime import datetime
 
 from flask import Flask, request, jsonify
 
@@ -40,7 +40,12 @@ def predict_specie_with_model(specie_name, model):
     Predict specie occurrence using specified model
     Date format
     """
-    date_from = request.args.get("from")
-    date_to = request.args.get("to")
 
-    return jsonify(app_service.predict_specie_with_model(specie_name, model, date_from, date_to))
+    date_from_datetime = datetime.strptime(request.args.get("from"), '%Y-%m-%d')
+    date_to_datetime = datetime.strptime(request.args.get("to"), '%Y-%m-%d')
+
+    if date_from_datetime > date_to_datetime:
+        return '400'
+
+
+    return jsonify(app_service.predict_specie_with_model(specie_name, model, date_from_datetime, date_to_datetime))
