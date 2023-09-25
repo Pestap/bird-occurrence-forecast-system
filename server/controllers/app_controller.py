@@ -38,8 +38,9 @@ def get_specie_model_information(specie_name, model):
 def predict_specie_with_model(specie_name, model):
     """
     Predict specie occurrence using specified model
+    Date format
     """
-    return specie_name + "_" + model +"_prediction"
+    date_from = request.args.get("from")
+    date_to = request.args.get("to")
 
-
-
+    return jsonify(app_service.predict_specie_with_model(specie_name, model, date_from, date_to))

@@ -22,3 +22,4 @@ class State(Enum):
 
 class Model(Enum):
     AUTOREGRESSION = 1
+    NEURAL_NETWORK = 2

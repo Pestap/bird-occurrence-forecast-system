@@ -15,6 +15,9 @@ class ArdeaAlba(Specie):
     def get_available_models(self):
         return [Model.AUTOREGRESSION.name]
 
+    def predict_autoregression(self, date_from, date_to):
+        return 10
+
     def get_autoregression_models(self) -> list[AutoregressionModel]:
         return [
             AutoregressionModel(State.DOLNOSLASKIE, 34),
