@@ -1,27 +1,31 @@
-from flask import Flask, request
+
+
+from flask import Flask, request, jsonify
 
 from server.services import app_service
 
 
+# TODO: make all responses JSON (3/5)
 def get_species():
     """
     Handle fetching all species
     """
 
-    return app_service.get_species()
+    return jsonify(app_service.get_species())
+
 
 def get_specie_info(specie_name):
     """
     Handle fetching specified specie information
     """
-    return app_service.get_specie_info(specie_name)
+    return jsonify(app_service.get_specie_info(specie_name))
 
 
 def get_specie_available_models(specie_name):
     """
     Handle fetching available models
     """
-    return app_service.get_specie_models(specie_name)
+    return jsonify(app_service.get_specie_models(specie_name))
 
 
 def get_specie_model_information(specie_name, model):

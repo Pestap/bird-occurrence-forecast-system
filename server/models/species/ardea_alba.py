@@ -5,8 +5,8 @@ from server.models.enums import State, Model
 
 class ArdeaAlba(Specie):
     def get_info(self):
-        description = "Ardea Alba desc"
-        habitat = "Ardea Alba habitat"
+        description = "Ardea Alba sample description"
+        habitat = "Ardea Alba sample habititat"
 
         dict = {"description": description,
                 "habitat": habitat}
