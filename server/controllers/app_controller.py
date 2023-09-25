@@ -2,6 +2,14 @@ from flask import Flask, request
 
 from server.services import app_service
 
+
+def get_species():
+    """
+    Handle fetching all species
+    """
+
+    return app_service.get_species()
+
 def get_specie_info(specie_name):
     """
     Handle fetching specified specie information
