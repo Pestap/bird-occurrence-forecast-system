@@ -13,7 +13,6 @@ def load_from_file(filepath: str):
     for col_name, type_name in type_dict.items():
         df[col_name] = df[col_name].astype(type_name)
 
-
     return df
 
 
