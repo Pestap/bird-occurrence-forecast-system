@@ -1,6 +1,43 @@
 from enum import Enum
 
 
+def translate_state_to_enum(state_name):
+    if state_name == 'województwo dolnośląskie':
+        return State.DOLNOSLASKIE
+    elif state_name == 'województwo kujawsko-pomorskie':
+        return State.KUJAWSKO_POMORSKIE
+    elif state_name == 'województwo lubelskie':
+        return State.LUBELSKIE
+    elif state_name == 'województwo lubuskie':
+        return State.LUBUSKIE
+    elif state_name == 'województwo łódzkie':
+        return State.LODZKIE
+    elif state_name == 'województwo małopolskie':
+        return State.MALOPOLSKIE
+    elif state_name == 'województwo mazowieckie':
+        return State.MAZOWIECKIE
+    elif state_name == 'województwo opolskie':
+        return State.OPOLSKIE
+    elif state_name == 'województwo podkarpackie':
+        return State.PODKARPACKIE
+    elif state_name == 'województwo podlaskie':
+        return State.PODLASKIE
+    elif state_name == 'województwo pomorskie':
+        return State.POMORSKIE
+    elif state_name == 'województwo śląskie':
+        return State.SLASKIE
+    elif state_name == 'województwo świętokrzyskie':
+        return State.SWIETOKRZYSKIE
+    elif state_name == 'województwo warmińsko-mazurskie':
+        return State.WARMINSKO_MAZURSKIE
+    elif state_name == 'województwo wielkopolskie':
+        return State.WIELKOPOLSKIE
+    elif state_name == 'województwo zachodniopomorskie':
+        return State.ZACHODNIOPOMORSKIE
+    else:
+        return None
+
+
 class State(Enum):
     DOLNOSLASKIE = 1
     KUJAWSKO_POMORSKIE = 2

@@ -1,9 +1,17 @@
+import pandas as pd
+
 from server.models.autoregression.autoregression_model import AutoregressionModel
 from server.models.specie import Specie
 from server.models.enums import State, Model
 
-
 class ArdeaAlba(Specie):
+
+    def __init__(self): # FIXME: change to relative path
+        self.observation_csv_path = "D:\\Piotrek\\inzynierka\\bird-occurence-forecast-system\\data\\ardea_alba.csv"
+
+    def get_csv_filepath(self):
+        return self.observation_csv_path
+
     def get_info(self):
         description = "Ardea Alba sample description"
         habitat = "Ardea Alba sample habititat"
@@ -17,6 +25,9 @@ class ArdeaAlba(Specie):
 
     def predict_autoregression(self, date_from, date_to):
         return 10
+
+
+
 
     def get_autoregression_models(self) -> list[AutoregressionModel]:
         return [
