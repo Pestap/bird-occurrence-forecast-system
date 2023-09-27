@@ -54,7 +54,9 @@ def predict_specie_with_model(specie_name, model):
     try:
         date_from_datetime = datetime.strptime(request.args.get("from"), '%Y-%m-%d')
         date_to_datetime = datetime.strptime(request.args.get("to"), '%Y-%m-%d')
-
+        # Replace months with 1
+        date_to_datetime = date_to_datetime.replace(day=1)
+        date_from_datetime = date_from_datetime.replace(day=1)
         # Check if dates are correct
         if date_from_datetime > date_to_datetime:
             return Response("Invalid data range, (from after to)", status=400)

@@ -28,6 +28,6 @@ def get_specie_models(specie_name):
 
 def predict_specie_with_model(specie_name, model, date_from, date_to):
     try:
-        return species[specie_name].predict(model, date_from, date_to)
+        return species[specie_name].make_predictions(model, date_from, date_to)
     except KeyError:
         return None

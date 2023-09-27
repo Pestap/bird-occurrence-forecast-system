@@ -1,3 +1,5 @@
+from typing import Dict, Union, Any
+
 import pandas as pd
 
 from server.models.autoregression.autoregression_model import AutoregressionModel
@@ -26,25 +28,22 @@ class ArdeaAlba(Specie):
     def predict_autoregression(self, date_from, date_to):
         return 10
 
+    def get_autoregression_models(self) -> dict[int, int]:
+        return {State.DOLNOSLASKIE: 34,
+                State.KUJAWSKO_POMORSKIE: 25,
+                State.LUBELSKIE: 36,
+                State.LUBUSKIE: 24,
+                State.LODZKIE: 26,
+                State.MALOPOLSKIE: 29,
+                State.MAZOWIECKIE: 22,
+                State.OPOLSKIE: 36,
+                State.PODKARPACKIE: 24,
+                State.PODLASKIE: 32,
+                State.POMORSKIE: 26,
+                State.SLASKIE: 35,
+                State.SWIETOKRZYSKIE: 36,
+                State.WARMINSKO_MAZURSKIE: 24,
+                State.WIELKOPOLSKIE: 34,
+                State.ZACHODNIOPOMORSKIE: 35,
+                }
 
-
-
-    def get_autoregression_models(self) -> list[AutoregressionModel]:
-        return [
-            AutoregressionModel(State.DOLNOSLASKIE, 34),
-            AutoregressionModel(State.KUJAWSKO_POMORSKIE, 25),
-            AutoregressionModel(State.LUBELSKIE, 36),
-            AutoregressionModel(State.LUBUSKIE, 24),
-            AutoregressionModel(State.LODZKIE, 26),
-            AutoregressionModel(State.MALOPOLSKIE, 29),
-            AutoregressionModel(State.MAZOWIECKIE, 22),
-            AutoregressionModel(State.OPOLSKIE, 36),
-            AutoregressionModel(State.PODKARPACKIE, 24),
-            AutoregressionModel(State.PODLASKIE, 32),
-            AutoregressionModel(State.POMORSKIE, 26),
-            AutoregressionModel(State.SLASKIE, 35),
-            AutoregressionModel(State.SWIETOKRZYSKIE, 36),
-            AutoregressionModel(State.WARMINSKO_MAZURSKIE, 24),
-            AutoregressionModel(State.WIELKOPOLSKIE, 34),
-            AutoregressionModel(State.ZACHODNIOPOMORSKIE, 35)
-        ]
