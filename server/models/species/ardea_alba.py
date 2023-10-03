@@ -16,15 +16,19 @@ class ArdeaAlba(Specie):
         return self.observation_csv_path
 
     def get_info(self):
+        common_name = "Great egret"
+        scientific_name = "Ardea alba"
         description = "Ardea Alba sample description"
         habitat = "Ardea Alba sample habititat"
 
-        dict = {"description": description,
+        dict = {"scientific_name": scientific_name,
+                "common_name": common_name,
+                "description": description,
                 "habitat": habitat}
         return dict
 
     def get_available_models(self):
-        return [Model.AUTOREGRESSION.name]
+        return [Model.AUTOREGRESSION.name.lower()]
 
     def predict_autoregression(self, date_from, date_to):
         return 10

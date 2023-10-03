@@ -34,8 +34,10 @@ def get_specie_available_models(specie_name):
 
     response = app_service.get_specie_models(specie_name)
 
+    response_prepared = {"supported_models": response}
+
     if response is not None:
-        return jsonify(response) # throws 500 for now
+        return jsonify(response_prepared) # throws 500 for now
 
     return Response("Invalid specie name", status=400)
 
