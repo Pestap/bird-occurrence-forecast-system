@@ -2,6 +2,9 @@ from datetime import datetime
 
 import pandas as pd
 from abc import abstractmethod
+
+from dateutil import rrule, relativedelta
+
 from server.models.data_gathering.data_extraction_from_file import get_observations_state_groups
 from server.models import enums
 
@@ -47,77 +50,75 @@ class Specie:
         return None
 
     def make_predictions(self, model, date_from, date_to):
-         # Loads observation data from csv into dictionary
-        # TODO: maybe move to application startup
+        month_from = date_from.month
+        year_from = date_from.year
+
+        month_to = date_to.month
+        year_to = date_to.year
 
         predictions_dictionary = {}
-        for state, observations in self.observation_data_grouped.items():
+        """
+        predictions_dictionary structure:
+        {
+            year-month1:{
+                state1: value
+                state2: value
+                ...
+            },
+            year-month2: {
+                state1: value
+                state2: value    
+            }
+        }
+        """
 
-            # get last observation date
+        # For now I assume that all states have observations till 1-2023
+        # Earliest records are from 1990-1
 
-            last_observation_year = int(observations.tail(1)['YEAR'].to_numpy()[0])
-            last_observation_month = int(observations.tail(1)['MONTH'].to_numpy()[0])
+        if date_from <= datetime(2023, 1, 1):
+            desired_date_list = []
 
-            last_observation_date = datetime(last_observation_year, last_observation_month, 1)
+            # Create list of desired dates to read observations from:
+            until_date = date_to if date_to < datetime(2023, 1, 1) else datetime(2023, 1, 1)
+            for dt in rrule.rrule(rrule.MONTHLY, dtstart=date_from, until=until_date): # until is hardcoded for now
+                desired_date_list.append(dt)
+            # Read observations
+            for date in desired_date_list:
+                predictions_dictionary_key = f"{date.year}-{date.month}"
+                predictions_dictionary[predictions_dictionary_key] = {} # empty dictionary
 
-            # Get first observation date
-            first_observation_year = int(observations.head(1)['YEAR'].to_numpy()[0])
-            first_observation_month = int(observations.head(1)['MONTH'].to_numpy()[0])
+                for state, observations in self.observation_data_grouped.items():
+                    # Query observations for desired date
+                    try:
+                        value = float(observations.loc[(observations['YEAR'] == date.year) & (observations['MONTH'] == date.month)]['OBSERVATION COUNT'].to_numpy()[0])
+                        predictions_dictionary[predictions_dictionary_key][state.name] = value
+                    except IndexError: # Exception is thrown by accessing [0] index in empty array - no observation found
+                        predictions_dictionary[predictions_dictionary_key][state.name] = None
 
-            first_observation_date = datetime(first_observation_year, first_observation_month, 1)
+        # Make predictions
 
-            results = []
-            months_between_last_and_from_date = (date_from.year - last_observation_date.year) * 12 +\
-                                                (date_from.month - last_observation_date.month) # positive when from is after last
-            months_between_last_and_to_date = (date_to.year - last_observation_date.year) * 12 + \
-                                              (date_to.month - last_observation_date.month) # positive when to is after last
+        # Calculate how many months to predict
 
-            if months_between_last_and_from_date < 0: # TODO: change from to last
-                if months_between_last_and_to_date < 0:
-                    # get
-                    observations_slice = observations[(observations['YEAR'] >= date_from.year) & (observations['YEAR'] <= date_to.year)].tail(-date_from.month + 1).head(date_to.month - 12)
+        delta = relativedelta.relativedelta(date_to, datetime(2023,1,1))
+        months_from_last_observation_data = delta.months + (delta.years * 12)
 
-                    observations_slice_values = observations_slice['OBSERVATION COUNT'].to_numpy()
-                    observation_slice_months = observations_slice['MONTH'].to_numpy()
-                    observation_slice_years = observations_slice['YEAR'].to_numpy()
-                    observation_slice_dates = []
 
-                    for i in range(len(observations_slice_values)):
-                        observation_slice_dates.append(datetime(int(observation_slice_years[i]), int(observation_slice_months[i]), 1))
-
-                    # Here: observations and corresponding dates can be returned
-                    # TODO: do not return for first state but agregate for all
-                    predictions_dictionary[state] = observations_slice_values.tolist(), observation_slice_dates
-                else:
-                    pass # fetch some, predict months_between_last_and_to_date
-            else:
+        if months_from_last_observation_data > 0:
+            for state in self.observation_data_grouped.keys():
                 pass
-                # normal prediction for mo
-            # Check if from is before/inside/after
+                # predict for every state for months_from_last_observation_data
+                # add results to prediction_dictionary
 
-            """"
-            Change response to:
-            
-            date1: {
-                state1: val1,
-                state2: val2,
-                ...
-                state16: val16
-            }
-            date2: {
-                state1: val1,
-                state2: val2,
-                ...
-                state16: val16
-            }
-            
-            None/negative value - no data
-            
-            
-            
-            """
+
+        if date_from > datetime(2023, 1, 1):
+            pass
+            # Delete dictionary entries before that date
+
+
+
 
         return predictions_dictionary
+
 
 
         if model == enums.Model.AUTOREGRESSION.name.lower():

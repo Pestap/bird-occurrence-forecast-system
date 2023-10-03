@@ -68,7 +68,64 @@ The project is a part of Bachelor of Science thesis at Faculty of  Electronics, 
     If specified date range contains actual data, it is returned for that period. Predictions are made for dates with no observation data.  
     Example request:
     ```http request
-    GET http://127.0.0.1:5000/api/birds/ardea_alba/models/autoregression/predict?from=2011-10-25&to=2013-10-25
+    GET http://127.0.0.1:5000/api/birds/ardea_alba/models/autoregression/predict?from=2013-08-25&to=2013-10-25
     ```
     Example response:  
-    TODO
+    ```json
+    {
+      "2013-10": {
+        "DOLNOSLASKIE": 0.0,
+        "KUJAWSKO_POMORSKIE": 0.0,
+        "LODZKIE": 0.0,
+        "LUBELSKIE": 0.0,
+        "LUBUSKIE": 60.0,
+        "MALOPOLSKIE": 0.0,
+        "MAZOWIECKIE": 1.0,
+        "OPOLSKIE": 0.0,
+        "PODKARPACKIE": 0.0,
+        "PODLASKIE": 0.0,
+        "POMORSKIE": 0.0,
+        "SLASKIE": 56.666666666666664,
+        "SWIETOKRZYSKIE": 0.0,
+        "WARMINSKO_MAZURSKIE": 0.0,
+        "WIELKOPOLSKIE": 81.0,
+        "ZACHODNIOPOMORSKIE": 0.0
+      },
+      "2013-8": {
+        "DOLNOSLASKIE": 2.6666666666666665,
+        "KUJAWSKO_POMORSKIE": 3.0,
+        "LODZKIE": 0.0,
+        "LUBELSKIE": 0.0,
+        "LUBUSKIE": 11.333333333333334,
+        "MALOPOLSKIE": 0.0,
+        "MAZOWIECKIE": 0.0,
+        "OPOLSKIE": 0.0,
+        "PODKARPACKIE": 0.0,
+        "PODLASKIE": 1.0,
+        "POMORSKIE": 1.0,
+        "SLASKIE": 2.0,
+        "SWIETOKRZYSKIE": 0.0,
+        "WARMINSKO_MAZURSKIE": 0.0,
+        "WIELKOPOLSKIE": 5.0,
+        "ZACHODNIOPOMORSKIE": 14.5
+      },
+      "2013-9": {
+        "DOLNOSLASKIE": 0.0,
+        "KUJAWSKO_POMORSKIE": 0.0,
+        "LODZKIE": 0.0,
+        "LUBELSKIE": 1.0,
+        "LUBUSKIE": 5.0,
+        "MALOPOLSKIE": 2.0,
+        "MAZOWIECKIE": 2.0,
+        "OPOLSKIE": 0.0,
+        "PODKARPACKIE": 0.0,
+        "PODLASKIE": 1.0,
+        "POMORSKIE": 0.0,
+        "SLASKIE": 5.0,
+        "SWIETOKRZYSKIE": 0.0,
+        "WARMINSKO_MAZURSKIE": 0.0,
+        "WIELKOPOLSKIE": 1.0,
+        "ZACHODNIOPOMORSKIE": 8.666666666666666
+      }
+    }
+    ```
