@@ -1,12 +1,35 @@
-# System do predykcji występowania ptaków 
+# Bird Occurrence Forecast System
 
-## Projekt realizowany jest w ramach pracy inżynierskiej na Wydziale Elektroniki, Telekomunikacji i Informatyki Politechniki Gdańskiej.
+The project is a part of Bachelor of Science thesis at Faculty of  Electronics, Telecommunications and Informatics at Gdańsk University of Technology
 
+---
+### Authors
+- Bartłomiej Szczepaniec
+- Piotr Pesta
+---
+## REST API documentation
 
-## Co i gdzie
+### Available endpoints:
+1. **/api/birds**  
+    Get list of supported species  
+    Example request:
+    ```http request
+    GET http://localhost:5000/api/birds
+    ```
+    Example response:
+    ```json
+    {
+      "species": [
+        "ardea_alba",
+        "ciconia_ciconia"
+      ]
+    }
+    ```
 
-Moduł AI_model - predykcja
-Moduł Data - dane potrzebne do działania 
-Moduł data_extraction - pobieranie i wstępna obróbka danych
-Moduł server - backend
-Modul Ui
+2. **/api/birds/<specie_name>**  
+    Get information about specified specie  
+    Example request:
+    ```http request
+    GET http://localhost:5000/api/birds/ardea_alba
+    ```
+

@@ -10,7 +10,9 @@ def get_species():
     """
     Handle fetching all species
     """
-    return jsonify(app_service.get_species())
+    response = app_service.get_species()
+    response_prepared = {"species": response}
+    return jsonify(response_prepared)
 
 
 def get_specie_info(specie_name):
@@ -33,7 +35,7 @@ def get_specie_available_models(specie_name):
     response = app_service.get_specie_models(specie_name)
 
     if response is not None:
-        return jsonify(response)
+        return jsonify(response) # throws 500 for now
 
     return Response("Invalid specie name", status=400)
 
@@ -49,6 +51,24 @@ def predict_specie_with_model(specie_name, model):
     """
     Predict specie occurrence using specified model
     Date format
+
+    {
+        dolnoslaskie: {
+            []
+            []
+        }.
+        ...
+
+
+        2011-11 : {
+        dolnoslaskie: 212
+        ..
+        ,,
+        ..
+
+
+        }
+    }
     """
 
     try:
@@ -69,3 +89,5 @@ def predict_specie_with_model(specie_name, model):
         return Response("Invalid specie name", status=400)
     except ValueError:
         return Response("Invalid date format, try using YYYY-MM-DD", status=400)
+
+    # 2012-09-01

@@ -27,7 +27,7 @@ def handle_same_place_same_time(df):
 
     df['MONTH'] = df.apply(lambda row: row['OBSERVATION DATE'].month, axis=1)
 
-    for i in range(len(df)): # FIXME: for now never goes inside as -100 are replaced earlier
+    for i in range(len(df)): # TODO: for now never goes inside as -100 are replaced earlier
         if df.loc[i, 'OBSERVATION COUNT'] == -100:
             df.loc[i, 'OBSERVATION COUNT'] = average(df, df.loc[i, 'MONTH'], df.loc[i, 'YEAR'])
 
@@ -90,7 +90,7 @@ def divide_by_state(df):
         for i in range(first_year, 2023):
             if i in year_months_dict:
                 # iterate through months
-                for j in range(1,13):
+                for j in range(1, 13):
                     if j not in year_months_dict[i]:
                         row = pd.DataFrame({'STATE': [group.loc[0, 'STATE']], 'YEAR': [i], 'MONTH': [j], 'OBSERVATION COUNT': [0.0]})
                         group = pd.concat([group, row], ignore_index=True)
@@ -102,7 +102,6 @@ def divide_by_state(df):
                         {'STATE': [group.loc[0, 'STATE']], 'YEAR': [i], 'MONTH': [j], 'OBSERVATION COUNT': [0.0]})
                     group = pd.concat([group, row], ignore_index=True)
                     pass
-
 
         group.sort_values(['YEAR', 'MONTH'], ascending=[True, True], inplace=True)
         group.reset_index(inplace=True, drop=True)

@@ -11,11 +11,14 @@ class Specie:
     def __init__(self):
         self.observation_data_grouped = None
 
+
     @abstractmethod
     def get_autoregression_models(self):
         pass
+    # TODO: include first observation date (maybe also last?) in get_info
     # TODO: add get moving average models - after research
     # TODO: add get DNN models - after research
+
 
     @abstractmethod
     def get_info(self):
@@ -44,7 +47,7 @@ class Specie:
         return None
 
     def make_predictions(self, model, date_from, date_to):
-        self.load_observation_data_from_csv() # Loads observation data from csv into dictionary
+         # Loads observation data from csv into dictionary
         # TODO: maybe move to application startup
 
         predictions_dictionary = {}
@@ -69,7 +72,7 @@ class Specie:
             months_between_last_and_to_date = (date_to.year - last_observation_date.year) * 12 + \
                                               (date_to.month - last_observation_date.month) # positive when to is after last
 
-            if months_between_last_and_from_date < 0:
+            if months_between_last_and_from_date < 0: # TODO: change from to last
                 if months_between_last_and_to_date < 0:
                     # get
                     observations_slice = observations[(observations['YEAR'] >= date_from.year) & (observations['YEAR'] <= date_to.year)].tail(-date_from.month + 1).head(date_to.month - 12)
@@ -83,7 +86,8 @@ class Specie:
                         observation_slice_dates.append(datetime(int(observation_slice_years[i]), int(observation_slice_months[i]), 1))
 
                     # Here: observations and corresponding dates can be returned
-                    return observations_slice_values.tolist(), observation_slice_dates
+                    # TODO: do not return for first state but agregate for all
+                    predictions_dictionary[state] = observations_slice_values.tolist(), observation_slice_dates
                 else:
                     pass # fetch some, predict months_between_last_and_to_date
             else:
@@ -91,11 +95,33 @@ class Specie:
                 # normal prediction for mo
             # Check if from is before/inside/after
 
+            """"
+            Change response to:
+            
+            date1: {
+                state1: val1,
+                state2: val2,
+                ...
+                state16: val16
+            }
+            date2: {
+                state1: val1,
+                state2: val2,
+                ...
+                state16: val16
+            }
+            
+            None/negative value - no data
+            
+            
+            
+            """
+
+        return predictions_dictionary
 
 
         if model == enums.Model.AUTOREGRESSION.name.lower():
             return self.predict_autoregression(date_from, date_to)
         elif model == enums.Model.NEURALNETWORK.name.lower():
             return self.predict_neural_network(date_from, date_to)
-
         return None

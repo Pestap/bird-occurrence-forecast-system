@@ -15,7 +15,7 @@ class CiconiaCiconia(Specie):
     def get_autoregression_models(self) -> list[AutoregressionModel]:
         return [
 
-            # TODO: Test models for ciconia_ciconia.csv
+            # TODO: Test models for ciconia_ciconia.csv, change structure - like in ardea_alba
             AutoregressionModel(State.DOLNOSLASKIE, 0),
             AutoregressionModel(State.KUJAWSKO_POMORSKIE, 0),
             AutoregressionModel(State.LUBELSKIE, 0),
