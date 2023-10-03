@@ -55,15 +55,15 @@ The project is a part of Bachelor of Science thesis at Faculty of  Electronics, 
         ]
     }
     ```
-4. **/api/birds/<specie_name>/models/<model>**  
-    Get information about model identified by <model> for specie identified by <specie_name>  
+4. **/api/birds/<specie_name>/models/<model_name>**  
+    Get information about model identified by <model_name> for specie identified by <specie_name>  
     Example request:
     ```http request
     GET http://127.0.0.1:5000/api/birds/ardea_alba/models/autoregression
     ```
     Example response: 
     TODO
-5. **/birds/<specie_name>/models/<model>/predict?from=YYYY-MM-DD&to=YYYY-MM-DD**  
+5. **/birds/<specie_name>/models/<model_name>/predict?from=YYYY-MM-DD&to=YYYY-MM-DD**  
     Get observation data prediction (or historical data) for specie identified by <specie_name>.  
     If specified date range contains actual data, it is returned for that period. Predictions are made for dates with no observation data.  
     Example request:
