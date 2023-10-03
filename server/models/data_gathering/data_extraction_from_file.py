@@ -1,15 +1,19 @@
 import pandas as pd
-from sklearn.model_selection import train_test_split
-from sklearn import preprocessing
+
 
 def load_from_file(filepath: str):
+    """
+    Load data from created CSV file for give specie
+    """
     df = pd.read_csv(filepath, sep=";")
+    # -100 was set when extracting data from root file and replaced X
     df['OBSERVATION COUNT'].replace({-100: 1}, inplace=True)
-    print("Loaded from file")
 
+    # type dictionary for casting types
     type_dict = {'SCIENTIFIC NAME': str, 'OBSERVATION COUNT': int, 'LATITUDE': float, 'LONGITUDE': float,
              'OBSERVATION DATE': 'datetime64[s]', 'YEAR': int, 'WEEK OF YEAR': int, 'COUNTY': str, 'STATE': str}
 
+    # cast types
     for col_name, type_name in type_dict.items():
         df[col_name] = df[col_name].astype(type_name)
 
@@ -17,16 +21,18 @@ def load_from_file(filepath: str):
 
 
 def handle_same_place_same_time(df):
+    """
+    Group observations by state, year and month
+    """
 
     df['MONTH'] = df.apply(lambda row: row['OBSERVATION DATE'].month, axis=1)
 
-    for i in range(len(df)):
+    for i in range(len(df)): # TODO: for now never goes inside as -100 are replaced earlier
         if df.loc[i, 'OBSERVATION COUNT'] == -100:
-            df.loc[i, 'OBSERVATION COUNT'] = average(df,df.loc[i, 'MONTH'], df.loc[i, 'YEAR'])
+            df.loc[i, 'OBSERVATION COUNT'] = average(df, df.loc[i, 'MONTH'], df.loc[i, 'YEAR'])
 
     df = df[['OBSERVATION COUNT', 'MONTH', 'YEAR', 'STATE']]
     df = df.groupby(['STATE', 'YEAR', 'MONTH'])['OBSERVATION COUNT'].mean().reset_index()
-    print("Grouped")
     return df
 
 
@@ -84,7 +90,7 @@ def divide_by_state(df):
         for i in range(first_year, 2023):
             if i in year_months_dict:
                 # iterate through months
-                for j in range(1,13):
+                for j in range(1, 13):
                     if j not in year_months_dict[i]:
                         row = pd.DataFrame({'STATE': [group.loc[0, 'STATE']], 'YEAR': [i], 'MONTH': [j], 'OBSERVATION COUNT': [0.0]})
                         group = pd.concat([group, row], ignore_index=True)
@@ -97,20 +103,17 @@ def divide_by_state(df):
                     group = pd.concat([group, row], ignore_index=True)
                     pass
 
-
         group.sort_values(['YEAR', 'MONTH'], ascending=[True, True], inplace=True)
         group.reset_index(inplace=True, drop=True)
         groups_with_zeroes.append(group)
 
-
-
     return groups_with_zeroes
 
 
-def create_groups(filename='../data/ardea_alba.csv'):
+def get_observations_state_groups(filename):
 
-    #df = load_from_file('../data/ebd_PL_relJan-2023/ebd_PL_relJan-2023.txt')
     df = load_from_file(filename)
+    # TODO: capture df here to extract observation data
     df = handle_same_place_same_time(df)
     groups = divide_by_state(df)
 

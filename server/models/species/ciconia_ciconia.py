@@ -1,13 +1,21 @@
 from server.models.autoregression.autoregression_model import AutoregressionModel
 from server.models.specie import Specie
-from server.models.states import State
+from server.models.enums import State
 
 
 class CiconiaCiconia(Specie):
+    def get_info(self):
+        description = "Ciconia ciconia sample description"
+        habitat = "Ciconia sample habitat"
+
+        dict = {"description": description,
+                "habitat": habitat}
+        return dict
+
     def get_autoregression_models(self) -> list[AutoregressionModel]:
         return [
 
-            # TODO: Test models for ciconia_ciconia.csv
+            # TODO: Test models for ciconia_ciconia.csv, change structure - like in ardea_alba
             AutoregressionModel(State.DOLNOSLASKIE, 0),
             AutoregressionModel(State.KUJAWSKO_POMORSKIE, 0),
             AutoregressionModel(State.LUBELSKIE, 0),
