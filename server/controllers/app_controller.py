@@ -86,7 +86,10 @@ def predict_specie_with_model(specie_name, model):
         response = app_service.predict_specie_with_model(specie_name, model, date_from_datetime, date_to_datetime)
 
         if response is not None:
-            return jsonify(response)
+            # Translate dates
+            response_translated = {f"{date.year}-{date.month:0>{2}}": value for date, value in response.items()}
+
+            return jsonify(response_translated)
 
         return Response("Invalid specie name", status=400)
     except ValueError:

@@ -84,16 +84,16 @@ class Specie:
                 desired_date_list.append(dt)
             # Read observations
             for date in desired_date_list:
-                predictions_dictionary_key = f"{date.year}-{date.month}"
-                predictions_dictionary[predictions_dictionary_key] = {} # empty dictionary
+                #predictions_dictionary_key = f"{date.year}-{date.month}"
+                predictions_dictionary[date] = {} # empty dictionary
 
                 for state, observations in self.observation_data_grouped.items():
                     # Query observations for desired date
                     try:
                         value = float(observations.loc[(observations['YEAR'] == date.year) & (observations['MONTH'] == date.month)]['OBSERVATION COUNT'].to_numpy()[0])
-                        predictions_dictionary[predictions_dictionary_key][state.name] = value
+                        predictions_dictionary[date][state.name] = value
                     except IndexError: # Exception is thrown by accessing [0] index in empty array - no observation found
-                        predictions_dictionary[predictions_dictionary_key][state.name] = None
+                        predictions_dictionary[date][state.name] = None
 
         # Make predictions
 
@@ -112,22 +112,23 @@ class Specie:
 
             for state in self.observation_data_grouped.keys():
                 # TODO: predictions by different methods (if else)
+
                 predictions = self.predict_autoregression(state, months_from_last_observation_data)
                 # predict for every state for months_from_last_observation_data
                 # add results to prediction_dictionary
                 predictions_with_dates = {desired_date_list[i]: predictions[i] for i in range(len(predictions))}
                 for date in desired_date_list:
                     # append predictions to predictions_dictionary
-                    predictions_dictionary_key = f"{date.year}-{date.month}"
-                    if predictions_dictionary.get(predictions_dictionary_key) is None:
-                        predictions_dictionary[predictions_dictionary_key] = {}
+                    #predictions_dictionary_key = f"{date.year}-{date.month}"
+                    if predictions_dictionary.get(date) is None:
+                        predictions_dictionary[date] = {}
 
-                    predictions_dictionary[predictions_dictionary_key][state.name] = predictions_with_dates[date]
+                    predictions_dictionary[date][state.name] = predictions_with_dates[date]
 
         if date_from > datetime(2023, 1, 1):
-            pass
-            # Delete dictionary entries before that date
 
+            predictions_dictionary = {date: value for date,value in predictions_dictionary.items() if date >= date_from}
+            # Delete dictionary entries before that date
 
 
 
