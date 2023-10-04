@@ -2,6 +2,9 @@ from datetime import datetime
 
 import pandas as pd
 from abc import abstractmethod
+
+from dateutil import rrule, relativedelta
+
 from server.models.data_gathering.data_extraction_from_file import get_observations_state_groups
 from server.models import enums
 
@@ -40,84 +43,97 @@ class Specie:
         for state in observation_data_grouped_not_translated:
             self.observation_data_grouped[enums.translate_state_to_enum(state[0])] = state[1]
 
-    def predict_autoregression(self, date_from, date_to):
+    def predict_autoregression(self, state, months):
         return None # In case no implementation
 
     def predict_neural_network(self, date_from, date_to):
         return None
 
     def make_predictions(self, model, date_from, date_to):
-         # Loads observation data from csv into dictionary
-        # TODO: maybe move to application startup
+        month_from = date_from.month
+        year_from = date_from.year
+
+        month_to = date_to.month
+        year_to = date_to.year
 
         predictions_dictionary = {}
-        for state, observations in self.observation_data_grouped.items():
-
-            # get last observation date
-
-            last_observation_year = int(observations.tail(1)['YEAR'].to_numpy()[0])
-            last_observation_month = int(observations.tail(1)['MONTH'].to_numpy()[0])
-
-            last_observation_date = datetime(last_observation_year, last_observation_month, 1)
-
-            # Get first observation date
-            first_observation_year = int(observations.head(1)['YEAR'].to_numpy()[0])
-            first_observation_month = int(observations.head(1)['MONTH'].to_numpy()[0])
-
-            first_observation_date = datetime(first_observation_year, first_observation_month, 1)
-
-            results = []
-            months_between_last_and_from_date = (date_from.year - last_observation_date.year) * 12 +\
-                                                (date_from.month - last_observation_date.month) # positive when from is after last
-            months_between_last_and_to_date = (date_to.year - last_observation_date.year) * 12 + \
-                                              (date_to.month - last_observation_date.month) # positive when to is after last
-
-            if months_between_last_and_from_date < 0: # TODO: change from to last
-                if months_between_last_and_to_date < 0:
-                    # get
-                    observations_slice = observations[(observations['YEAR'] >= date_from.year) & (observations['YEAR'] <= date_to.year)].tail(-date_from.month + 1).head(date_to.month - 12)
-
-                    observations_slice_values = observations_slice['OBSERVATION COUNT'].to_numpy()
-                    observation_slice_months = observations_slice['MONTH'].to_numpy()
-                    observation_slice_years = observations_slice['YEAR'].to_numpy()
-                    observation_slice_dates = []
-
-                    for i in range(len(observations_slice_values)):
-                        observation_slice_dates.append(datetime(int(observation_slice_years[i]), int(observation_slice_months[i]), 1))
-
-                    # Here: observations and corresponding dates can be returned
-                    # TODO: do not return for first state but agregate for all
-                    predictions_dictionary[state] = observations_slice_values.tolist(), observation_slice_dates
-                else:
-                    pass # fetch some, predict months_between_last_and_to_date
-            else:
-                pass
-                # normal prediction for mo
-            # Check if from is before/inside/after
-
-            """"
-            Change response to:
-            
-            date1: {
-                state1: val1,
-                state2: val2,
+        """
+        predictions_dictionary structure:
+        {
+            year-month1:{
+                state1: value
+                state2: value
                 ...
-                state16: val16
+            },
+            year-month2: {
+                state1: value
+                state2: value    
             }
-            date2: {
-                state1: val1,
-                state2: val2,
-                ...
-                state16: val16
-            }
-            
-            None/negative value - no data
-            
-            
-            
-            """
+        }
+        """
+
+        # For now I assume that all states have observations till 1-2023
+        # Earliest records are from 1990-1
+
+        if date_from <= datetime(2023, 1, 1):
+            desired_date_list = []
+
+            # Create list of desired dates to read observations from:
+            until_date = date_to if date_to < datetime(2023, 1, 1) else datetime(2023, 1, 1)
+            for dt in rrule.rrule(rrule.MONTHLY, dtstart=date_from, until=until_date): # until is hardcoded for now
+                desired_date_list.append(dt)
+            # Read observations
+            for date in desired_date_list:
+                #predictions_dictionary_key = f"{date.year}-{date.month}"
+                predictions_dictionary[date] = {} # empty dictionary
+
+                for state, observations in self.observation_data_grouped.items():
+                    # Query observations for desired date
+                    try:
+                        value = float(observations.loc[(observations['YEAR'] == date.year) & (observations['MONTH'] == date.month)]['OBSERVATION COUNT'].to_numpy()[0])
+                        predictions_dictionary[date][state.name] = value
+                    except IndexError: # Exception is thrown by accessing [0] index in empty array - no observation found
+                        predictions_dictionary[date][state.name] = None
+
+        # Make predictions
+
+        # Calculate how many months to predict
+
+        delta = relativedelta.relativedelta(date_to, datetime(2023,1,1))
+        months_from_last_observation_data = delta.months + (delta.years * 12)
+
+
+        if months_from_last_observation_data > 0:
+            # TODO: rename to prediction date list, the other one to observation date list
+            desired_date_list = []
+
+            for dt in rrule.rrule(rrule.MONTHLY, dtstart=datetime(2023, 2, 1), until=date_to): # until is hardcoded for now
+                desired_date_list.append(dt)
+
+            for state in self.observation_data_grouped.keys():
+                # TODO: predictions by different methods (if else)
+
+                predictions = self.predict_autoregression(state, months_from_last_observation_data)
+                # predict for every state for months_from_last_observation_data
+                # add results to prediction_dictionary
+                predictions_with_dates = {desired_date_list[i]: predictions[i] for i in range(len(predictions))}
+                for date in desired_date_list:
+                    # append predictions to predictions_dictionary
+                    #predictions_dictionary_key = f"{date.year}-{date.month}"
+                    if predictions_dictionary.get(date) is None:
+                        predictions_dictionary[date] = {}
+
+                    predictions_dictionary[date][state.name] = predictions_with_dates[date]
+
+        if date_from > datetime(2023, 1, 1):
+
+            predictions_dictionary = {date: value for date,value in predictions_dictionary.items() if date >= date_from}
+            # Delete dictionary entries before that date
+
+
 
         return predictions_dictionary
+
 
 
         if model == enums.Model.AUTOREGRESSION.name.lower():

@@ -5,7 +5,7 @@ import pandas as pd
 from server.models.autoregression.autoregression_model import AutoregressionModel
 from server.models.specie import Specie
 from server.models.enums import State, Model
-
+from statsmodels.tsa.ar_model import AutoReg, ar_select_order
 class ArdeaAlba(Specie):
 
     def __init__(self): # FIXME: change to relative path
@@ -30,8 +30,11 @@ class ArdeaAlba(Specie):
     def get_available_models(self):
         return [Model.AUTOREGRESSION.name.lower()]
 
-    def predict_autoregression(self, date_from, date_to):
-        return 10
+    def predict_autoregression(self, state, months):
+        #selector = ar_select_order(self.observation_data_grouped['OBSERVATION COUNT'], months)
+        model = AutoReg(self.observation_data_grouped[state]['OBSERVATION COUNT'], lags=self.get_autoregression_models()[state]).fit()
+        result = list(model.forecast(steps=months))
+        return result
 
     def get_autoregression_models(self) -> dict[int, int]:
         return {State.DOLNOSLASKIE: 34,
