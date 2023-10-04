@@ -49,13 +49,13 @@ class Specie:
     def predict_neural_network(self, date_from, date_to):
         return None
 
+    def make_predictions_with_model(self, model, state, steps):
+        if model.upper() == enums.Model.AUTOREGRESSION.name:
+            return self.predict_autoregression(state, steps)
+        else:
+            return None
+
     def make_predictions(self, model, date_from, date_to):
-        month_from = date_from.month
-        year_from = date_from.year
-
-        month_to = date_to.month
-        year_to = date_to.year
-
         predictions_dictionary = {}
         """
         predictions_dictionary structure:
@@ -111,15 +111,16 @@ class Specie:
                 desired_date_list.append(dt)
 
             for state in self.observation_data_grouped.keys():
-                # TODO: predictions by different methods (if else)
-
-                predictions = self.predict_autoregression(state, months_from_last_observation_data)
+                predictions = self.make_predictions_with_model(model, state, months_from_last_observation_data)
+                # If incorrect model selected
+                if predictions is None:
+                    return None
                 # predict for every state for months_from_last_observation_data
                 # add results to prediction_dictionary
                 predictions_with_dates = {desired_date_list[i]: predictions[i] for i in range(len(predictions))}
                 for date in desired_date_list:
                     # append predictions to predictions_dictionary
-                    #predictions_dictionary_key = f"{date.year}-{date.month}"
+                    # predictions_dictionary_key = f"{date.year}-{date.month}"
                     if predictions_dictionary.get(date) is None:
                         predictions_dictionary[date] = {}
 
@@ -130,14 +131,4 @@ class Specie:
             predictions_dictionary = {date: value for date,value in predictions_dictionary.items() if date >= date_from}
             # Delete dictionary entries before that date
 
-
-
         return predictions_dictionary
-
-
-
-        if model == enums.Model.AUTOREGRESSION.name.lower():
-            return self.predict_autoregression(date_from, date_to)
-        elif model == enums.Model.NEURALNETWORK.name.lower():
-            return self.predict_neural_network(date_from, date_to)
-        return None
