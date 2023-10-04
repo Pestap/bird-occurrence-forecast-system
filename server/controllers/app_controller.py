@@ -86,8 +86,8 @@ def predict_specie_with_model(specie_name, model):
         response = app_service.predict_specie_with_model(specie_name, model, date_from_datetime, date_to_datetime)
 
         if response is not None:
-            # Translate dates
-            response_translated = {f"{date.year}-{date.month:0>{2}}": value for date, value in response.items()}
+            # Translate dates and round to 2 decimal places
+            response_translated = {f"{date.year}-{date.month:0>{2}}": {state: round(observation_value, 2) for state, observation_value in value.items()} for date, value in response.items()}
 
             return jsonify(response_translated)
 
