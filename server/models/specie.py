@@ -43,7 +43,7 @@ class Specie:
         for state in observation_data_grouped_not_translated:
             self.observation_data_grouped[enums.translate_state_to_enum(state[0])] = state[1]
 
-    def predict_autoregression(self, date_from, date_to):
+    def predict_autoregression(self, state, months):
         return None # In case no implementation
 
     def predict_neural_network(self, date_from, date_to):
@@ -104,11 +104,25 @@ class Specie:
 
 
         if months_from_last_observation_data > 0:
+            # TODO: rename to prediction date list, the other one to observation date list
+            desired_date_list = []
+
+            for dt in rrule.rrule(rrule.MONTHLY, dtstart=datetime(2023, 2, 1), until=date_to): # until is hardcoded for now
+                desired_date_list.append(dt)
+
             for state in self.observation_data_grouped.keys():
-                pass
+                # TODO: predictions by different methods (if else)
+                predictions = self.predict_autoregression(state, months_from_last_observation_data)
                 # predict for every state for months_from_last_observation_data
                 # add results to prediction_dictionary
+                predictions_with_dates = {desired_date_list[i]: predictions[i] for i in range(len(predictions))}
+                for date in desired_date_list:
+                    # append predictions to predictions_dictionary
+                    predictions_dictionary_key = f"{date.year}-{date.month}"
+                    if predictions_dictionary.get(predictions_dictionary_key) is None:
+                        predictions_dictionary[predictions_dictionary_key] = {}
 
+                    predictions_dictionary[predictions_dictionary_key][state.name] = predictions_with_dates[date]
 
         if date_from > datetime(2023, 1, 1):
             pass
