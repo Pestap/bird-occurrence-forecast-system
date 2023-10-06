@@ -84,10 +84,16 @@ def predict_specie_with_model(specie_name, model):
             return Response("Invalid data range, (from after to)", status=400)
 
         response = app_service.predict_specie_with_model(specie_name, model, date_from_datetime, date_to_datetime)
-
         if response is not None:
-            # Translate dates and round to 2 decimal places
-            response_translated = {f"{date.year}-{date.month:0>{2}}": {state: round(observation_value, 2) for state, observation_value in value.items()} for date, value in response.items()}
+            # Translate dates
+            #{state: round(observation_value, 2)
+            response_translated = {f"{date.year}-{date.month:0>{2}}": value for date, value in response.items()}
+
+            # Round numbers
+            for date, data in response_translated.items():
+                for state, observation_value in data.items():
+                    if observation_value is not None:
+                        response_translated[date][state] = round(observation_value, 2)
 
             return jsonify(response_translated)
 
