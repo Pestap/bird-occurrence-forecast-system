@@ -4,6 +4,14 @@ from server.models.enums import State
 
 
 class CiconiaCiconia(Specie):
+
+    def __init__(self): # FIXME: change to relative path
+        self.observation_csv_path = "D:\\Piotrek\\inzynierka\\bird-occurence-forecast-system\\data\\ciconia_ciconia.csv"
+        self.load_observation_data_from_csv()
+
+    def get_csv_filepath(self):
+        return self.observation_csv_path
+
     def get_info(self):
         description = "Ciconia ciconia sample description"
         habitat = "Ciconia sample habitat"
@@ -12,24 +20,21 @@ class CiconiaCiconia(Specie):
                 "habitat": habitat}
         return dict
 
-    def get_autoregression_models(self) -> list[AutoregressionModel]:
-        return [
-
-            # TODO: Test models for ciconia_ciconia.csv, change structure - like in ardea_alba
-            AutoregressionModel(State.DOLNOSLASKIE, 0),
-            AutoregressionModel(State.KUJAWSKO_POMORSKIE, 0),
-            AutoregressionModel(State.LUBELSKIE, 0),
-            AutoregressionModel(State.LUBUSKIE, 0),
-            AutoregressionModel(State.LODZKIE, 0),
-            AutoregressionModel(State.LODZKIE, 0),
-            AutoregressionModel(State.MALOPOLSKIE, 0),
-            AutoregressionModel(State.MAZOWIECKIE, 0),
-            AutoregressionModel(State.OPOLSKIE, 0),
-            AutoregressionModel(State.PODKARPACKIE, 0),
-            AutoregressionModel(State.PODLASKIE, 0),
-            AutoregressionModel(State.POMORSKIE, 0),
-            AutoregressionModel(State.SLASKIE, 0),
-            AutoregressionModel(State.SWIETOKRZYSKIE, 0),
-            AutoregressionModel(State.WIELKOPOLSKIE, 0),
-            AutoregressionModel(State.ZACHODNIOPOMORSKIE, 0)
-        ]
+    def get_autoregression_models(self) -> list[AutoregressionModel]: #TODO: test values, for now they are copied from ardea_alba
+        return  {State.DOLNOSLASKIE: 34,
+                State.KUJAWSKO_POMORSKIE: 25,
+                State.LUBELSKIE: 36,
+                State.LUBUSKIE: 24,
+                State.LODZKIE: 26,
+                State.MALOPOLSKIE: 29,
+                State.MAZOWIECKIE: 22,
+                State.OPOLSKIE: 36,
+                State.PODKARPACKIE: 24,
+                State.PODLASKIE: 32,
+                State.POMORSKIE: 26,
+                State.SLASKIE: 35,
+                State.SWIETOKRZYSKIE: 36,
+                State.WARMINSKO_MAZURSKIE: 24,
+                State.WIELKOPOLSKIE: 34,
+                State.ZACHODNIOPOMORSKIE: 35,
+                }
