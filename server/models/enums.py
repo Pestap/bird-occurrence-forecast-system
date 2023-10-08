@@ -37,6 +37,43 @@ def translate_state_to_enum(state_name):
     else:
         return None
 
+# TODO: refactor
+def translate_enum_to_state(state):
+    if state == State.DOLNOSLASKIE.name:
+        return 'dolnośląskie'
+    elif state == State.KUJAWSKO_POMORSKIE.name:
+        return 'kujawsko-pomorskie'
+    elif state == State.LUBELSKIE.name:
+        return 'lubelskie'
+    elif state == State.LUBUSKIE.name:
+        return 'lubuskie'
+    elif state == State.LODZKIE.name:
+        return 'łódzkie'
+    elif state == State.MALOPOLSKIE.name:
+        return 'małopolskie'
+    elif state == State.MAZOWIECKIE.name:
+        return 'mazowieckie'
+    elif state == State.OPOLSKIE.name:
+        return 'opolskie'
+    elif state == State.PODKARPACKIE.name:
+        return 'podkarpackie'
+    elif state == State.PODLASKIE.name:
+        return 'podlaskie'
+    elif state == State.POMORSKIE.name:
+        return 'pomorskie'
+    elif state == State.SLASKIE.name:
+        return 'śląskie'
+    elif state == State.SWIETOKRZYSKIE.name:
+        return 'świętokrzyskie'
+    elif state == State.WARMINSKO_MAZURSKIE.name:
+        return 'warmińsko-mazurskie'
+    elif state == State.WIELKOPOLSKIE.name:
+        return 'wielkopolskie'
+    elif state == State.ZACHODNIOPOMORSKIE.name:
+        return 'zachodniopomorskie'
+    else:
+        return None
+
 
 class State(Enum):
     DOLNOSLASKIE = 1

@@ -6,7 +6,8 @@ from server.models.enums import State
 class CiconiaCiconia(Specie):
 
     def __init__(self): # FIXME: change to relative path
-        self.observation_csv_path = "D:\\Piotrek\\inzynierka\\bird-occurence-forecast-system\\data\\ciconia_ciconia.csv"
+        # self.observation_csv_path = "D:\\Piotrek\\inzynierka\\bird-occurence-forecast-system\\data\\ciconia_ciconia.csv"
+        self.observation_csv_path = "static/data/ciconia_ciconia.csv"  # path is relative from app.py
         self.load_observation_data_from_csv()
 
     def get_csv_filepath(self):
