@@ -2,6 +2,7 @@ from datetime import datetime
 
 from flask import Flask, request, jsonify, Response
 
+from server.models.enums import translate_enum_to_state
 from server.services import app_service
 
 
@@ -89,13 +90,26 @@ def predict_specie_with_model(specie_name, model):
             #{state: round(observation_value, 2)
             response_translated = {f"{date.year}-{date.month:0>{2}}": value for date, value in response.items()}
 
-            # Round numbers
+            # Round numbers and translate states to string
             for date, data in response_translated.items():
                 for state, observation_value in data.items():
+
                     if observation_value is not None:
                         response_translated[date][state] = round(observation_value, 2)
 
-            return jsonify(response_translated)
+                    # translate enums
+                    # response_translated[date][translate_enum_to_state(state)] = response_translated[date].pop(state)
+
+
+            # TODO: refactor
+            response_v2 = {date: {} for date in response_translated.keys()}
+
+            for date, empty_dict in response_v2.items():
+                for state, value in response_translated[date].items():
+                    empty_dict[translate_enum_to_state(state)] = value
+
+
+            return jsonify(response_v2)
 
         return Response("Invalid specie name", status=400)
     except ValueError:
