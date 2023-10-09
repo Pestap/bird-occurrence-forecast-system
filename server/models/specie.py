@@ -47,7 +47,9 @@ class Specie:
 
         model = AutoReg(self.observation_data_grouped[state]['OBSERVATION COUNT'], lags=steps).fit()
         result = list(model.forecast(steps=months))
-        return result
+        result_non_negative = [val if val >=0 else 0 for val in result]
+
+        return result_non_negative
 
     def predict_neural_network(self, date_from, date_to):
         return None

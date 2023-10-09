@@ -96,9 +96,6 @@ def predict_specie_with_model(specie_name, model):
 
                     if observation_value is not None:
                         response_translated[date][state] = round(observation_value, 2)
-                    # TODO: fix negative values
-
-
 
             # TODO: refactor
             response_v2 = {date: {} for date in response_translated.keys()}
