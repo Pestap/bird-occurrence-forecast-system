@@ -1,6 +1,6 @@
 from server.models.autoregression.autoregression_model import AutoregressionModel
 from server.models.specie import Specie
-from server.models.enums import State
+from server.models.enums import State, Model
 
 
 class CiconiaCiconia(Specie):
@@ -14,13 +14,19 @@ class CiconiaCiconia(Specie):
         return self.observation_csv_path
 
     def get_info(self):
-        description = "Ciconia ciconia sample description"
-        habitat = "Ciconia sample habitat"
+        common_name = "White Strok"
+        scientific_name = "Ciconia ciconia"
+        description = "Ardea Alba sample description"
+        habitat = "Ardea Alba sample habititat"
 
-        dict = {"description": description,
+        dict = {"scientific_name": scientific_name,
+                "common_name": common_name,
+                "description": description,
                 "habitat": habitat}
         return dict
 
+    def get_available_models(self):
+        return [Model.AUTOREGRESSION.name.lower()]
     def get_autoregression_models(self) -> list[AutoregressionModel]: #TODO: test values, for now they are copied from ardea_alba
         return  {State.DOLNOSLASKIE: 34,
                 State.KUJAWSKO_POMORSKIE: 25,

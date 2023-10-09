@@ -96,9 +96,8 @@ def predict_specie_with_model(specie_name, model):
 
                     if observation_value is not None:
                         response_translated[date][state] = round(observation_value, 2)
+                    # TODO: fix negative values
 
-                    # translate enums
-                    # response_translated[date][translate_enum_to_state(state)] = response_translated[date].pop(state)
 
 
             # TODO: refactor
