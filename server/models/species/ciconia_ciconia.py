@@ -26,8 +26,9 @@ class CiconiaCiconia(Specie):
 
     def get_available_models(self):
         return [Model.AUTOREGRESSION.name.lower()]
-    def get_autoregression_models(self) -> list[AutoregressionModel]: #TODO: test values, for now they are copied from ardea_alba
-        return  {State.DOLNOSLASKIE: 34,
+
+    def get_autoregression_models(self):  # TODO: test values, for now they are copied from ardea_alba
+        return {State.DOLNOSLASKIE: 34,
                 State.KUJAWSKO_POMORSKIE: 25,
                 State.LUBELSKIE: 36,
                 State.LUBUSKIE: 24,

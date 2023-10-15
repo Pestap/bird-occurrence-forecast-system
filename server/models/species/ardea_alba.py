@@ -28,7 +28,7 @@ class ArdeaAlba(Specie):
         return [Model.AUTOREGRESSION.name.lower(),
                 Model.ARMA.name.lower()]
 
-    def get_autoregression_models(self) -> dict[int, int]:
+    def get_autoregression_models(self):
         return {State.DOLNOSLASKIE: 34,
                 State.KUJAWSKO_POMORSKIE: 25,
                 State.LUBELSKIE: 36,
