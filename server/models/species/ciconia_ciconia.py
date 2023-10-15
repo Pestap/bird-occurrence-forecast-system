@@ -5,8 +5,7 @@ from server.models.enums import State, Model
 
 class CiconiaCiconia(Specie):
 
-    def __init__(self): # FIXME: change to relative path
-        # self.observation_csv_path = "D:\\Piotrek\\inzynierka\\bird-occurence-forecast-system\\data\\ciconia_ciconia.csv"
+    def __init__(self):
         self.observation_csv_path = "static/data/ciconia_ciconia.csv"  # path is relative from app.py
         self.load_observation_data_from_csv()
 
@@ -27,8 +26,9 @@ class CiconiaCiconia(Specie):
 
     def get_available_models(self):
         return [Model.AUTOREGRESSION.name.lower()]
-    def get_autoregression_models(self) -> list[AutoregressionModel]: #TODO: test values, for now they are copied from ardea_alba
-        return  {State.DOLNOSLASKIE: 34,
+
+    def get_autoregression_models(self):  # TODO: test values, for now they are copied from ardea_alba
+        return {State.DOLNOSLASKIE: 34,
                 State.KUJAWSKO_POMORSKIE: 25,
                 State.LUBELSKIE: 36,
                 State.LUBUSKIE: 24,

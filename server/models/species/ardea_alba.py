@@ -5,8 +5,7 @@ from server.models.enums import State, Model
 
 class ArdeaAlba(Specie):
 
-    def __init__(self): # FIXME: change to relative path
-        #self.observation_csv_path = "D:\\Piotrek\\inzynierka\\bird-occurence-forecast-system\\data\\ardea_alba.csv"
+    def __init__(self):
         self.observation_csv_path = "static/data/ardea_alba.csv" # path is relative from app.py
         self.load_observation_data_from_csv()
 
@@ -26,9 +25,10 @@ class ArdeaAlba(Specie):
         return dict
 
     def get_available_models(self):
-        return [Model.AUTOREGRESSION.name.lower()]
+        return [Model.AUTOREGRESSION.name.lower(),
+                Model.ARMA.name.lower()]
 
-    def get_autoregression_models(self) -> dict[int, int]:
+    def get_autoregression_models(self):
         return {State.DOLNOSLASKIE: 34,
                 State.KUJAWSKO_POMORSKIE: 25,
                 State.LUBELSKIE: 36,

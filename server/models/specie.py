@@ -3,6 +3,7 @@ from statsmodels.tsa.ar_model import AutoReg
 from abc import abstractmethod
 
 from dateutil import rrule, relativedelta
+from statsmodels.tsa.statespace.sarimax import SARIMAX
 
 from server.models.data_gathering.data_extraction_from_file import get_observations_state_groups
 from server.models import enums
@@ -47,7 +48,22 @@ class Specie:
 
         model = AutoReg(self.observation_data_grouped[state]['OBSERVATION COUNT'], lags=steps).fit()
         result = list(model.forecast(steps=months))
-        return result
+        result_non_negative = [val if val >=0 else 0 for val in result]
+
+        return result_non_negative
+
+    def predict_arma(self, state, months):
+        steps = self.get_autoregression_models()[state]
+
+        if steps is None:
+            return None
+
+        model = SARIMAX(self.observation_data_grouped[state]['OBSERVATION COUNT'], order=(steps, 0, 1), alpha=0.95).fit()
+        results = list(model.predict(start=len(self.observation_data_grouped[state]['OBSERVATION COUNT']), end=len(self.observation_data_grouped[state]['OBSERVATION COUNT'])) + months)
+
+        result_non_negative = [val if val >= 0 else 0 for val in results]
+
+        return result_non_negative
 
     def predict_neural_network(self, date_from, date_to):
         return None
@@ -55,6 +71,8 @@ class Specie:
     def make_predictions_with_model(self, model, state, steps):
         if model.upper() == enums.Model.AUTOREGRESSION.name:
             return self.predict_autoregression(state, steps)
+        elif model.upper() == enums.Model.ARMA.name:
+            return self.predict_arma(state, steps)
         else:
             return None
 
