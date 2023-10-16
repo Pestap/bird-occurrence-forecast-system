@@ -27,21 +27,21 @@ class CiconiaCiconia(Specie):
     def get_available_models(self):
         return [Model.AUTOREGRESSION.name.lower()]
 
-    def get_autoregression_models(self):  # TODO: test values, for now they are copied from ardea_alba
-        return {State.DOLNOSLASKIE: 34,
-                State.KUJAWSKO_POMORSKIE: 25,
+    def get_autoregression_models(self):
+        return {State.DOLNOSLASKIE: 36,
+                State.KUJAWSKO_POMORSKIE: 36,
                 State.LUBELSKIE: 36,
-                State.LUBUSKIE: 24,
-                State.LODZKIE: 26,
-                State.MALOPOLSKIE: 29,
-                State.MAZOWIECKIE: 22,
-                State.OPOLSKIE: 36,
+                State.LUBUSKIE: 35,
+                State.LODZKIE: 24,
+                State.MALOPOLSKIE: 36,
+                State.MAZOWIECKIE: 25,
+                State.OPOLSKIE: 33,
                 State.PODKARPACKIE: 24,
-                State.PODLASKIE: 32,
-                State.POMORSKIE: 26,
-                State.SLASKIE: 35,
-                State.SWIETOKRZYSKIE: 36,
-                State.WARMINSKO_MAZURSKIE: 24,
-                State.WIELKOPOLSKIE: 34,
-                State.ZACHODNIOPOMORSKIE: 35,
+                State.PODLASKIE: 36,
+                State.POMORSKIE: 32,
+                State.SLASKIE: 36,
+                State.SWIETOKRZYSKIE: 35,
+                State.WARMINSKO_MAZURSKIE: 36,
+                State.WIELKOPOLSKIE: 36,
+                State.ZACHODNIOPOMORSKIE: 36,
                 }
