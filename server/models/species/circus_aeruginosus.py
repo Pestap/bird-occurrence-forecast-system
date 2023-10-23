@@ -8,21 +8,19 @@ class CircusAeruginosus(Specie):
     def __init__(self):
         self.observation_csv_path = "static/data/circus_aeruginosus.csv" # path is relative from app.py
         self.load_observation_data_from_csv()
+        self.common_name = "Western marsh harrier"
+        self.scientific_name = "Circus Aeruginosus"
+        self.description = "Western marsh harrier sample description"
+        self.habitat = "Western marsh harrier sample habititat"
 
     def get_csv_filepath(self):
         return self.observation_csv_path
 
     def get_info(self):
-        common_name = "Western marsh harrier"
-        scientific_name = "Circus Aeruginosus"
-        description = "Western marsh harrier sample description"
-        habitat = "Western marsh harrier sample habititat"
-
-        dict = {"scientific_name": scientific_name,
-                "common_name": common_name,
-                "description": description,
-                "habitat": habitat}
-        return dict
+        return {"scientific_name": self.scientific_name,
+                "common_name": self.common_name,
+                "description": self.description,
+                "habitat": self.habitat}
 
     def get_available_models(self):
         return [Model.AUTOREGRESSION.name.lower(),

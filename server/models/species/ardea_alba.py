@@ -8,21 +8,19 @@ class ArdeaAlba(Specie):
     def __init__(self):
         self.observation_csv_path = "static/data/ardea_alba.csv" # path is relative from app.py
         self.load_observation_data_from_csv()
+        self.common_name = "Great egret"
+        self.scientific_name = "Ardea alba"
+        self.desription = "Ardea Alba sample description"
+        self.habitat = "Ardea Alba sample habititat"
 
     def get_csv_filepath(self):
         return self.observation_csv_path
 
     def get_info(self):
-        common_name = "Great egret"
-        scientific_name = "Ardea alba"
-        description = "Ardea Alba sample description"
-        habitat = "Ardea Alba sample habititat"
-
-        dict = {"scientific_name": scientific_name,
-                "common_name": common_name,
-                "description": description,
-                "habitat": habitat}
-        return dict
+        return {"scientific_name": self.scientific_name,
+                "common_name": self.common_name,
+                "description": self.description,
+                "habitat": self.habitat}
 
     def get_available_models(self):
         return [Model.AUTOREGRESSION.name.lower(),

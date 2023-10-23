@@ -8,21 +8,19 @@ class CiconiaCiconia(Specie):
     def __init__(self):
         self.observation_csv_path = "static/data/ciconia_ciconia.csv"  # path is relative from app.py
         self.load_observation_data_from_csv()
+        self.common_name = "White Strok"
+        self.scientific_name = "Ciconia ciconia"
+        self.description = "White stork sample description"
+        self.habitat = "White stork sample habititat"
 
     def get_csv_filepath(self):
         return self.observation_csv_path
 
     def get_info(self):
-        common_name = "White Strok"
-        scientific_name = "Ciconia ciconia"
-        description = "Ardea Alba sample description"
-        habitat = "Ardea Alba sample habititat"
-
-        dict = {"scientific_name": scientific_name,
-                "common_name": common_name,
-                "description": description,
-                "habitat": habitat}
-        return dict
+        return {"scientific_name": self.scientific_name,
+                "common_name": self.common_name,
+                "description": self.description,
+                "habitat": self.habitat}
 
     def get_available_models(self):
         return [Model.AUTOREGRESSION.name.lower()]
