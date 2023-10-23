@@ -1,10 +1,13 @@
 from server.models.species.ardea_alba import ArdeaAlba
 from server.models.species.ciconia_ciconia import CiconiaCiconia
+from server.models.species.circus_aeruginosus import CircusAeruginosus
 
 # species dictionary
 species = {
     'ardea_alba': ArdeaAlba(),
-    'ciconia_ciconia': CiconiaCiconia()
+    'circus_aeruginosus': CircusAeruginosus(),
+    'ciconia_ciconia': CiconiaCiconia(),
+
 }
 
 
@@ -26,8 +29,8 @@ def get_specie_models(specie_name):
         return None
 
 
-def predict_specie_with_model(specie_name, model, date_from, date_to):
+def predict_specie_with_model(specie_name, model, date_from, date_to, model_params):
     try:
-        return species[specie_name].make_predictions(model, date_from, date_to)
+        return species[specie_name].make_predictions(model, date_from, date_to, model_params)
     except KeyError:
         return None

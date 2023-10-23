@@ -13,10 +13,10 @@ col_list = ['SCIENTIFIC NAME', 'OBSERVATION COUNT', 'LATITUDE', 'LONGITUDE', 'OB
 type_dict = {'SCIENTIFIC NAME': str, 'OBSERVATION COUNT': int, 'LATITUDE': float, 'LONGITUDE': float,
              'OBSERVATION DATE': 'datetime64[s]'}
 
-df = load_data(col_list, 'SCIENTIFIC NAME', 'Ciconia ciconia')#, filepath='../data/ebd_PL_relJan-2023/ebd_PL_relJan-2023.txt')
+df = load_data(col_list, 'SCIENTIFIC NAME', 'Circus aeruginosus')#, filepath='../data/ebd_PL_relJan-2023/ebd_PL_relJan-2023.txt')
 df = prepare_data(df, type_dict)
 
-save_df_to_file(df,'../data/ciconia_ciconia.csv')
+save_df_to_file(df,'../data/circus_aeruginosus.csv')
 
 
 

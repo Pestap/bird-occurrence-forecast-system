@@ -51,28 +51,6 @@ def get_specie_model_information(specie_name, model):
 
 
 def predict_specie_with_model(specie_name, model):
-    """
-    Predict specie occurrence using specified model
-    Date format
-
-    {
-        dolnoslaskie: {
-            []
-            []
-        }.
-        ...
-
-
-        2011-11 : {
-        dolnoslaskie: 212
-        ..
-        ,,
-        ..
-
-
-        }
-    }
-    """
 
     try:
         date_from_datetime = datetime.strptime(request.args.get("from"), '%Y-%m-%d')
@@ -84,7 +62,19 @@ def predict_specie_with_model(specie_name, model):
         if date_from_datetime > date_to_datetime:
             return Response("Invalid data range, (from after to)", status=400)
 
-        response = app_service.predict_specie_with_model(specie_name, model, date_from_datetime, date_to_datetime)
+        # Get model params from body and validate them
+        model_params = {}
+
+        model_params['autoregression_order'] = request.args.get("autoregression_order")
+
+
+        validate_model_params(model_params)
+
+
+
+
+
+        response = app_service.predict_specie_with_model(specie_name, model, date_from_datetime, date_to_datetime, model_params)
         if response is not None:
             # Translate dates
             #{state: round(observation_value, 2)
@@ -112,3 +102,13 @@ def predict_specie_with_model(specie_name, model):
         return Response("Invalid date format, try using YYYY-MM-DD", status=400)
 
     # 2012-09-01
+
+def validate_model_params(model_params):
+    params_to_check = ['autoregression_order']
+
+    for param in model_params:
+        if param in params_to_check and param in model_params:
+            try:
+                model_params[param] = int(model_params[param])
+            except ValueError:
+                model_params[param] = None
