@@ -40,11 +40,18 @@ class Specie:
         for state in observation_data_grouped_not_translated:
             self.observation_data_grouped[enums.translate_state_to_enum(state[0])] = state[1]
 
-    def predict_autoregression(self, state, months):
-        steps = self.get_autoregression_models()[state]
+    def predict_autoregression(self, state, months, user_ar_order=None):
+        steps = user_ar_order
+
+        if steps is None:
+            steps = self.get_autoregression_models()[state]
+
 
         if steps is None: # id steps is None it means that the specie does not support autoregression
             return None
+
+
+        print(f"Predicting with order: {str(steps)} ({state.name})")
 
         model = AutoReg(self.observation_data_grouped[state]['OBSERVATION COUNT'], lags=steps).fit()
         result = list(model.forecast(steps=months))
@@ -68,30 +75,18 @@ class Specie:
     def predict_neural_network(self, date_from, date_to):
         return None
 
-    def make_predictions_with_model(self, model, state, steps):
+    def make_predictions_with_model(self, model, model_params, state, steps):
         if model.upper() == enums.Model.AUTOREGRESSION.name:
-            return self.predict_autoregression(state, steps)
+
+            return self.predict_autoregression(state, steps, model_params['autoregression_order'] if 'autoregression_order' in model_params else None)
         elif model.upper() == enums.Model.ARMA.name:
             return self.predict_arma(state, steps)
         else:
             return None
 
-    def make_predictions(self, model, date_from, date_to):
+    def make_predictions(self, model, date_from, date_to, model_params):
         predictions_dictionary = {}
-        """
-        predictions_dictionary structure:
-        {
-            year-month1:{
-                state1: value
-                state2: value
-                ...
-            },
-            year-month2: {
-                state1: value
-                state2: value    
-            }
-        }
-        """
+
 
         # For now I assume that all states have observations till 1-2023
         # Earliest records are from 1990-1
@@ -146,7 +141,7 @@ class Specie:
             # iterate through states and make predictions
             for state in self.observation_data_grouped.keys():
                 # make predictions with model: implementation by desired specie
-                predictions = self.make_predictions_with_model(model, state, months_from_last_observation_data)
+                predictions = self.make_predictions_with_model(model, model_params, state, months_from_last_observation_data)
                 # If incorrect model selected
                 if predictions is None:
                     return None
