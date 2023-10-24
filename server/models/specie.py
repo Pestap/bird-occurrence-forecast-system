@@ -46,16 +46,13 @@ class Specie:
         if steps is None:
             steps = self.get_autoregression_models()[state]
 
-
-        if steps is None: # id steps is None it means that the specie does not support autoregression
+        # if steps is None it means that the specie does not support autoregression
+        if steps is None:
             return None
-
-
-        print(f"Predicting with order: {str(steps)} ({state.name})")
 
         model = AutoReg(self.observation_data_grouped[state]['OBSERVATION COUNT'], lags=steps).fit()
         result = list(model.forecast(steps=months))
-        result_non_negative = [val if val >=0 else 0 for val in result]
+        result_non_negative = [val if val >= 0 else 0 for val in result]
 
         return result_non_negative
 

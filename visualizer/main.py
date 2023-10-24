@@ -47,16 +47,15 @@ if __name__ == '__main__':
     model = "autoregression"
     specie = "ciconia_ciconia"
     from_date = "2016-08-25"
-    to_date = "2026-01-1"
-
-    resource = f"api/birds/{specie}/models/{model}/predict?from={from_date}&to={to_date}"
+    to_date = "2025-01-1"
+    ar_order = 24
+    resource = f"api/birds/{specie}/models/{model}/predict?from={from_date}&to={to_date}&autoregression_order={ar_order}"
 
     url = base_url + "/" + resource
 
     headers = {"Content-Type": "application/json; charset=utf-8"}
-    data={"autoregression_order": 100}
-
-    r = requests.get(url, data=json.dumps(data), headers=headers)
+    #data={"autoregression_order": }
+    r = requests.get(url, headers=headers)
 
 
     state = translate_enum_to_state(State.POMORSKIE.name)
