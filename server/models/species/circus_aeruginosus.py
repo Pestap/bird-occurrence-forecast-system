@@ -11,7 +11,7 @@ class CircusAeruginosus(Specie):
         self.common_name = "Western marsh harrier"
         self.scientific_name = "Circus Aeruginosus"
         self.description = "Western marsh harrier sample description"
-        self.habitat = "Western marsh harrier sample habititat"
+        self.habitat = "Western marsh harrier sample habitat"
 
     def get_csv_filepath(self):
         return self.observation_csv_path

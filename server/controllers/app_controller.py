@@ -67,7 +67,6 @@ def predict_specie_with_model(specie_name, model):
 
         model_params['autoregression_order'] = request.args.get("autoregression_order")
 
-
         validate_model_params(model_params)
 
 

@@ -54,8 +54,8 @@ if __name__ == '__main__':
     url = base_url + "/" + resource
 
     headers = {"Content-Type": "application/json; charset=utf-8"}
-    data={"autoregression_order": 100}
-
+    #data={"autoregression_order": }
+    data = {"autoregression_order": "24"}
     r = requests.get(url, data=json.dumps(data), headers=headers)
 
 
