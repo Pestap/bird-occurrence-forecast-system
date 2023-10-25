@@ -55,7 +55,10 @@ if __name__ == '__main__':
 
     headers = {"Content-Type": "application/json; charset=utf-8"}
     #data={"autoregression_order": }
-    r = requests.get(url, headers=headers)
+
+    data = {"autoregression_order": "24"}
+    r = requests.get(url, data=json.dumps(data), headers=headers)
+
 
 
     state = translate_enum_to_state(State.WIELKOPOLSKIE.name)

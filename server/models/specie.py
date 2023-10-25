@@ -62,6 +62,7 @@ class Specie:
         if steps is None:
             return None
 
+
         model = SARIMAX(self.observation_data_grouped[state]['OBSERVATION COUNT'], order=(steps, 0, 1), alpha=0.95).fit()
         results = list(model.predict(start=len(self.observation_data_grouped[state]['OBSERVATION COUNT']), end=len(self.observation_data_grouped[state]['OBSERVATION COUNT'])) + months)
 
@@ -69,6 +70,9 @@ class Specie:
 
         return result_non_negative
 
+
+    def predict_sarima(self, state, months):
+        pass
     def predict_neural_network(self, date_from, date_to):
         return None
 
