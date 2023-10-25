@@ -32,7 +32,7 @@ def get_series_from_json(json_data, state):
 def draw_plot(x,y):
     plt.plot(x,y, label="Observations")
     plt.xticks(x[0::3], rotation=45)
-    plt.vlines(x=datetime(2023,1,1), ymin = -10, ymax=10, colors = 'red', label= 'Observations - Predictions border')
+    plt.vlines(x=datetime(2023,1,1), ymin = -1, ymax=10, colors = 'red', label= 'Observations - Predictions border')
     plt.grid(True)
     # TODO: update title with state
     plt.xlabel("Dates")
@@ -45,8 +45,8 @@ if __name__ == '__main__':
     base_url = "http://127.0.0.1:5000"
 
     model = "autoregression"
-    specie = "ciconia_ciconia"
-    from_date = "2016-08-25"
+    specie = "ardea_alba"
+    from_date = "2000-08-25"
     to_date = "2025-01-1"
     ar_order = 24
     resource = f"api/birds/{specie}/models/{model}/predict?from={from_date}&to={to_date}&autoregression_order={ar_order}"
@@ -58,7 +58,7 @@ if __name__ == '__main__':
     r = requests.get(url, headers=headers)
 
 
-    state = translate_enum_to_state(State.POMORSKIE.name)
+    state = translate_enum_to_state(State.WIELKOPOLSKIE.name)
     print(r.reason)
     print(r.content)
     print(r.json())
