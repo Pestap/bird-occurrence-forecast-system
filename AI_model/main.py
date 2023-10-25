@@ -2,11 +2,11 @@ from prepare_data_set import *
 from visualize_data import *
 from autoregression import *
 
-groups = create_groups('../data/ardea_alba.csv')
+groups = create_groups('../data/ciconia_ciconia.csv')
 
 
 state = 'województwo zachodniopomorskie'
-months = 35
+months = 46
 dates, observations = prepare_observation_data(groups, state)
 
 #train, test, predicted = boxcox_ar(dates, observations, 0.8)

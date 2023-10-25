@@ -109,5 +109,5 @@ def validate_model_params(model_params):
         if param in params_to_check and param in model_params:
             try:
                 model_params[param] = int(model_params[param])
-            except ValueError:
+            except (ValueError, TypeError) as e:
                 model_params[param] = None
