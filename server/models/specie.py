@@ -5,8 +5,8 @@ from abc import abstractmethod
 from dateutil import rrule, relativedelta
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 
-from server.models.data_gathering.data_extraction_from_file import get_observations_state_groups
-from server.models import enums
+from models.data_gathering.data_extraction_from_file import get_observations_state_groups
+from models import enums
 
 
 class Specie:
@@ -50,7 +50,7 @@ class Specie:
         if steps is None:
             return None
 
-        model = AutoReg(self.observation_data_grouped[state]['OBSERVATION COUNT'], lags=steps).fit()
+        model = AutoReg(self.observation_data_grouped[state]['OBSERVATION COUNT'], lags=steps, seasonal=True, period=12).fit()
         result = list(model.forecast(steps=months))
         result_non_negative = [val if val >= 0 else 0 for val in result]
 

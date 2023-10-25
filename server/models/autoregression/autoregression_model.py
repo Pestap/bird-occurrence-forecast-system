@@ -1,4 +1,4 @@
-from server.models.enums import State
+from models.enums import State
 
 
 class AutoregressionModel:

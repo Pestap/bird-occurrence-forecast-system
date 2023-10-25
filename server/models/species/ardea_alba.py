@@ -1,5 +1,5 @@
-from server.models.specie import Specie
-from server.models.enums import State, Model
+from models.specie import Specie
+from models.enums import State, Model
 
 
 

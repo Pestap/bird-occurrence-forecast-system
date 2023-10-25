@@ -5,12 +5,12 @@ from autoregression import *
 groups = create_groups('../data/ciconia_ciconia.csv')
 
 
-state = 'województwo zachodniopomorskie'
-months = 46
+state = 'województwo wielkopolskie'
+months = 36
 dates, observations = prepare_observation_data(groups, state)
 
 #train, test, predicted = boxcox_ar(dates, observations, 0.8)
-train, test, predicted = autoreg( dates, observations, 24, months)
+train, test, predicted = autoreg( dates, observations, 12, months)
 #predicted = (predicted[0].rolling(2).sum(), predicted[1])
 
 

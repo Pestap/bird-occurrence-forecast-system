@@ -4,8 +4,6 @@ from datetime import datetime
 import requests
 from matplotlib import pyplot as plt
 
-from server.models.enums import State, translate_enum_to_state
-
 
 def get_series_from_json(json_data, state):
     dates = []
@@ -45,10 +43,10 @@ if __name__ == '__main__':
     base_url = "http://127.0.0.1:5000"
 
     model = "autoregression"
-    specie = "ardea_alba"
+    specie = "ciconia_ciconia"
     from_date = "2000-08-25"
     to_date = "2025-01-1"
-    ar_order = 24
+    ar_order = 36
     resource = f"api/birds/{specie}/models/{model}/predict?from={from_date}&to={to_date}&autoregression_order={ar_order}"
 
     url = base_url + "/" + resource
@@ -61,7 +59,7 @@ if __name__ == '__main__':
 
 
 
-    state = translate_enum_to_state(State.WIELKOPOLSKIE.name)
+    state = "pomorskie"
     print(r.reason)
     print(r.content)
     print(r.json())

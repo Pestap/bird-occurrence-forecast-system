@@ -1,6 +1,6 @@
 from flask import Blueprint
 
-from server.controllers.app_controller import get_specie_info, get_specie_available_models, predict_specie_with_model, \
+from controllers.app_controller import get_specie_info, get_specie_available_models, predict_specie_with_model, \
     get_specie_model_information, get_species
 
 blueprint = Blueprint('blueprint', __name__)

@@ -1,6 +1,6 @@
-from server.models.species.ardea_alba import ArdeaAlba
-from server.models.species.ciconia_ciconia import CiconiaCiconia
-from server.models.species.circus_aeruginosus import CircusAeruginosus
+from models.species.ardea_alba import ArdeaAlba
+from models.species.ciconia_ciconia import CiconiaCiconia
+from models.species.circus_aeruginosus import CircusAeruginosus
 
 # species dictionary
 species = {

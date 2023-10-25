@@ -2,8 +2,8 @@ from datetime import datetime
 
 from flask import Flask, request, jsonify, Response
 
-from server.models.enums import translate_enum_to_state
-from server.services import app_service
+from models.enums import translate_enum_to_state
+from services import app_service
 
 
 # TODO: make all responses JSON (3/5)
