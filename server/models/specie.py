@@ -39,6 +39,7 @@ class Specie:
         # Translate states and represent them as dictionary
         for state in observation_data_grouped_not_translated:
             self.observation_data_grouped[enums.translate_state_to_enum(state[0])] = state[1]
+        print(f"SPECIES LOADED: {self.scientific_name}")
 
     def predict_autoregression(self, state, months, user_ar_order=None):
         steps = user_ar_order

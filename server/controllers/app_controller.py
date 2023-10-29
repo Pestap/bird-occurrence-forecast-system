@@ -66,8 +66,16 @@ def predict_specie_with_model(specie_name, model):
 
         # Get edge date (for now no validation)
 
-        edge_date= datetime.strptime(request.args.get("edge"), '%Y-%m-%d')
 
+        edge_date_from_query = request.args.get("edge")
+
+        if edge_date_from_query is None:
+            edge_date_from_query = "2023-1-1"
+
+        try:
+            edge_date = datetime.strptime(edge_date_from_query, '%Y-%m-%d')
+        except ValueError:
+            edge_date = datetime(2023,1,1)
 
 
         # Get model params from body and validate them
