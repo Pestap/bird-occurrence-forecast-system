@@ -8,6 +8,7 @@ from statsmodels.tsa.statespace.sarimax import SARIMAX
 from models.data_gathering.data_extraction_from_file import get_observations_state_groups
 from models import enums
 
+from constants import LAST_OBSERVATION_DATE_STRING
 
 class Specie:
 
@@ -102,20 +103,20 @@ class Specie:
         """
 
 
-
-        if date_from <= edge_date: # read observations when desired by user
+        if date_from <= datetime.strptime(LAST_OBSERVATION_DATE_STRING, '%Y-%m-%d'): # read observations when desired by user
             observation_date_list = []
+            observations_dictionary = {}
 
             # Create list of desired dates to read observations from:
             #TODO: maybe add constant for threshold date
-            until_date = date_to if date_to < edge_date else edge_date # get the date to which read observations
+            until_date = date_to if date_to < datetime.strptime(LAST_OBSERVATION_DATE_STRING, '%Y-%m-%d') else datetime.strptime(LAST_OBSERVATION_DATE_STRING, '%Y-%m-%d') # get the date to which read observations
 
             for dt in rrule.rrule(rrule.MONTHLY, dtstart=date_from, until=until_date): # until is hardcoded for now
                 observation_date_list.append(dt)
 
             # Read observations
             for date in observation_date_list:
-                predictions_dictionary[date] = {} # empty dictionary placeholder
+                observations_dictionary[date] = {} # empty dictionary placeholder
 
                 # iterate through observations by state
                 for state, observations in self.observation_data_grouped.items():
@@ -123,9 +124,12 @@ class Specie:
                     try:
                         # read OBSERVATION COUNT and convert to float
                         value = float(observations.loc[(observations['YEAR'] == date.year) & (observations['MONTH'] == date.month)]['OBSERVATION COUNT'].to_numpy()[0])
-                        predictions_dictionary[date][state.name] = value
+                        observations_dictionary[date][state.name] = value
                     except IndexError: # Exception is thrown by accessing [0] index in empty array - no observation found
-                        predictions_dictionary[date][state.name] = None # if no observation found for specified date - None => null
+                        observations_dictionary[date][state.name] = None # if no observation found for specified date - None => null
+
+            # Split the data into training and test?
+
 
         """
         
@@ -163,6 +167,8 @@ class Specie:
 
                     predictions_dictionary[date][state.name] = predictions_with_dates[date] # add prediction to appropriate dictionary
 
+
+        # Cut unnecessary results
         if date_from > edge_date: # if date from is after last observation data, remove entries after 2023.01.01 and before date_to
             predictions_dictionary = {date: value for date, value in predictions_dictionary.items() if date >= date_from}
 

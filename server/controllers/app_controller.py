@@ -5,7 +5,7 @@ from flask import Flask, request, jsonify, Response
 from models.enums import translate_enum_to_state
 from services import app_service
 
-
+from constants import LAST_OBSERVATION_DATE_STRING
 # TODO: make all responses JSON (3/5)
 def get_species():
     """
@@ -75,7 +75,10 @@ def predict_specie_with_model(specie_name, model):
         try:
             edge_date = datetime.strptime(edge_date_from_query, '%Y-%m-%d')
         except ValueError:
-            edge_date = datetime(2023,1,1)
+            edge_date = datetime.strptime(LAST_OBSERVATION_DATE_STRING, '%Y-%m-%d')
+
+        if edge_date > datetime.strptime(LAST_OBSERVATION_DATE_STRING, '%Y-%m-%d') or edge_date < date_from_datetime:
+            return Response("Parameter (edge) cannot exceed 2023-1-1 and cannot be before date_from", status=400)
 
 
         # Get model params from body and validate them
