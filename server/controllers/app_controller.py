@@ -55,12 +55,20 @@ def predict_specie_with_model(specie_name, model):
     try:
         date_from_datetime = datetime.strptime(request.args.get("from"), '%Y-%m-%d')
         date_to_datetime = datetime.strptime(request.args.get("to"), '%Y-%m-%d')
+
+
         # Replace months with 1
         date_to_datetime = date_to_datetime.replace(day=1)
         date_from_datetime = date_from_datetime.replace(day=1)
         # Check if dates are correct
         if date_from_datetime > date_to_datetime:
             return Response("Invalid data range, (from after to)", status=400)
+
+        # Get edge date (for now no validation)
+
+        edge_date= datetime.strptime(request.args.get("edge"), '%Y-%m-%d')
+
+
 
         # Get model params from body and validate them
         model_params = {}
@@ -73,7 +81,7 @@ def predict_specie_with_model(specie_name, model):
 
 
 
-        response = app_service.predict_specie_with_model(specie_name, model, date_from_datetime, date_to_datetime, model_params)
+        response = app_service.predict_specie_with_model(specie_name, model, date_from_datetime, date_to_datetime, model_params, edge_date)
         if response is not None:
             # Translate dates
             #{state: round(observation_value, 2)

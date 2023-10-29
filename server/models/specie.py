@@ -85,12 +85,14 @@ class Specie:
         else:
             return None
 
-    def make_predictions(self, model, date_from, date_to, model_params):
+    def make_predictions(self, model, date_from, date_to, model_params, edge_date):
         predictions_dictionary = {}
 
 
         # For now I assume that all states have observations till 1-2023
         # Earliest records are from 1990-1
+
+        #edge_date = datetime(2023,1,1)
 
         """
         
@@ -98,12 +100,14 @@ class Specie:
         
         """
 
-        if date_from <= datetime(2023, 1, 1): # read observations when desired by user
+
+
+        if date_from <= edge_date: # read observations when desired by user
             observation_date_list = []
 
             # Create list of desired dates to read observations from:
             #TODO: maybe add constant for threshold date
-            until_date = date_to if date_to < datetime(2023, 1, 1) else datetime(2023, 1, 1) # get the date to which read observations
+            until_date = date_to if date_to < edge_date else edge_date # get the date to which read observations
 
             for dt in rrule.rrule(rrule.MONTHLY, dtstart=date_from, until=until_date): # until is hardcoded for now
                 observation_date_list.append(dt)
@@ -129,15 +133,17 @@ class Specie:
         """
 
         # Calculate how many months to predict
-        delta = relativedelta.relativedelta(date_to, datetime(2023, 1, 1))
+        delta = relativedelta.relativedelta(date_to, edge_date)
         months_from_last_observation_data = delta.months + (delta.years * 12)
 
         if months_from_last_observation_data > 0: # predict only if needed
             prediction_date_list = []
 
             # TODO: maybe add constant for dtstart
-            for dt in rrule.rrule(rrule.MONTHLY, dtstart=datetime(2023, 2, 1), until=date_to): # start date hardcoded - 2023.02.01 - first month for which we do not have observations
+            for dt in rrule.rrule(rrule.MONTHLY, dtstart=edge_date, until=date_to): # start date hardcoded - 2023.02.01 - first month for which we do not have observations
                 prediction_date_list.append(dt)
+
+            prediction_date_list = prediction_date_list[1::]
 
             # iterate through states and make predictions
             for state in self.observation_data_grouped.keys():
@@ -156,7 +162,7 @@ class Specie:
 
                     predictions_dictionary[date][state.name] = predictions_with_dates[date] # add prediction to appropriate dictionary
 
-        if date_from > datetime(2023, 1, 1): # if date from is after last observation data, remove entries after 2023.01.01 and before date_to
+        if date_from > edge_date: # if date from is after last observation data, remove entries after 2023.01.01 and before date_to
             predictions_dictionary = {date: value for date, value in predictions_dictionary.items() if date >= date_from}
 
         return predictions_dictionary
