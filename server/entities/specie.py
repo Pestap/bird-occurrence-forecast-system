@@ -5,8 +5,8 @@ from abc import abstractmethod
 from dateutil import rrule, relativedelta
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 
-from models.data_gathering.data_extraction_from_file import get_observations_state_groups
-from models import enums
+from entities.data_gathering.data_extraction_from_file import get_observations_state_groups
+from entities import enums
 
 from constants import LAST_OBSERVATION_DATE_STRING
 
@@ -89,6 +89,7 @@ class Specie:
 
     def make_predictions(self, model, date_from, date_to, model_params, edge_date):
         predictions_dictionary = {}
+        test_observation_dictionary = {}
 
 
         # For now I assume that all states have observations till 1-2023
@@ -129,6 +130,12 @@ class Specie:
                         observations_dictionary[date][state.name] = None # if no observation found for specified date - None => null
 
             # Split the data into training and test?
+
+            for date, data in observations_dictionary.items():
+                if date <= edge_date:
+                    predictions_dictionary[date] = data
+                else:
+                    test_observation_dictionary[date] = data
 
 
         """
@@ -172,4 +179,4 @@ class Specie:
         if date_from > edge_date: # if date from is after last observation data, remove entries after 2023.01.01 and before date_to
             predictions_dictionary = {date: value for date, value in predictions_dictionary.items() if date >= date_from}
 
-        return predictions_dictionary
+        return predictions_dictionary, test_observation_dictionary

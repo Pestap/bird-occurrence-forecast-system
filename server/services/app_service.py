@@ -1,6 +1,6 @@
-from models.species.ardea_alba import ArdeaAlba
-from models.species.ciconia_ciconia import CiconiaCiconia
-from models.species.circus_aeruginosus import CircusAeruginosus
+from entities.species.ardea_alba import ArdeaAlba
+from entities.species.ciconia_ciconia import CiconiaCiconia
+from entities.species.circus_aeruginosus import CircusAeruginosus
 
 # species dictionary
 species = {

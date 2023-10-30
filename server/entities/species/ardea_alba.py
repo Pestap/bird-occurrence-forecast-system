@@ -1,17 +1,18 @@
-from models.specie import Specie
-from models.enums import State, Model
+from entities.specie import Specie
+from entities.enums import State, Model
 
 
 
 class ArdeaAlba(Specie):
 
     def __init__(self):
-        self.observation_csv_path = "static/data/ardea_alba.csv" # path is relative from app.py
-        self.load_observation_data_from_csv()
         self.common_name = "Great egret"
         self.scientific_name = "Ardea alba"
         self.desription = "Ardea Alba sample description"
         self.habitat = "Ardea Alba sample habititat"
+        self.observation_csv_path = "static/data/ardea_alba.csv" # path is relative from app.py
+        self.load_observation_data_from_csv()
+
 
     def get_csv_filepath(self):
         return self.observation_csv_path
