@@ -77,7 +77,7 @@ def predict_specie_with_model(specie_name, model):
         except ValueError:
             edge_date = datetime.strptime(LAST_OBSERVATION_DATE_STRING, '%Y-%m-%d')
 
-        if edge_date > datetime.strptime(LAST_OBSERVATION_DATE_STRING, '%Y-%m-%d') or edge_date < date_from_datetime:
+        if edge_date > datetime.strptime(LAST_OBSERVATION_DATE_STRING, '%Y-%m-%d'):
             return Response("Parameter (edge) cannot exceed 2023-1-1 and cannot be before date_from", status=400)
 
 
@@ -93,6 +93,7 @@ def predict_specie_with_model(specie_name, model):
         if response is not None:
             predictions = response[0]
             tests = response[1]
+            prediction_errors = response[2]
 
             # Translate dates
             #{state: round(observation_value, 2)
@@ -112,6 +113,9 @@ def predict_specie_with_model(specie_name, model):
                     if observation_value is not None:
                         tests_translated[date][state] = round(observation_value, 2)
 
+            for state, data in prediction_errors.items():
+                prediction_errors[state] = round(data, 2)
+
             # TODO: refactor
             predictions_v2 = {date: {} for date in predictions_translated.keys()}
 
@@ -125,10 +129,13 @@ def predict_specie_with_model(specie_name, model):
                 for state, value in tests_translated[date].items():
                     empty_dict[translate_enum_to_state(state)] = value
 
+            prediction_errors_v2 = {translate_enum_to_state(state): value for state, value in prediction_errors.items()}
+
 
             response_object = {
-                "predictions" : predictions_translated,
-                "tests": tests_translated
+                "predictions" : predictions_v2,
+                "tests": tests_v2,
+                "mae_errors": prediction_errors_v2
 
             }
             return jsonify(response_object)
