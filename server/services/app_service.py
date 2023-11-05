@@ -1,12 +1,32 @@
 from entities.species.ardea_alba import ArdeaAlba
+from entities.species.buteo_buteo import ButeoButeo
+from entities.species.calidris_alpina import CalidrisAlpina
+from entities.species.calidris_pugnax import CalidrisPugnax
 from entities.species.ciconia_ciconia import CiconiaCiconia
 from entities.species.circus_aeruginosus import CircusAeruginosus
+from entities.species.clanga_clanga import ClangaClanga
+from entities.species.grus_grus import GrusGrus
+from entities.species.merops_apiaster import MeropsApiaster
+from entities.species.motacilla_alba import MotacillaAlba
+from entities.species.motacilla_citreola import MotacillaCitreola
+from entities.species.nucifraga_caryocatactes import NucifragaCaryocatactes
+from entities.species.phalacrocorax_carbo import PhalacrocoraxCarbo
 
 # species dictionary
 species = {
     'ardea_alba': ArdeaAlba(),
     'circus_aeruginosus': CircusAeruginosus(),
     'ciconia_ciconia': CiconiaCiconia(),
+    'clanga_clanga': ClangaClanga(),
+    'motacilla_alba': MotacillaAlba(),
+    'motacilla_citreolla': MotacillaCitreola(),
+    'merops_apiaster': MeropsApiaster(),
+    'buteo_buteo': ButeoButeo(),
+    'nucifraga_caryocatactes': NucifragaCaryocatactes(),
+    'grus_grus': GrusGrus(),
+    'calidris_pugnax': CalidrisPugnax(),
+    'calidris_alpina': CalidrisAlpina(),
+    'phalacrocorax_carbo': PhalacrocoraxCarbo()
 
 }
 

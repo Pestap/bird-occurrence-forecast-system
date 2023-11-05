@@ -43,9 +43,9 @@ if __name__ == '__main__':
     base_url = "http://127.0.0.1:5000"
 
     model = "autoregression"
-    specie = "ciconia_ciconia"
+    specie = "motacilla_alba"
     from_date = "2000-08-25"
-    to_date = "2025-01-1"
+    to_date = "2023-01-1"
     ar_order = 36
     resource = f"api/birds/{specie}/models/{model}/predict?from={from_date}&to={to_date}&autoregression_order={ar_order}"
 
@@ -66,4 +66,4 @@ if __name__ == '__main__':
 
     x, y = get_series_from_json(r.json()['predictions'], state)
 
-    draw_plot(x,y)
+    draw_plot(x, y)

@@ -1,15 +1,16 @@
+
 from entities.specie import Specie
 from entities.enums import State, Model
 
 
-class CircusAeruginosus(Specie):
+class CalidrisPugnax(Specie):
 
     def __init__(self):
-        self.common_name = "Western marsh harrier"
-        self.scientific_name = "Circus Aeruginosus"
-        self.description = "Western marsh harrier sample description"
-        self.habitat = "Western marsh harrier sample habitat"
-        self.observation_csv_path = "static/data/circus_aeruginosus.csv" # path is relative from app.py
+        self.common_name = "Ruff"
+        self.scientific_name = "Calidris pugnax"
+        self.description = "Calidris pugnax sample description"
+        self.habitat = "Calidris pugnax sample habititat"
+        self.observation_csv_path = "static/data/calidris_pugnax.csv" # path is relative from app.py
         self.load_observation_data_from_csv()
 
 

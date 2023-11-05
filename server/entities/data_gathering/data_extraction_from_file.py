@@ -1,5 +1,5 @@
 import pandas as pd
-
+pd.options.mode.chained_assignment = None
 
 def load_from_file(filepath: str):
     """
@@ -16,7 +16,7 @@ def load_from_file(filepath: str):
     # cast types
     for col_name, type_name in type_dict.items():
         if col_name == 'OBSERVATION DATE':
-            df[col_name] = pd.to_datetime(df[col_name], format="%d.%m.%Y", infer_datetime_format=True)
+            df[col_name] = pd.to_datetime(df[col_name], format="%d.%m.%Y")
             #df[col_name] = df[col_name].astype(type_name)
         else:
             df[col_name] = df[col_name].astype(type_name)

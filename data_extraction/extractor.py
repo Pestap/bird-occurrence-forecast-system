@@ -12,10 +12,10 @@ col_list = ['SCIENTIFIC NAME', 'OBSERVATION COUNT', 'LATITUDE', 'LONGITUDE', 'OB
 type_dict = {'SCIENTIFIC NAME': str, 'OBSERVATION COUNT': int, 'LATITUDE': float, 'LONGITUDE': float,
              'OBSERVATION DATE': 'datetime64[s]', 'STATE': str}
 
-df = load_data(col_list, 'SCIENTIFIC NAME', 'Clanga clanga')#, filepath='../data/ebd_PL_relJan-2023/ebd_PL_relJan-2023.txt')
+df = load_data(col_list, 'SCIENTIFIC NAME', 'Phalacrocorax carbo')#, filepath='../data/ebd_PL_relJan-2023/ebd_PL_relJan-2023.txt')
 df = prepare_data(df, type_dict)
 
-save_df_to_file(df,'../data/clanga_clanga.csv')
+save_df_to_file(df,'../data/phalacrocorax_carbo.csv')
 
 
 
