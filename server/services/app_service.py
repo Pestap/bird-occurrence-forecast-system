@@ -19,7 +19,7 @@ species = {
     'ciconia_ciconia': CiconiaCiconia(),
     'clanga_clanga': ClangaClanga(),
     'motacilla_alba': MotacillaAlba(),
-    'motacilla_citreolla': MotacillaCitreola(),
+    'motacilla_citreola': MotacillaCitreola(),
     'merops_apiaster': MeropsApiaster(),
     'buteo_buteo': ButeoButeo(),
     'nucifraga_caryocatactes': NucifragaCaryocatactes(),
