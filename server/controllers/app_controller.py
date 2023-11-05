@@ -2,10 +2,10 @@ from datetime import datetime
 
 from flask import Flask, request, jsonify, Response
 
-from server.models.enums import translate_enum_to_state
-from server.services import app_service
+from entities.enums import translate_enum_to_state
+from services import app_service
 
-
+from constants import LAST_OBSERVATION_DATE_STRING
 # TODO: make all responses JSON (3/5)
 def get_species():
     """
@@ -55,12 +55,31 @@ def predict_specie_with_model(specie_name, model):
     try:
         date_from_datetime = datetime.strptime(request.args.get("from"), '%Y-%m-%d')
         date_to_datetime = datetime.strptime(request.args.get("to"), '%Y-%m-%d')
+
+
         # Replace months with 1
         date_to_datetime = date_to_datetime.replace(day=1)
         date_from_datetime = date_from_datetime.replace(day=1)
         # Check if dates are correct
         if date_from_datetime > date_to_datetime:
             return Response("Invalid data range, (from after to)", status=400)
+
+        # Get edge date (for now no validation)
+
+
+        edge_date_from_query = request.args.get("edge")
+
+        if edge_date_from_query is None:
+            edge_date_from_query = LAST_OBSERVATION_DATE_STRING
+
+        try:
+            edge_date = datetime.strptime(edge_date_from_query, '%Y-%m-%d')
+        except ValueError:
+            edge_date = datetime.strptime(LAST_OBSERVATION_DATE_STRING, '%Y-%m-%d')
+
+        if edge_date > datetime.strptime(LAST_OBSERVATION_DATE_STRING, '%Y-%m-%d'):
+            return Response("Parameter (edge) cannot exceed 2023-1-1 and cannot be before date_from", status=400)
+
 
         # Get model params from body and validate them
         model_params = {}
@@ -70,31 +89,56 @@ def predict_specie_with_model(specie_name, model):
         validate_model_params(model_params)
 
 
-
-
-
-        response = app_service.predict_specie_with_model(specie_name, model, date_from_datetime, date_to_datetime, model_params)
+        response = app_service.predict_specie_with_model(specie_name, model, date_from_datetime, date_to_datetime, model_params, edge_date)
         if response is not None:
+            predictions = response[0]
+            tests = response[1]
+            prediction_errors = response[2]
+
             # Translate dates
             #{state: round(observation_value, 2)
-            response_translated = {f"{date.year}-{date.month:0>{2}}": value for date, value in response.items()}
+            predictions_translated = {f"{date.year}-{date.month:0>{2}}": value for date, value in predictions.items()}
+            tests_translated = {f"{date.year}-{date.month:0>{2}}": value for date, value in tests.items()}
 
             # Round numbers and translate states to string
-            for date, data in response_translated.items():
+            for date, data in predictions_translated.items():
                 for state, observation_value in data.items():
 
                     if observation_value is not None:
-                        response_translated[date][state] = round(observation_value, 2)
+                        predictions_translated[date][state] = round(observation_value, 2)
+
+            for date, data in tests_translated.items():
+                for state, observation_value in data.items():
+
+                    if observation_value is not None:
+                        tests_translated[date][state] = round(observation_value, 2)
+
+            for state, data in prediction_errors.items():
+                prediction_errors[state] = round(data, 2)
 
             # TODO: refactor
-            response_v2 = {date: {} for date in response_translated.keys()}
+            predictions_v2 = {date: {} for date in predictions_translated.keys()}
 
-            for date, empty_dict in response_v2.items():
-                for state, value in response_translated[date].items():
+            for date, empty_dict in predictions_v2.items():
+                for state, value in predictions_translated[date].items():
                     empty_dict[translate_enum_to_state(state)] = value
 
+            tests_v2 = {date: {} for date in tests_translated.keys()}
 
-            return jsonify(response_v2)
+            for date, empty_dict in tests_v2.items():
+                for state, value in tests_translated[date].items():
+                    empty_dict[translate_enum_to_state(state)] = value
+
+            prediction_errors_v2 = {translate_enum_to_state(state): value for state, value in prediction_errors.items()}
+
+
+            response_object = {
+                "predictions" : predictions_v2,
+                "tests": tests_v2,
+                "mae_errors": prediction_errors_v2
+
+            }
+            return jsonify(response_object)
 
         return Response("Invalid specie name", status=400)
     except ValueError:

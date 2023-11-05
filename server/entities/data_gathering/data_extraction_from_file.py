@@ -68,7 +68,6 @@ def average(df, month, year):
 def divide_by_state(df):
 
     grouped = df.groupby(df.STATE)
-    print(grouped)
     groups = []
     # ew. list comp
     for g in grouped.groups:

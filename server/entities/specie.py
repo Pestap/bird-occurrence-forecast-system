@@ -5,9 +5,10 @@ from abc import abstractmethod
 from dateutil import rrule, relativedelta
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 
-from server.models.data_gathering.data_extraction_from_file import get_observations_state_groups
-from server.models import enums
+from entities.data_gathering.data_extraction_from_file import get_observations_state_groups
+from entities import enums
 
+from constants import LAST_OBSERVATION_DATE_STRING
 
 class Specie:
 
@@ -39,6 +40,7 @@ class Specie:
         # Translate states and represent them as dictionary
         for state in observation_data_grouped_not_translated:
             self.observation_data_grouped[enums.translate_state_to_enum(state[0])] = state[1]
+        print(f"SPECIES LOADED: {self.scientific_name}")
 
     def predict_autoregression(self, state, months, user_ar_order=None):
         steps = user_ar_order
@@ -50,7 +52,7 @@ class Specie:
         if steps is None:
             return None
 
-        model = AutoReg(self.observation_data_grouped[state]['OBSERVATION COUNT'], lags=steps).fit()
+        model = AutoReg(self.observation_data_grouped[state]['OBSERVATION COUNT'], lags=steps, seasonal=True, period=12).fit()
         result = list(model.forecast(steps=months))
         result_non_negative = [val if val >= 0 else 0 for val in result]
 
@@ -85,12 +87,15 @@ class Specie:
         else:
             return None
 
-    def make_predictions(self, model, date_from, date_to, model_params):
+    def make_predictions(self, model, date_from, date_to, model_params, edge_date):
         predictions_dictionary = {}
+        test_observation_dictionary = {}
 
 
         # For now I assume that all states have observations till 1-2023
         # Earliest records are from 1990-1
+
+        #edge_date = datetime(2023,1,1)
 
         """
         
@@ -98,19 +103,21 @@ class Specie:
         
         """
 
-        if date_from <= datetime(2023, 1, 1): # read observations when desired by user
+
+        if date_from <= datetime.strptime(LAST_OBSERVATION_DATE_STRING, '%Y-%m-%d'): # read observations when desired by user
             observation_date_list = []
+            observations_dictionary = {}
 
             # Create list of desired dates to read observations from:
             #TODO: maybe add constant for threshold date
-            until_date = date_to if date_to < datetime(2023, 1, 1) else datetime(2023, 1, 1) # get the date to which read observations
+            until_date = date_to if date_to < datetime.strptime(LAST_OBSERVATION_DATE_STRING, '%Y-%m-%d') else datetime.strptime(LAST_OBSERVATION_DATE_STRING, '%Y-%m-%d') # get the date to which read observations
 
             for dt in rrule.rrule(rrule.MONTHLY, dtstart=date_from, until=until_date): # until is hardcoded for now
                 observation_date_list.append(dt)
 
             # Read observations
             for date in observation_date_list:
-                predictions_dictionary[date] = {} # empty dictionary placeholder
+                observations_dictionary[date] = {} # empty dictionary placeholder
 
                 # iterate through observations by state
                 for state, observations in self.observation_data_grouped.items():
@@ -118,9 +125,18 @@ class Specie:
                     try:
                         # read OBSERVATION COUNT and convert to float
                         value = float(observations.loc[(observations['YEAR'] == date.year) & (observations['MONTH'] == date.month)]['OBSERVATION COUNT'].to_numpy()[0])
-                        predictions_dictionary[date][state.name] = value
+                        observations_dictionary[date][state.name] = value
                     except IndexError: # Exception is thrown by accessing [0] index in empty array - no observation found
-                        predictions_dictionary[date][state.name] = None # if no observation found for specified date - None => null
+                        observations_dictionary[date][state.name] = None # if no observation found for specified date - None => null
+
+            # Split the data into training and test?
+
+            for date, data in observations_dictionary.items():
+                if date <= edge_date:
+                    predictions_dictionary[date] = data
+                else:
+                    test_observation_dictionary[date] = data
+
 
         """
         
@@ -129,15 +145,17 @@ class Specie:
         """
 
         # Calculate how many months to predict
-        delta = relativedelta.relativedelta(date_to, datetime(2023, 1, 1))
+        delta = relativedelta.relativedelta(date_to, edge_date)
         months_from_last_observation_data = delta.months + (delta.years * 12)
 
         if months_from_last_observation_data > 0: # predict only if needed
             prediction_date_list = []
 
             # TODO: maybe add constant for dtstart
-            for dt in rrule.rrule(rrule.MONTHLY, dtstart=datetime(2023, 2, 1), until=date_to): # start date hardcoded - 2023.02.01 - first month for which we do not have observations
+            for dt in rrule.rrule(rrule.MONTHLY, dtstart=edge_date, until=date_to): # start date hardcoded - 2023.02.01 - first month for which we do not have observations
                 prediction_date_list.append(dt)
+
+            prediction_date_list = prediction_date_list[1::]
 
             # iterate through states and make predictions
             for state in self.observation_data_grouped.keys():
@@ -156,7 +174,9 @@ class Specie:
 
                     predictions_dictionary[date][state.name] = predictions_with_dates[date] # add prediction to appropriate dictionary
 
-        if date_from > datetime(2023, 1, 1): # if date from is after last observation data, remove entries after 2023.01.01 and before date_to
+
+        # Cut unnecessary results
+        if date_from > edge_date: # if date from is after last observation data, remove entries after 2023.01.01 and before date_to
             predictions_dictionary = {date: value for date, value in predictions_dictionary.items() if date >= date_from}
 
-        return predictions_dictionary
+        return predictions_dictionary, test_observation_dictionary
