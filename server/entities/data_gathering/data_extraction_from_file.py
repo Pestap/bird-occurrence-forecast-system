@@ -11,7 +11,7 @@ def load_from_file(filepath: str):
 
     # type dictionary for casting types
     type_dict = {'SCIENTIFIC NAME': str, 'OBSERVATION COUNT': int, 'LATITUDE': float, 'LONGITUDE': float,
-             'OBSERVATION DATE': 'datetime64[D]', 'YEAR': int, 'WEEK OF YEAR': int, 'COUNTY': str, 'STATE': str}
+             'OBSERVATION DATE': 'datetime64[D]', 'YEAR': int, 'WEEK OF YEAR': int, 'STATE': str}
 
     # cast types
     for col_name, type_name in type_dict.items():

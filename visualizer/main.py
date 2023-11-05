@@ -55,7 +55,7 @@ if __name__ == '__main__':
     #data={"autoregression_order": }
 
     data = {"autoregression_order": "24"}
-    r = requests.get(url, data=json.dumps(data), headers=headers)
+    r = requests.get(url, headers=headers)
 
 
 
@@ -64,6 +64,6 @@ if __name__ == '__main__':
     print(r.content)
     print(r.json())
 
-    x, y = get_series_from_json(r.json(), state)
+    x, y = get_series_from_json(r.json()['predictions'], state)
 
     draw_plot(x,y)

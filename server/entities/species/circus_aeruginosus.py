@@ -17,12 +17,6 @@ class CircusAeruginosus(Specie):
     def get_csv_filepath(self):
         return self.observation_csv_path
 
-    def get_info(self):
-        return {"scientific_name": self.scientific_name,
-                "common_name": self.common_name,
-                "description": self.description,
-                "habitat": self.habitat}
-
     def get_available_models(self):
         return [Model.AUTOREGRESSION.name.lower(),
                 Model.ARMA.name.lower()]
