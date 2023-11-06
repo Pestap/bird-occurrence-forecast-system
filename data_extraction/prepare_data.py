@@ -1,4 +1,5 @@
-from geopy.geocoders import Nominatim
+#from geopy.geocoders import Nominatim
+import pandas as pd
 
 
 # handle missing values (replace invalid with -100, will be dropped later if needed)
@@ -25,6 +26,7 @@ def parse_dates(df):
 
 
 # get counties and states for all observations
+"""
 def reverse_geocoding(df):
     geolocator = Nominatim(user_agent="coords_powiaty_and_woj")
 
@@ -54,7 +56,34 @@ def reverse_geocoding(df):
     df = df[df['STATE'] != 'no_state']
     print("Finished reverse geocoding")
     return df
+"""
 
+def translate_states(df):
+    df['STATE'].replace({
+        "Dolnoslaskie": "województwo dolnośląskie",
+        "Kujawsko-pomorskie": "województwo kujawsko-pomorskie",
+        "Lubelskie": "województwo lubelskie",
+        "Lubuskie": "województwo lubuskie",
+        "Lódzkie": "województwo łódzkie",
+        "Malopolskie": "województwo małopolskie",
+        "Mazowieckie": "województwo mazowieckie",
+        "Opolskie": "województwo opolskie",
+        "Podkarpackie": "województwo podkarpackie",
+        "Podlaskie": "województwo podlaskie",
+        "Pomorskie": "województwo pomorskie",
+        "Slaskie": "województwo śląskie",
+        "Swietokrzyskie": "województwo świętokrzyskie",
+        "Warminsko-mazurskie": "województwo warmińsko-mazurskie",
+        "Wielkopolskie": "województwo wielkopolskie",
+        "Zachodniopomorskie": "województwo zachodniopomorskie"
+
+    }, inplace=True)
+    return df
+
+
+def translate_dates(df):
+    df['OBSERVATION DATE'] = df['OBSERVATION DATE'].dt.strftime('%d.%m.%Y')
+    return df
 
 # for the whole process for data preperation
 def prepare_data(df, type_dict={'SCIENTIFIC NAME': str, 'OBSERVATION COUNT': int, 'LATITUDE': float, 'LONGITUDE': float,
@@ -63,6 +92,7 @@ def prepare_data(df, type_dict={'SCIENTIFIC NAME': str, 'OBSERVATION COUNT': int
     df = handle_missing_values(df, 'OBSERVATION COUNT')
     df = parse_datatypes(df, type_dict)
     df = parse_dates(df)
-    df = reverse_geocoding(df)
+    df = translate_states(df)
+    df = translate_dates(df)
 
     return df

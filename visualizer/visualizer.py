@@ -27,27 +27,33 @@ def get_series_from_json(json_data, state):
     return dates, values
 
 
-def draw_plot(x,y):
-    plt.plot(x,y, label="Observations")
-    plt.xticks(x[0::3], rotation=45)
-    plt.vlines(x=datetime(2023,1,1), ymin = -1, ymax=10, colors = 'red', label= 'Observations - Predictions border')
+def draw_plot(json_data, state):
+    p_dates, p_values = get_series_from_json(json_data['predictions'], state)
+    t_dates, t_values = get_series_from_json(json_data['tests'], state)
+
+    fig, ax = plt.subplots()
+    ax.plot(p_dates, p_values, label="Predictions", color='blue')
+    ax.plot(t_dates, t_values, label="Test", color='red')
+    plt.xticks(p_dates[0::3], rotation=45)
     plt.grid(True)
     # TODO: update title with state
+    legend=ax.legend(loc='center right')
     plt.xlabel("Dates")
     plt.ylabel("Average observation count")
-    plt.title("Obesrvations")
-    plt.legend()
+    plt.title(f"Obesrvations - {state}")
+
     plt.show()
 
 if __name__ == '__main__':
     base_url = "http://127.0.0.1:5000"
 
     model = "autoregression"
-    specie = "ciconia_ciconia"
-    from_date = "2000-08-25"
-    to_date = "2025-01-1"
-    ar_order = 36
-    resource = f"api/birds/{specie}/models/{model}/predict?from={from_date}&to={to_date}&autoregression_order={ar_order}"
+    specie = "calidris_alpina"
+    from_date = "2005-01-01"
+    to_date = "2033-01-1"
+    ar_order = 24
+    edge= edge="2021-12-01"
+    resource = f"api/birds/{specie}/models/{model}/predict?from={from_date}&to={to_date}&autoregression_order={ar_order}&edge={edge}"
 
     url = base_url + "/" + resource
 
@@ -55,15 +61,15 @@ if __name__ == '__main__':
     #data={"autoregression_order": }
 
     data = {"autoregression_order": "24"}
-    r = requests.get(url, data=json.dumps(data), headers=headers)
+    r = requests.get(url, headers=headers)
 
 
 
     state = "pomorskie"
     print(r.reason)
     print(r.content)
-    print(r.json())
+    print(r.json()['mae_errors'])
 
-    x, y = get_series_from_json(r.json(), state)
+   # x, y = get_series_from_json(r.json()['predictions'], state)
 
-    draw_plot(x,y)
+    draw_plot(r.json(), state)

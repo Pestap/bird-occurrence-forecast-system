@@ -28,7 +28,7 @@ def load_data(columns_to_extract, filter_column_name, filter_column_value,
               filepath='../data/ebd_PL_relJan-2023/ebd_PL_relJan-2023.txt'):
     df = load_from_file(filepath)
     df = extract_rows_by_column_value(df, filter_column_name, filter_column_value)
-    df= extract_columns(df, columns_to_extract)
+    df = extract_columns(df, columns_to_extract)
     print("Loaded data")
     return df
 

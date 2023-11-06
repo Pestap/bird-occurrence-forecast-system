@@ -21,9 +21,11 @@ class Specie:
     # TODO: add get moving average models - after research
     # TODO: add get DNN models - after research
 
-    @abstractmethod
     def get_info(self):
-        pass
+        return {"scientific_name": self.scientific_name,
+                "common_name": self.common_name,
+                "description": self.description,
+                "habitat": self.habitat}
 
     @abstractmethod
     def get_available_models(self):
