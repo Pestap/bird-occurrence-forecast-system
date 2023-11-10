@@ -49,6 +49,12 @@ def get_specie_models(specie_name):
         return None
 
 
+def get_observations(specie_name, date_from, date_to):
+    try:
+        return species[specie_name].get_observations(date_from, date_to)
+    except KeyError:
+        return None
+
 def predict_specie_with_model(specie_name, model, date_from, date_to, model_params, edge_date):
     try:
         predicted, test = species[specie_name].make_predictions(model, date_from, date_to, model_params, edge_date)

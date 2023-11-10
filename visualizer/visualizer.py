@@ -48,9 +48,9 @@ if __name__ == '__main__':
     base_url = "http://127.0.0.1:5000"
 
     model = "autoregression"
-    specie = "calidris_alpina"
+    specie = "grus_grus"
     from_date = "2005-01-01"
-    to_date = "2033-01-1"
+    to_date = "2028-01-1"
     ar_order = 24
     edge= edge="2021-12-01"
     resource = f"api/birds/{specie}/models/{model}/predict?from={from_date}&to={to_date}&autoregression_order={ar_order}&edge={edge}"
@@ -65,7 +65,7 @@ if __name__ == '__main__':
 
 
 
-    state = "pomorskie"
+    state = "wielkopolskie"
     print(r.reason)
     print(r.content)
     print(r.json()['mae_errors'])
