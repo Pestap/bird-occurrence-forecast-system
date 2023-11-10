@@ -5,7 +5,7 @@ from abc import abstractmethod
 from dateutil import rrule, relativedelta
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 
-from entities.data_gathering.data_extraction_from_file import get_observations_state_groups
+from entities.data_gathering.data_extraction_from_file import get_observations
 from entities import enums
 
 from constants import LAST_OBSERVATION_DATE_STRING
@@ -14,6 +14,7 @@ class Specie:
 
     def __init__(self):
         self.observation_data_grouped = None
+        self.observations_df = None
 
     def get_autoregression_models(self):
         return None
@@ -37,12 +38,33 @@ class Specie:
 
     def load_observation_data_from_csv(self):
         self.observation_data_grouped = {}
-        observation_data_grouped_not_translated = get_observations_state_groups(self.get_csv_filepath())
+        observation_data_grouped_not_translated, observations = get_observations(self.get_csv_filepath())
 
         # Translate states and represent them as dictionary
         for state in observation_data_grouped_not_translated:
             self.observation_data_grouped[enums.translate_state_to_enum(state[0])] = state[1]
+
+        self.observations_df = observations
         print(f"SPECIES LOADED: {self.scientific_name}")
+
+    def get_observations(self, date_from, date_to):
+        df = self.observations_df
+        filtered_observations = df.loc[(df['OBSERVATION DATE'] >= date_from) & (df['OBSERVATION DATE'] <= date_to)]
+        filtered_observations.sort_values(by='OBSERVATION DATE', ascending=True, inplace=True)
+        dictionaries_list = filtered_observations.to_dict('records')
+
+        # change keys
+        for obsevation_fact in dictionaries_list:
+            obsevation_fact['observation count'] = obsevation_fact['OBSERVATION COUNT']
+            del obsevation_fact['OBSERVATION COUNT']
+            obsevation_fact['observation date'] = obsevation_fact['OBSERVATION DATE']
+            del obsevation_fact['OBSERVATION DATE']
+            obsevation_fact['latitude'] = obsevation_fact['LATITUDE']
+            del obsevation_fact['LATITUDE']
+            obsevation_fact['longitude'] = obsevation_fact['LONGITUDE']
+            del obsevation_fact['LONGITUDE']
+
+        return dictionaries_list
 
     def predict_autoregression(self, state, months, user_ar_order=None):
         steps = user_ar_order

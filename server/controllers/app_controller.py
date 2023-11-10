@@ -50,6 +50,19 @@ def get_specie_model_information(specie_name, model):
     return specie_name + "_" + model
 
 
+def get_observations(specie_name):
+    date_from = datetime.strptime(request.args.get("from"), '%Y-%m-%d')
+    date_to = datetime.strptime(request.args.get("to"), '%Y-%m-%d')
+    response = app_service.get_observations(specie_name, date_from, date_to)
+
+    response_prepared = {"observations": response}
+
+    if response is not None:
+        return jsonify(response_prepared)  # throws 500 for now
+
+    return Response("Invalid specie name", status=400)
+
+
 def predict_specie_with_model(specie_name, model):
 
     try:

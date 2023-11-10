@@ -40,6 +40,9 @@ def handle_same_place_same_time(df):
     return df
 
 
+def get_columns_from_dataframe(df, column_list):
+    return df[column_list]
+
 def average(df, month, year):
     sum_year = 0
     count_year = 0
@@ -113,16 +116,22 @@ def divide_by_state(df):
     return groups_with_zeroes
 
 
-def get_observations_state_groups(filename):
+def get_observations(filename):
 
-    df = load_from_file(filename)
-    # TODO: capture df here to extract observation data
-    df = handle_same_place_same_time(df)
+    observations = load_from_file(filename)
+
+
+    # group data
+    df = handle_same_place_same_time(observations)
     groups = divide_by_state(df)
 
     group_tuples = []
     for group in groups:
         group_tuples.append((group.loc[0, 'STATE'], group))
 
-    return group_tuples
+    # handle observations
+    observations = get_columns_from_dataframe(observations, ["OBSERVATION COUNT", "OBSERVATION DATE", "LATITUDE", "LONGITUDE"])
+
+
+    return group_tuples, observations
 
