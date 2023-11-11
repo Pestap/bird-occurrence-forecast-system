@@ -76,8 +76,8 @@ def get_observations(specie_name):
 def predict_specie_with_model(specie_name, model):
 
     try:
-        date_from_datetime = datetime.strptime(request.args.get("from"), '%Y-%m-%d')
-        date_to_datetime = datetime.strptime(request.args.get("to"), '%Y-%m-%d')
+        date_from_datetime = datetime.strptime(request.args.get("from"), '%Y-%m')
+        date_to_datetime = datetime.strptime(request.args.get("to"), '%Y-%m')
 
 
         # Replace months with 1

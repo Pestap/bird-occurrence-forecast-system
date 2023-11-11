@@ -63,12 +63,15 @@ The project is a part of Bachelor of Science thesis at Faculty of  Electronics, 
     ```
     Example response: 
     TODO
-5. **/birds/<specie_name>/models/<model_name>/predict?from=YYYY-MM-DD&to=YYYY-MM-DD**  
+5. **/birds/<specie_name>/models/<model_name>/predict?from=YYYY-MM&to=YYYY-MM**  
     Get observation data prediction (or historical data) for specie identified by <specie_name>.  
     If specified date range contains actual data, it is returned for that period. Predictions are made for dates with no observation data.  
+    
+    NOTE: dates contain only month and year (no day!)
+
     Example request:
     ```http request
-    GET http://127.0.0.1:5000/api/birds/ardea_alba/models/autoregression/predict?from=2013-08-25&to=2013-10-25
+    GET http://127.0.0.1:5000/api/birds/ardea_alba/models/autoregression/predict?from=2013-08&to=2013-10
     ```
     Example response:  
     ```json
