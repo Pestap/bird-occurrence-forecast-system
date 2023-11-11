@@ -2,6 +2,10 @@ from datetime import datetime
 
 from flask import Flask, request, jsonify, Response
 
+import constants
+from app import cache
+
+
 from entities.enums import translate_enum_to_state
 from services import app_service
 
@@ -50,9 +54,14 @@ def get_specie_model_information(specie_name, model):
     return specie_name + "_" + model
 
 
+@cache.cached(timeout=constants.CACHE_TIMEOUT, query_string=True)
 def get_observations(specie_name):
-    date_from = datetime.strptime(request.args.get("from"), '%Y-%m-%d')
-    date_to = datetime.strptime(request.args.get("to"), '%Y-%m-%d')
+    try:
+        date_from = datetime.strptime(request.args.get("from"), '%Y-%m-%d')
+        date_to = datetime.strptime(request.args.get("to"), '%Y-%m-%d')
+    except ValueError:
+        return Response("Invalid date format", status=400)
+
     response = app_service.get_observations(specie_name, date_from, date_to)
 
     response_prepared = {"observations": response}
@@ -63,6 +72,7 @@ def get_observations(specie_name):
     return Response("Invalid specie name", status=400)
 
 
+@cache.cached(timeout=constants.CACHE_TIMEOUT, query_string=True)
 def predict_specie_with_model(specie_name, model):
 
     try:
