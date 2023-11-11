@@ -83,18 +83,21 @@ class Specie:
         return result_non_negative
 
     def predict_arma(self, state, months):
-        steps = self.get_autoregression_models()[state]
-
-        if steps is None:
+        #steps = self.get_autoregression_models()[state]
+        ar_steps = 12
+        ma_steps = 6
+        i_steps = 2
+        if ar_steps is None or ma_steps is None:
             return None
 
+        model = SARIMAX(self.observation_data_grouped[state]['OBSERVATION COUNT'], order=(ar_steps, i_steps, ma_steps), alpha=0.95)
+        results = model.fit()
+        #results = list(model.predict(start=len(self.observation_data_grouped[state]['OBSERVATION COUNT']), end=len(self.observation_data_grouped[state]['OBSERVATION COUNT'])) + months)
 
-        model = SARIMAX(self.observation_data_grouped[state]['OBSERVATION COUNT'], order=(steps, 0, 1), alpha=0.95).fit()
-        results = list(model.predict(start=len(self.observation_data_grouped[state]['OBSERVATION COUNT']), end=len(self.observation_data_grouped[state]['OBSERVATION COUNT'])) + months)
+        predictions = list(results.forecast(steps=months))
+        predictions_non_negative = [val if val >= 0 else 0 for val in predictions]
 
-        result_non_negative = [val if val >= 0 else 0 for val in results]
-
-        return result_non_negative
+        return predictions_non_negative
 
 
     def predict_sarima(self, state, months):
