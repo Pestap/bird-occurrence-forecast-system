@@ -27,7 +27,7 @@ def get_series_from_json(json_data, state):
     return dates, values
 
 
-def draw_plot(json_data, state):
+def draw_plot(json_data, state, title):
     p_dates, p_values = get_series_from_json(json_data['predictions'], state)
     t_dates, t_values = get_series_from_json(json_data['tests'], state)
 
@@ -40,21 +40,21 @@ def draw_plot(json_data, state):
     legend=ax.legend(loc='center right')
     plt.xlabel("Dates")
     plt.ylabel("Average observation count")
-    plt.title(f"Obesrvations - {state}")
+    plt.title(title)
 
     plt.show()
 
 if __name__ == '__main__':
     base_url = "http://127.0.0.1:5000"
 
-    model = "autoregression"
-    specie = "grus_grus"
-    from_date = "2005-01-01"
-    to_date = "2028-01-1"
+    model = "arma"
+    specie = "ciconia_ciconia"
+    from_date = "2020-08-25"
+    to_date = "2023-04-1"
     ar_order = 24
     edge= edge="2021-12-01"
-    resource = f"api/birds/{specie}/models/{model}/predict?from={from_date}&to={to_date}&autoregression_order={ar_order}&edge={edge}"
-
+    resource = f"api/birds/{specie}/models/{model}/predict?from={from_date}&to={to_date}&autoregression_order={ar_order}"
+    resource = "api/birds/ciconia_ciconia/models/arma/predict?from=2021-08-25&to=2023-04-01&autoregression_order=24"
     url = base_url + "/" + resource
 
     headers = {"Content-Type": "application/json; charset=utf-8"}
@@ -72,4 +72,5 @@ if __name__ == '__main__':
 
    # x, y = get_series_from_json(r.json()['predictions'], state)
 
-    draw_plot(r.json(), state)
+    draw_plot(r.json(), state, "sample title")
+

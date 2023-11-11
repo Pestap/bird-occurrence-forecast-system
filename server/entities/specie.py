@@ -10,6 +10,7 @@ from entities import enums
 
 from constants import LAST_OBSERVATION_DATE_STRING
 
+
 class Specie:
 
     def __init__(self):
@@ -28,8 +29,15 @@ class Specie:
                 "description": self.description,
                 "habitat": self.habitat}
 
-    @abstractmethod
+
     def get_available_models(self):
+        result = self.get_available_models_for_species()
+        result += [enums.model.AUTOREGRESSION.name.lower(),
+                   enums.model.ARMA.name.lower()] # append models applicable to all species
+        return result
+
+    @abstractmethod
+    def get_available_models_for_species(self):
         pass
 
     @abstractmethod

@@ -1,10 +1,8 @@
 from flask_caching import Cache
-
 cache = Cache(config={'CACHE_TYPE': 'simple'})
-
 from flask import Flask
 from routes.blueprint import blueprint
-from flask_cors import CORS, cross_origin
+from flask_cors import CORS
 
 
 def create_app():
