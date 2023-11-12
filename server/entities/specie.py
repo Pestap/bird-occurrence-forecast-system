@@ -32,8 +32,8 @@ class Specie:
 
     def get_available_models(self):
         result = self.get_available_models_for_species()
-        result += [enums.model.AUTOREGRESSION.name.lower(),
-                   enums.model.ARMA.name.lower()] # append models applicable to all species
+        result += [enums.Model.AUTOREGRESSION.name.lower(),
+                   enums.Model.ARMA.name.lower()] # append models applicable to all species
         return result
 
     @abstractmethod
