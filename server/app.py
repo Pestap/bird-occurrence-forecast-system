@@ -1,9 +1,8 @@
-from flask_caching import Cache
-cache = Cache(config={'CACHE_TYPE': 'simple'})
+
 from flask import Flask
 from routes.blueprint import blueprint
 from flask_cors import CORS
-
+from cache.cache_module import cache
 
 def create_app():
     app = Flask(__name__)
