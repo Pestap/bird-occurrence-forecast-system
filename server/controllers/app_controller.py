@@ -3,7 +3,7 @@ from datetime import datetime
 from flask import Flask, request, jsonify, Response
 
 import constants
-from app import cache
+from cache.cache_module import cache
 
 
 from entities.enums import translate_enum_to_state
