@@ -9,7 +9,7 @@ from entities.data_gathering.data_extraction_from_file import get_observations
 from entities import enums
 
 from constants import LAST_OBSERVATION_DATE_STRING
-from entities.prediction_models.models import AutoregressionModel, ArmaModel
+from entities.prediction_models.models import AutoregressionModel, ArmaModel, ArimaModel, SarimaModel
 
 
 class Specie:
@@ -17,8 +17,10 @@ class Specie:
     def __init__(self):
         self.observation_data_grouped = None
         self.observations_df = None
-        self.default_autoregression_model = None
+        self.default_autoregression_model = AutoregressionModel()
         self.default_arma_model = ArmaModel()
+        self.default_arima_model = ArimaModel()
+        self.default_sarima_model = SarimaModel()
 
     def get_autoregression_models(self):
         return None
@@ -35,7 +37,7 @@ class Specie:
     def get_available_models(self):
         result = self.get_available_models_for_species()
         result += [enums.Model.AUTOREGRESSION.name.lower(),
-                   enums.Model.ARMA.name.lower()] # append models applicable to all species
+                   enums.Model.ARMA.name.lower(), enums.Model.ARIMA.name.lower()] # append models applicable to all species
         return result
 
     @abstractmethod
@@ -95,9 +97,14 @@ class Specie:
         ar_steps = model_params['autoregression_order']
         ma_steps = model_params['moving_average_order']
 
-        if ar_steps is None or ma_steps is None:
+        if ar_steps is None:
             try:
                 ar_steps = self.default_arma_model.params['autoregression_order']['default']
+            except AttributeError:
+                return None
+
+        if ma_steps is None:
+            try:
                 ma_steps = self.default_arma_model.params['moving_average_order']['default']
             except AttributeError:
                 return None
@@ -111,8 +118,66 @@ class Specie:
 
         return predictions_non_negative
 
-    def predict_sarima(self, state, months):
-        pass
+    def predict_arima(self, state, months, model_params):
+        ar_steps = model_params['autoregression_order']
+        ma_steps = model_params['moving_average_order']
+        i_steps = model_params['differencing_order']
+
+        if ar_steps is None:
+            try:
+                ar_steps = self.default_arima_model.params['autoregression_order']['default']
+            except AttributeError:
+                return None
+
+        if ma_steps is None:
+            try:
+                ma_steps = self.default_arima_model.params['moving_average_order']['default']
+            except AttributeError:
+                return None
+
+        if i_steps is None:
+            try:
+                i_steps = self.default_arima_model.params['differencing_order']['default']
+            except AttributeError:
+                return None
+        model = SARIMAX(self.observation_data_grouped[state]['OBSERVATION COUNT'], order=(ar_steps, i_steps, ma_steps), alpha=0.95)
+        results = model.fit()
+
+        predictions = list(results.forecast(steps=months))
+        predictions_non_negative = [val if val >= 0 else 0 for val in predictions]
+
+        return predictions_non_negative
+
+    def predict_sarima(self, state, months, model_params):
+        ar_steps = model_params['autoregression_order']
+        ma_steps = model_params['moving_average_order']
+        i_steps = model_params['differencing_order']
+
+        if ar_steps is None:
+            try:
+                ar_steps = self.default_sarima_model.params['autoregression_order']['default']
+            except AttributeError:
+                return None
+
+        if ma_steps is None:
+            try:
+                ma_steps = self.default_sarima_model.params['moving_average_order']['default']
+            except AttributeError:
+                return None
+
+        if i_steps is None:
+            try:
+                i_steps = self.default_sarima_model.params['differencing_order']['default']
+            except AttributeError:
+                return None
+        model = SARIMAX(self.observation_data_grouped[state]['OBSERVATION COUNT'], order=(ar_steps, i_steps, 3),
+                        seasonal_order=(0, 2, 3, 12), alpha=0.95)
+        results = model.fit()
+
+        predictions = list(results.forecast(steps=months))
+        predictions_non_negative = [val if val >= 0 else 0 for val in predictions]
+
+        return predictions_non_negative
     def predict_neural_network(self, date_from, date_to):
         return None
 
@@ -120,7 +185,11 @@ class Specie:
         if model.upper() == enums.Model.AUTOREGRESSION.name:
             return self.predict_autoregression(state, steps, model_params)
         elif model.upper() == enums.Model.ARMA.name:
-            return self.predict_arma(state, steps)
+            return self.predict_arma(state, steps, model_params)
+        elif model.upper() == enums.Model.ARIMA.name:
+            return self.predict_arima(state, steps, model_params)
+        elif model.upper() == enums.Model.SARIMA.name:
+            return self.predict_sarima(state, steps, model_params)
         else:
             return None
 
