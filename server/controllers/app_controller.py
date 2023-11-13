@@ -8,7 +8,7 @@ from cache.cache_module import cache
 
 from entities.enums import translate_enum_to_state
 from services import app_service
-
+from entities.prediction_models.models import get_model_params
 from constants import LAST_OBSERVATION_DATE_STRING
 # TODO: make all responses JSON (3/5)
 
@@ -53,14 +53,15 @@ def get_species_model_information(species_name, model):
     Handle fetching specified model information for species
 
     """
-    models = app_service.get_species_models(species_name)
+    available_models = app_service.get_species_models(species_name)
 
-    if models is None:
+    if available_models is None:
         return Response("Invalid species name", status=404)
 
-    if model in models:
-       pass
-
+    if model in available_models:
+        result = get_model_params(model)
+        if result is not None:
+            return jsonify(result)
 
     return Response("Selected species does not support selected model", status=404)
 
@@ -120,6 +121,7 @@ def predict_species_with_model(species_name, model):
 
         model_params['autoregression_order'] = request.args.get("autoregression_order")
         model_params['moving_average_order'] = request.args.get("moving_average_order")
+        model_params['differencing_order'] = request.args.get("differencing_order")
 
         validate_model_params(model_params)
 
@@ -182,7 +184,7 @@ def predict_species_with_model(species_name, model):
     # 2012-09-01
 
 def validate_model_params(model_params):
-    params_to_check = ['autoregression_order', 'moving_average_order']
+    params_to_check = ['autoregression_order', 'moving_average_order', 'differencing_order']
 
     for param in model_params:
         if param in params_to_check and param in model_params:
