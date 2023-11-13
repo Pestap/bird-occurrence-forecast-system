@@ -9,6 +9,7 @@ from entities.data_gathering.data_extraction_from_file import get_observations
 from entities import enums
 
 from constants import LAST_OBSERVATION_DATE_STRING
+from entities.prediction_models.models import AutoregressionModel, ArmaModel
 
 
 class Specie:
@@ -16,19 +17,20 @@ class Specie:
     def __init__(self):
         self.observation_data_grouped = None
         self.observations_df = None
+        self.default_autoregression_model = None
+        self.default_arma_model = ArmaModel()
 
     def get_autoregression_models(self):
         return None
     # TODO: include first observation date (maybe also last?) in get_info
     # TODO: add get moving average models - after research
-    # TODO: add get DNN models - after research
+    # TODO: add get DNN prediction_models - after research
 
     def get_info(self):
         return {"scientific_name": self.scientific_name,
                 "common_name": self.common_name,
                 "description": self.description,
                 "habitat": self.habitat}
-
 
     def get_available_models(self):
         result = self.get_available_models_for_species()
@@ -74,15 +76,13 @@ class Specie:
 
         return dictionaries_list
 
-    def predict_autoregression(self, state, months, user_ar_order=None):
-        steps = user_ar_order
-
+    def predict_autoregression(self, state, months, model_params=None):
+        steps = model_params['autoregression_order']
         if steps is None:
-            steps = self.get_autoregression_models()[state]
-
-        # if steps is None it means that the specie does not support autoregression
-        if steps is None:
-            return None
+            try:
+                steps = self.default_autoregression_model.params['autoregression_order']['default']
+            except AttributeError:
+                return None
 
         model = AutoReg(self.observation_data_grouped[state]['OBSERVATION COUNT'], lags=steps, seasonal=True, period=12).fit()
         result = list(model.forecast(steps=months))
@@ -90,15 +90,19 @@ class Specie:
 
         return result_non_negative
 
-    def predict_arma(self, state, months):
+    def predict_arma(self, state, months, model_params=None):
         #steps = self.get_autoregression_models()[state]
-        ar_steps = 12
-        ma_steps = 6
-        i_steps = 2
-        if ar_steps is None or ma_steps is None:
-            return None
+        ar_steps = model_params['autoregression_order']
+        ma_steps = model_params['moving_average_order']
 
-        model = SARIMAX(self.observation_data_grouped[state]['OBSERVATION COUNT'], order=(ar_steps, i_steps, ma_steps), alpha=0.95)
+        if ar_steps is None or ma_steps is None:
+            try:
+                ar_steps = self.default_arma_model.params['autoregression_order']['default']
+                ma_steps = self.default_arma_model.params['moving_average_order']['default']
+            except AttributeError:
+                return None
+
+        model = SARIMAX(self.observation_data_grouped[state]['OBSERVATION COUNT'], order=(ar_steps, 0, ma_steps), alpha=0.95)
         results = model.fit()
         #results = list(model.predict(start=len(self.observation_data_grouped[state]['OBSERVATION COUNT']), end=len(self.observation_data_grouped[state]['OBSERVATION COUNT'])) + months)
 
@@ -107,7 +111,6 @@ class Specie:
 
         return predictions_non_negative
 
-
     def predict_sarima(self, state, months):
         pass
     def predict_neural_network(self, date_from, date_to):
@@ -115,8 +118,7 @@ class Specie:
 
     def make_predictions_with_model(self, model, model_params, state, steps):
         if model.upper() == enums.Model.AUTOREGRESSION.name:
-
-            return self.predict_autoregression(state, steps, model_params['autoregression_order'] if 'autoregression_order' in model_params else None)
+            return self.predict_autoregression(state, steps, model_params)
         elif model.upper() == enums.Model.ARMA.name:
             return self.predict_arma(state, steps)
         else:
@@ -137,7 +139,6 @@ class Specie:
         READ OBSERVATIONS FROM DATA
         
         """
-
 
         if date_from <= datetime.strptime(LAST_OBSERVATION_DATE_STRING, '%Y-%m-%d'): # read observations when desired by user
             observation_date_list = []

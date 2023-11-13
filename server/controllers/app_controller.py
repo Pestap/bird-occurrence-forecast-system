@@ -11,6 +11,7 @@ from services import app_service
 
 from constants import LAST_OBSERVATION_DATE_STRING
 # TODO: make all responses JSON (3/5)
+
 def get_species():
     """
     Handle fetching all species
@@ -20,60 +21,70 @@ def get_species():
     return jsonify(response_prepared)
 
 
-def get_specie_info(specie_name):
+def get_specie_info(species_name):
     """
     Handle fetching specified specie information
     """
-    response = app_service.get_specie_info(specie_name)
+    response = app_service.get_species_info(species_name)
 
     if response is not None:
         return jsonify(response)
 
-    return Response("Invalid specie name", status=400)
+    return Response("Invalid species name", status=400)
 
 
-def get_specie_available_models(specie_name):
+def get_species_available_models(species_name):
     """
     Handle fetching available models
     """
 
-    response = app_service.get_specie_models(specie_name)
+    response = app_service.get_species_models(species_name)
 
     response_prepared = {"supported_models": response}
 
     if response is not None:
         return jsonify(response_prepared) # throws 500 for now
 
-    return Response("Invalid specie name", status=400)
+    return Response("Invalid species name", status=400)
 
 
-def get_specie_model_information(specie_name, model):
+def get_species_model_information(species_name, model):
     """
-    Handle fetching specified model information for specie
+    Handle fetching specified model information for species
+
     """
-    return specie_name + "_" + model
+    models = app_service.get_species_models(species_name)
+
+    if models is None:
+        return Response("Invalid species name", status=404)
+
+    if model in models:
+       pass
+
+
+    return Response("Selected species does not support selected model", status=404)
 
 
 @cache.cached(timeout=constants.CACHE_TIMEOUT, query_string=True)
-def get_observations(specie_name):
+def get_observations(species_name):
     try:
         date_from = datetime.strptime(request.args.get("from"), '%Y-%m-%d')
         date_to = datetime.strptime(request.args.get("to"), '%Y-%m-%d')
     except ValueError:
         return Response("Invalid date format", status=400)
 
-    response = app_service.get_observations(specie_name, date_from, date_to)
+    response = app_service.get_observations(species_name, date_from, date_to)
 
     response_prepared = {"observations": response}
 
     if response is not None:
         return jsonify(response_prepared)  # throws 500 for now
 
-    return Response("Invalid specie name", status=400)
+    return Response("Invalid species name", status=400)
 
 
 @cache.cached(timeout=constants.CACHE_TIMEOUT, query_string=True)
-def predict_specie_with_model(specie_name, model):
+def predict_species_with_model(species_name, model):
 
     try:
         date_from_datetime = datetime.strptime(request.args.get("from"), '%Y-%m')
@@ -108,11 +119,12 @@ def predict_specie_with_model(specie_name, model):
         model_params = {}
 
         model_params['autoregression_order'] = request.args.get("autoregression_order")
+        model_params['moving_average_order'] = request.args.get("moving_average_order")
 
         validate_model_params(model_params)
 
 
-        response = app_service.predict_specie_with_model(specie_name, model, date_from_datetime, date_to_datetime, model_params, edge_date)
+        response = app_service.predict_species_with_model(species_name, model, date_from_datetime, date_to_datetime, model_params, edge_date)
         if response is not None:
             predictions = response[0]
             tests = response[1]
@@ -163,14 +175,14 @@ def predict_specie_with_model(specie_name, model):
             }
             return jsonify(response_object)
 
-        return Response("Invalid specie name", status=400)
+        return Response("Invalid species name", status=400)
     except ValueError:
         return Response("Invalid date format, try using YYYY-MM-DD", status=400)
 
     # 2012-09-01
 
 def validate_model_params(model_params):
-    params_to_check = ['autoregression_order']
+    params_to_check = ['autoregression_order', 'moving_average_order']
 
     for param in model_params:
         if param in params_to_check and param in model_params:
