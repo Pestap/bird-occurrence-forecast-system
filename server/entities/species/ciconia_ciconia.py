@@ -1,10 +1,11 @@
-from entities.specie import Specie
+from entities.species_base import Specie
 from entities.enums import State, Model
 
 
 class CiconiaCiconia(Specie):
 
     def __init__(self):
+        super().__init__()
         self.common_name = "White Strok"
         self.scientific_name = "Ciconia ciconia"
         self.description = "White stork sample description"

@@ -1,4 +1,4 @@
-from entities.specie import Specie
+from entities.species_base import Specie
 from entities.enums import State, Model
 
 

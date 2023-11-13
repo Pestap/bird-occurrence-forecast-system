@@ -35,35 +35,35 @@ def get_species():
     return list(species.keys())
 
 
-def get_specie_info(specie_name):
+def get_species_info(species_name):
     try:
-        return species[specie_name].get_info()
+        return species[species_name].get_info()
     except KeyError:
         return None
 
 
-def get_specie_models(specie_name):
+def get_species_models(species_name):
     try:
-        return species[specie_name].get_available_models()
+        return species[species_name].get_available_models()
     except KeyError:
         return None
 
 
-def get_observations(specie_name, date_from, date_to):
+def get_observations(species_name, date_from, date_to):
     try:
-        return species[specie_name].get_observations(date_from, date_to)
+        return species[species_name].get_observations(date_from, date_to)
     except KeyError:
         return None
 
-def predict_specie_with_model(specie_name, model, date_from, date_to, model_params, edge_date):
-    try:
+
+def predict_species_with_model(specie_name, model, date_from, date_to, model_params, edge_date):
+    try: # add try catch  - in case of None from predictions
         predicted, test = species[specie_name].make_predictions(model, date_from, date_to, model_params, edge_date)
         prediction_error = calculate_mae_prediction(predicted, test)
         #return species[specie_name].make_predictions(model, date_from, date_to, model_params, edge_date)
         return predicted, test, prediction_error
-    except KeyError:
+    except (KeyError, TypeError) as ex:
         return None
-
 
 
 def calculate_mae_prediction(predicted, test):
