@@ -7,12 +7,11 @@ def get_model_params(model_name):
         return ArmaModel.default_params
     elif model_name.upper() == entities.enums.Model.AUTOREGRESSION.name:
         return AutoregressionModel.default_params
-    elif model_name.upper() == entities.enums.Model.SARIMA.name:
-        return SarimaModel.default_params
     elif model_name.upper() == entities.enums.Model.ARIMA.name:
         return ArimaModel.default_params
     else:
         return None
+
 
 class Model:
     def __init__(self, type, params):
@@ -55,6 +54,7 @@ class ArmaModel(Model):
             params = ArmaModel.default_params
 
         super().__init__(ModelType.ARMA, params)
+
 
 class ArimaModel(Model):
     default_params = {
