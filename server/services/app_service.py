@@ -12,6 +12,10 @@ from entities.species.motacilla_citreola import MotacillaCitreola
 from entities.species.nucifraga_caryocatactes import NucifragaCaryocatactes
 from entities.species.phalacrocorax_carbo import PhalacrocoraxCarbo
 
+
+# repository
+
+
 # species dictionary
 species = {
     'ardea_alba': ArdeaAlba(),
@@ -29,6 +33,7 @@ species = {
     'phalacrocorax_carbo': PhalacrocoraxCarbo()
 
 }
+
 
 
 def get_species():

@@ -5,12 +5,13 @@ from abc import abstractmethod
 from dateutil import rrule, relativedelta
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 
-from entities.data_gathering.data_extraction_from_file import get_observations
+from repositories.data_extraction_from_file import get_observations
 from entities import enums
 
 from constants import LAST_OBSERVATION_DATE_STRING
 from entities.prediction_models.models import AutoregressionModel, ArmaModel, ArimaModel, SarimaModel
 
+from repositories.mongodbrepository import repository
 
 class Specie:
 
@@ -21,6 +22,10 @@ class Specie:
         self.default_arma_model = ArmaModel()
         self.default_arima_model = ArimaModel()
         self.default_sarima_model = SarimaModel()
+
+#        print(repository.get_information_for_species("Ardea alba"))
+
+
 
     def get_autoregression_models(self):
         return None
@@ -178,8 +183,7 @@ class Specie:
         predictions_non_negative = [val if val >= 0 else 0 for val in predictions]
 
         return predictions_non_negative
-    def predict_neural_network(self, date_from, date_to):
-        return None
+
 
     def make_predictions_with_model(self, model, model_params, state, steps):
         if model.upper() == enums.Model.AUTOREGRESSION.name:
