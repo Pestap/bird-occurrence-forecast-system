@@ -30,8 +30,6 @@ class Specie:
     def get_autoregression_models(self):
         return None
     # TODO: include first observation date (maybe also last?) in get_info
-    # TODO: add get moving average models - after research
-    # TODO: add get DNN prediction_models - after research
 
     def get_info(self):
         return {"scientific_name": self.scientific_name,
@@ -40,9 +38,12 @@ class Specie:
                 "habitat": self.habitat}
 
     def get_available_models(self):
+        """
+        Get models available for species and append models supported frir akk
+        """
         result = self.get_available_models_for_species()
         result += [enums.Model.AUTOREGRESSION.name.lower(),
-                   enums.Model.ARMA.name.lower(), enums.Model.ARIMA.name.lower()] # append models applicable to all species
+                   enums.Model.ARMA.name.lower(), enums.Model.ARIMA.name.lower()]
         return result
 
     @abstractmethod
