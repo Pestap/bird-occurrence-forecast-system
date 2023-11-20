@@ -9,7 +9,7 @@ from cache.cache_module import cache
 from entities.enums import translate_enum_to_state
 from services import app_service
 from entities.prediction_models.models import get_model_params
-from constants import LAST_OBSERVATION_DATE_STRING
+from constants import LAST_OBSERVATION_DATE_STRING, EDGE_DATE_DEFAULT
 # TODO: make all responses JSON (3/5)
 
 def get_species():
@@ -105,12 +105,12 @@ def predict_species_with_model(species_name, model):
         edge_date_from_query = request.args.get("edge")
 
         if edge_date_from_query is None:
-            edge_date_from_query = LAST_OBSERVATION_DATE_STRING
+            edge_date_from_query = EDGE_DATE_DEFAULT
 
         try:
             edge_date = datetime.strptime(edge_date_from_query, '%Y-%m-%d')
         except ValueError:
-            edge_date = datetime.strptime(LAST_OBSERVATION_DATE_STRING, '%Y-%m-%d')
+            edge_date = datetime.strptime(EDGE_DATE_DEFAULT, '%Y-%m-%d')
 
         if edge_date > datetime.strptime(LAST_OBSERVATION_DATE_STRING, '%Y-%m-%d'):
             return Response("Parameter (edge) cannot exceed 2023-1-1 and cannot be before date_from", status=400)

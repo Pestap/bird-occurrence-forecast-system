@@ -5,6 +5,7 @@ from entities.enums import State, Model
 class MotacillaAlba(Specie):
 
     def __init__(self):
+        super().__init__()
         self.common_name = "White wagtail"
         self.scientific_name = "Motacilla alba"
         self.description = "Motacilla alba sample description"

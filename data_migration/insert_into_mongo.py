@@ -31,7 +31,7 @@ column_data_types = {
     "YEAR": int,
     "WEEK OF YEAR": int,
 }
-
+collection.delete_many({})
 for filename in os.listdir(csv_directory):
     if filename.endswith(".csv"):
         file_path = os.path.join(csv_directory, filename)
@@ -50,4 +50,81 @@ for filename in os.listdir(csv_directory):
                 collection.insert_one(converted_row)
 
 # Close MongoDB connection
+
+collection_info_name = "species_information"
+info_collection = db[collection_info_name]
+info_collection.delete_many({})
+# Information about species
+
+species_information = [
+    {"COMMON NAME": "Great egret",
+    "SCIENTIFIC NAME": "Ardea alba",
+    "DESCRIPTION": "Sample description",
+    "HABITAT": "Sample habitat",
+     },
+    {"COMMON NAME": "Common buzzard",
+    "SCIENTIFIC NAME": "Buteo buteo",
+    "DESCRIPTION": "Sample description",
+    "HABITAT": "Sample habitat",
+     },
+    {"COMMON NAME": "Dunlin",
+    "SCIENTIFIC NAME": "Calidris alpina",
+    "DESCRIPTION": "Sample description",
+    "HABITAT": "Sample habitat",
+     },
+    {"COMMON NAME": "Ruff",
+    "SCIENTIFIC NAME": "Calidris pugnax",
+    "DESCRIPTION": "Sample description",
+    "HABITAT": "Sample habitat",
+     },
+    {"COMMON NAME": "White Stork",
+    "SCIENTIFIC NAME": "Ciconia ciconia",
+    "DESCRIPTION": "Sample description",
+    "HABITAT": "Sample habitat",
+     },
+    {"COMMON NAME": "Western marsh harrier",
+    "SCIENTIFIC NAME": "Circus Aeruginosus",
+    "DESCRIPTION": "Sample description",
+    "HABITAT": "Sample habitat",
+     },
+    {"COMMON NAME": "Greater spotted eagle",
+    "SCIENTIFIC NAME": "Clanga clanga",
+    "DESCRIPTION": "Sample description",
+    "HABITAT": "Sample habitat",
+     },
+    {"COMMON NAME": "Common crane",
+    "SCIENTIFIC NAME": "Grus grus",
+    "DESCRIPTION": "Sample description",
+    "HABITAT": "Sample habitat",
+     },
+    {"COMMON NAME": "European bee-eater",
+    "SCIENTIFIC NAME": "Merops apiaster",
+    "DESCRIPTION": "Sample description",
+    "HABITAT": "Sample habitat",
+     },
+    {"COMMON NAME": "White wagtail",
+    "SCIENTIFIC NAME": "Motacilla alba",
+    "DESCRIPTION": "Sample description",
+    "HABITAT": "Sample habitat",
+     },
+    {"COMMON NAME": "Citrine wagtail",
+    "SCIENTIFIC NAME": "Motacilla citreola",
+    "DESCRIPTION": "Sample description",
+    "HABITAT": "Sample habitat",
+     },
+    {"COMMON NAME": "Spotted nutcracker",
+    "SCIENTIFIC NAME": "Nucifraga caryocatactes",
+    "DESCRIPTION": "Sample description",
+    "HABITAT": "Sample habitat",
+     },
+    {"COMMON NAME": "Great cormorant",
+    "SCIENTIFIC NAME": "Phalacrocorax carbo",
+    "DESCRIPTION": "Sample description",
+    "HABITAT": "Sample habitat",
+     }
+]
+
+info_collection.insert_many(species_information)
+
+
 client.close()

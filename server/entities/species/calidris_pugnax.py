@@ -6,6 +6,7 @@ from entities.enums import State, Model
 class CalidrisPugnax(Specie):
 
     def __init__(self):
+        super().__init__()
         self.common_name = "Ruff"
         self.scientific_name = "Calidris pugnax"
         self.description = "Calidris pugnax sample description"

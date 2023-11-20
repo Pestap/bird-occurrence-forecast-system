@@ -4,6 +4,7 @@ from entities.enums import State, Model
 
 class PhalacrocoraxCarbo(Specie):
     def __init__(self):
+        super().__init__()
         self.common_name = "Great cormorant"
         self.scientific_name = "Phalacrocorax carbo"
         self.description = "Phalacrocorax carbo sample description"

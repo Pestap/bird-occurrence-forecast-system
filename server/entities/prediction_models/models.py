@@ -9,9 +9,10 @@ def get_model_params(model_name):
         return AutoregressionModel.default_params
     elif model_name.upper() == entities.enums.Model.SARIMA.name:
         return SarimaModel.default_params
+    elif model_name.upper() == entities.enums.Model.ARIMA.name:
+        return ArimaModel.default_params
     else:
         return None
-
 
 class Model:
     def __init__(self, type, params):
