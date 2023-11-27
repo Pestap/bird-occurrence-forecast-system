@@ -137,6 +137,7 @@ def predict_species_with_model(species_name, model):
     mae_errors = response[2]
     mape_errors = response[3]
     rmse_errors = response[4]
+    custom_errors = response[5]
 
     # Translate dates
     predictions_translated = {f"{date.year}-{date.month:0>{2}}": value for date, value in predictions.items()}
@@ -167,6 +168,10 @@ def predict_species_with_model(species_name, model):
         if data is not None:
             rmse_errors[state] = round(data, 2)
 
+    for state, data in custom_errors.items():
+        if data is not None:
+            custom_errors[state] = round(data, 2)
+
     predictions_v2 = {date: {} for date in predictions_translated.keys()}
 
     for date, empty_dict in predictions_v2.items():
@@ -182,13 +187,15 @@ def predict_species_with_model(species_name, model):
     mae_errors_v2 = {translate_enum_to_state(state): value for state, value in mae_errors.items()}
     mape_errors_v2 = {translate_enum_to_state(state): value for state, value in mape_errors.items()}
     rmse_errors_v2 = {translate_enum_to_state(state): value for state, value in rmse_errors.items()}
+    custom_errors_v2 = {translate_enum_to_state(state): value for state, value in custom_errors.items()}
 
     response_object = {
         "predictions" : predictions_v2,
         "tests": tests_v2,
         "mae_errors": mae_errors_v2,
         "mape_errors": mape_errors_v2,
-        "rmse_errors": rmse_errors_v2
+        "rmse_errors": rmse_errors_v2,
+        "custom_errors": custom_errors_v2
     }
 
     return jsonify(response_object)
