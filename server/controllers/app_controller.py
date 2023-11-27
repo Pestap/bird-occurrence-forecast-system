@@ -102,7 +102,7 @@ def predict_species_with_model(species_name, model):
             return Response("Invalid data range, (from after to)", status=400)
 
     except ValueError:
-        return Response("Invalid date format: should be %Y-%m-%d", status=400)
+        return Response("Invalid date format: should be %Y-%m", status=400)
     except TypeError:
         return Response("Missing query parameters: from, to", status=400)
 
@@ -112,10 +112,8 @@ def predict_species_with_model(species_name, model):
     if edge_date_from_query is None: # if none set to default
         edge_date_from_query = EDGE_DATE_DEFAULT
 
-    try: # try to parse
-        edge_date = datetime.strptime(edge_date_from_query, '%Y-%m')
-    except ValueError:
-        edge_date = datetime.strptime(EDGE_DATE_DEFAULT, '%Y-%m')
+    # try to parse
+    edge_date = datetime.strptime(edge_date_from_query, '%Y-%m')
 
     # check if edge date is valid
     if edge_date > datetime.strptime(LAST_OBSERVATION_DATE_STRING, '%Y-%m-%d'):
@@ -158,13 +156,16 @@ def predict_species_with_model(species_name, model):
                 tests_translated[date][state] = round(observation_value, 2)
 
     for state, data in mae_errors.items():
-        mae_errors[state] = round(data, 2)
+        if data is not None:
+            mae_errors[state] = round(data, 2)
 
     for state, data in mape_errors.items():
-        mape_errors[state] = round(data, 2)
+        if data is not None:
+            mape_errors[state] = round(data, 2)
 
     for state, data in rmse_errors.items():
-        rmse_errors[state] = round(data, 2)
+        if data is not None:
+            rmse_errors[state] = round(data, 2)
 
     predictions_v2 = {date: {} for date in predictions_translated.keys()}
 

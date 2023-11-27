@@ -226,7 +226,6 @@ class Species:
                     except IndexError: # Exception is thrown by accessing [0] index in empty array - no observation found
                         observations_dictionary[date][state.name] = None # if no observation found for specified date - None => null
 
-            # Split the data into training and test?
 
             for date, data in observations_dictionary.items():
                 if date <= edge_date:
@@ -234,6 +233,7 @@ class Species:
                 else:
                     test_observation_dictionary[date] = data
 
+            # TODO: add check if all states are present every time
 
         """
         
@@ -257,7 +257,10 @@ class Species:
             # iterate through states and make predictions
             for state in self.observation_data_grouped.keys():
                 # make predictions with model: implementation by desired specie
-                predictions = self.make_predictions_with_model(model, model_params, state, months_from_last_observation_data)
+                try:
+                    predictions = self.make_predictions_with_model(model, model_params, state, months_from_last_observation_data)
+                except (ValueError, ZeroDivisionError) as e:
+                    predictions = months_from_last_observation_data*[0]
                 # If incorrect model selected
                 if predictions is None:
                     return None
