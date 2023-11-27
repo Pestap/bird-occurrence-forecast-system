@@ -32,6 +32,7 @@ def load_data(columns_to_extract, filter_column_name, filter_column_value,
     print("Loaded data")
     return df
 
+
 # Function for getting all available common names from data to file
 def get_common_names(filepath='../data/ebd_PL_relJan-2023/ebd_PL_relJan-2023.txt'):
     df = load_from_file(filepath)

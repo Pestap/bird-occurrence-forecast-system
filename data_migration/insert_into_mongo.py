@@ -1,7 +1,6 @@
 import csv
 import os
 from datetime import datetime
-
 from pymongo import MongoClient
 
 username = "bird_app"
@@ -31,7 +30,9 @@ column_data_types = {
     "YEAR": int,
     "WEEK OF YEAR": int,
 }
+
 collection.delete_many({})
+
 for filename in os.listdir(csv_directory):
     if filename.endswith(".csv"):
         file_path = os.path.join(csv_directory, filename)
@@ -54,8 +55,8 @@ for filename in os.listdir(csv_directory):
 collection_info_name = "species_information"
 info_collection = db[collection_info_name]
 info_collection.delete_many({})
-# Information about species
 
+# Information about species TODO: maybe change to wikipedia and eBird links
 species_information = [
     {"COMMON NAME": "Great egret",
     "SCIENTIFIC NAME": "Ardea alba",
@@ -125,6 +126,5 @@ species_information = [
 ]
 
 info_collection.insert_many(species_information)
-
 
 client.close()

@@ -1,9 +1,9 @@
 
-from entities.species_base import Specie
+from entities.species_base import Species
 from entities.enums import State, Model
 
 
-class CalidrisPugnax(Specie):
+class CalidrisPugnax(Species):
 
     def __init__(self):
         super().__init__()
@@ -12,8 +12,7 @@ class CalidrisPugnax(Specie):
         self.description = "Calidris pugnax sample description"
         self.habitat = "Calidris pugnax sample habititat"
         self.observation_csv_path = "static/data/calidris_pugnax.csv" # path is relative from app.py
-        self.load_observation_data_from_csv()
-
+        self.load_observation_data()
 
     def get_csv_filepath(self):
         return self.observation_csv_path
@@ -39,4 +38,3 @@ class CalidrisPugnax(Specie):
                 State.WIELKOPOLSKIE: 34,
                 State.ZACHODNIOPOMORSKIE: 35,
                 }
-

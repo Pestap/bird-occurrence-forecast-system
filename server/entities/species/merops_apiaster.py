@@ -1,8 +1,8 @@
-from entities.species_base import Specie
+from entities.species_base import Species
 from entities.enums import State, Model
 
 
-class MeropsApiaster(Specie):
+class MeropsApiaster(Species):
 
     def __init__(self):
         super().__init__()
@@ -11,8 +11,7 @@ class MeropsApiaster(Specie):
         self.description = "Merops apiaster sample description"
         self.habitat = "Merops apiaster sample habititat"
         self.observation_csv_path = "static/data/merops_apiaster.csv" # path is relative from app.py
-        self.load_observation_data_from_csv()
-
+        self.load_observation_data()
 
     def get_csv_filepath(self):
         return self.observation_csv_path
@@ -38,4 +37,3 @@ class MeropsApiaster(Specie):
                 State.WIELKOPOLSKIE: 34,
                 State.ZACHODNIOPOMORSKIE: 35,
                 }
-

@@ -1,8 +1,8 @@
-from entities.species_base import Specie
+from entities.species_base import Species
 from entities.enums import State, Model
 
 
-class ButeoButeo(Specie):
+class ButeoButeo(Species):
 
     def __init__(self):
         super().__init__()
@@ -11,8 +11,7 @@ class ButeoButeo(Specie):
         self.description = "Buteo buteo sample description"
         self.habitat = "Buteo buteo sample habititat"
         self.observation_csv_path = "static/data/buteo_buteo.csv" # path is relative from app.py
-        self.load_observation_data_from_csv()
-
+        self.load_observation_data()
 
     def get_csv_filepath(self):
         return self.observation_csv_path

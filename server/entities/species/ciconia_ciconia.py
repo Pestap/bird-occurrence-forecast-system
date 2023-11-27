@@ -1,8 +1,8 @@
-from entities.species_base import Specie
+from entities.species_base import Species
 from entities.enums import State, Model
 
 
-class CiconiaCiconia(Specie):
+class CiconiaCiconia(Species):
 
     def __init__(self):
         super().__init__()
@@ -11,8 +11,7 @@ class CiconiaCiconia(Specie):
         self.description = "White stork sample description"
         self.habitat = "White stork sample habititat"
         self.observation_csv_path = "static/data/ciconia_ciconia.csv"  # path is relative from app.py
-        self.load_observation_data_from_csv()
-
+        self.load_observation_data()
 
     def get_csv_filepath(self):
         return self.observation_csv_path
