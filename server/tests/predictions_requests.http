@@ -1,0 +1,26 @@
+### Ardea alba
+GET http://localhost:5000/api/birds/ardea_alba/models/autoregression/predict?from=2022-01&to=2022-12
+### Circus aeruginosus
+GET http://localhost:5000/api/birds/circus_aeruginosus/models/autoregression/predict?from=2022-01&to=2022-12
+### Ciconia ciconia
+GET http://localhost:5000/api/birds/ciconia_ciconia/models/autoregression/predict?from=2022-01&to=2022-12
+### Clanga clanga
+GET http://localhost:5000/api/birds/clanga_clanga/models/autoregression/predict?from=2022-01&to=2022-12
+### Motacilla alba
+GET http://localhost:5000/api/birds/motacilla_alba/models/autoregression/predict?from=2022-01&to=2022-12
+### Motacilla citreola
+GET http://localhost:5000/api/birds/motacilla_citreola/models/autoregression/predict?from=2022-01&to=2022-12
+### Merops apiaster
+GET http://localhost:5000/api/birds/merops_apiaster/models/autoregression/predict?from=2022-01&to=2022-12
+### Buteo buteo
+GET http://localhost:5000/api/birds/buteo_buteo/models/autoregression/predict?from=2022-01&to=2022-12
+### Nucifraga caryocatactes
+GET http://localhost:5000/api/birds/nucifraga_caryocatactes/models/autoregression/predict?from=2022-01&to=2022-12
+### Grus grus
+GET http://localhost:5000/api/birds/grus_grus/models/autoregression/predict?from=2022-01&to=2022-12
+### Calidris pugnax
+GET http://localhost:5000/api/birds/calidris_pugnax/models/autoregression/predict?from=2022-01&to=2022-12
+### Calidris alpina
+GET http://localhost:5000/api/birds/calidris_alpina/models/autoregression/predict?from=2022-01&to=2022-12
+### Phalacrocorax carbo
+GET http://localhost:5000/api/birds/phalacrocorax_carbo/models/autoregression/predict?from=2022-01&to=2022-12

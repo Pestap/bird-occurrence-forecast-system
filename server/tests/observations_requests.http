@@ -1,0 +1,26 @@
+### Ardea alba
+GET http://localhost:5000/api/birds/ardea_alba/observations?from=2022-01-01&to=2022-12-01
+### Circus aeruginosus
+GET http://localhost:5000/api/birds/circus_aeruginosus/observations?from=2022-01-01&to=2022-12-01
+### Ciconia ciconia
+GET http://localhost:5000/api/birds/ciconia_ciconia/observations?from=2022-01-01&to=2022-12-01
+### Clanga clanga
+GET http://localhost:5000/api/birds/clanga_clanga/observations?from=2022-01-01&to=2022-12-01
+### Motacilla alba
+GET http://localhost:5000/api/birds/motacilla_alba/observations?from=2022-01-01&to=2022-12-01
+### Motacilla citreola
+GET http://localhost:5000/api/birds/motacilla_citreola/observations?from=2022-01-01&to=2022-12-01
+### Merops apiaster
+GET http://localhost:5000/api/birds/merops_apiaster/observations?from=2022-01-01&to=2022-12-01
+### Buteo buteo
+GET http://localhost:5000/api/birds/buteo_buteo/observations?from=2022-01-01&to=2022-12-01
+### Nucifraga caryocatactes
+GET http://localhost:5000/api/birds/nucifraga_caryocatactes/observations?from=2022-01-01&to=2022-12-01
+### Grus grus
+GET http://localhost:5000/api/birds/grus_grus/observations?from=2022-01-01&to=2022-12-01
+### Calidris pugnax
+GET http://localhost:5000/api/birds/calidris_pugnax/observations?from=2022-01-01&to=2022-12-01
+### Calidris alpina
+GET http://localhost:5000/api/birds/calidris_alpina/observations?from=2022-01-01&to=2022-12-01
+### Phalacrocorax carbo
+GET http://localhost:5000/api/birds/phalacrocorax_carbo/observations?from=2022-01-01&to=2022-12-01
