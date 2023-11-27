@@ -1,5 +1,7 @@
 import pandas as pd
 pd.options.mode.chained_assignment = None
+from repositories.mongodbrepository import repository
+
 
 def load_from_file(filepath: str):
     """
@@ -17,7 +19,6 @@ def load_from_file(filepath: str):
     for col_name, type_name in type_dict.items():
         if col_name == 'OBSERVATION DATE':
             df[col_name] = pd.to_datetime(df[col_name], format="%d.%m.%Y")
-            #df[col_name] = df[col_name].astype(type_name)
         else:
             df[col_name] = df[col_name].astype(type_name)
 
@@ -33,7 +34,7 @@ def handle_same_place_same_time(df):
 
     for i in range(len(df)): # TODO: for now never goes inside as -100 are replaced earlier
         if df.loc[i, 'OBSERVATION COUNT'] == -100:
-            df.loc[i, 'OBSERVATION COUNT'] = average(df, df.loc[i, 'MONTH'], df.loc[i, 'YEAR'])
+            df.loc[i, 'OBSERVATION COUNT'] = 1 #average(df, df.loc[i, 'MONTH'], df.loc[i, 'YEAR'])
 
     df = df[['OBSERVATION COUNT', 'MONTH', 'YEAR', 'STATE']]
     df = df.groupby(['STATE', 'YEAR', 'MONTH'])['OBSERVATION COUNT'].mean().reset_index()
@@ -43,16 +44,15 @@ def handle_same_place_same_time(df):
 def get_columns_from_dataframe(df, column_list):
     return df[column_list]
 
+
 def average(df, month, year):
     sum_year = 0
     count_year = 0
-
     sum_month = 0
     count_month = 0
 
     for i in range(len(df)):
-        if df.loc[i, 'YEAR'] == year and df.loc[i, 'OBSERVATION_COUNT'] != -100:
-
+        if df.loc[i, 'YEAR'] == year and df.loc[i, 'OBSERVATION COUNT'] != -100:
             sum_year += df.loc[i, 'OBSERVATION COUNT']
             count_year += 1
 
@@ -100,10 +100,8 @@ def divide_by_state(df):
                     if j not in year_months_dict[i]:
                         row = pd.DataFrame({'STATE': [group.loc[0, 'STATE']], 'YEAR': [i], 'MONTH': [j], 'OBSERVATION COUNT': [0.0]})
                         group = pd.concat([group, row], ignore_index=True)
-                        #group.loc[len(group)] = {'STATE': group.loc[0, 'STATE'], 'YEAR': i, 'MONTH': j, 'OBSERVATION COUNT': 0}
             else:
                 for j in range(1,13):
-                    #group = group.append({'STATE': group.loc[0, 'STATE'], 'YEAR': i, 'MONTH': j, 'OBSERVATION COUNT': 0}, ignore_index=True)
                     row = pd.DataFrame(
                         {'STATE': [group.loc[0, 'STATE']], 'YEAR': [i], 'MONTH': [j], 'OBSERVATION COUNT': [0.0]})
                     group = pd.concat([group, row], ignore_index=True)
@@ -116,10 +114,11 @@ def divide_by_state(df):
     return groups_with_zeroes
 
 
-def get_observations(filename):
+def get_observations(species_name):
 
-    observations = load_from_file(filename)
+    #observations = load_from_file(filename) # for loading from file
 
+    observations = repository.get_observations_for_species(species_name) # loading from mongodb
 
     # group data
     df = handle_same_place_same_time(observations)
@@ -130,8 +129,7 @@ def get_observations(filename):
         group_tuples.append((group.loc[0, 'STATE'], group))
 
     # handle observations
-    observations = get_columns_from_dataframe(observations, ["OBSERVATION COUNT", "OBSERVATION DATE", "LATITUDE", "LONGITUDE"])
-
+    observations = get_columns_from_dataframe(observations,
+                                              ["OBSERVATION COUNT", "OBSERVATION DATE", "LATITUDE", "LONGITUDE"])
 
     return group_tuples, observations
-

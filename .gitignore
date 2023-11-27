@@ -2,6 +2,7 @@ data/ebd_PL_relJan-2023
 data
 venv
 .idea
+__pycache__
 
 ## Data_extraction
 data_extraction/.idea

@@ -1,18 +1,17 @@
-from entities.species_base import Specie
+from entities.species_base import Species
 from entities.enums import State, Model
 
 
-class GrusGrus(Specie):
+class GrusGrus(Species):
 
     def __init__(self):
         super().__init__()
         self.common_name = "Common crane"
-        self.scientific_name = "Grus Grus"
+        self.scientific_name = "Grus grus"
         self.description = "Grus Grus sample description"
         self.habitat = "Grus Grus sample habititat"
         self.observation_csv_path = "static/data/grus_grus.csv" # path is relative from app.py
-        self.load_observation_data_from_csv()
-
+        self.load_observation_data()
 
     def get_csv_filepath(self):
         return self.observation_csv_path
@@ -38,4 +37,3 @@ class GrusGrus(Specie):
                 State.WIELKOPOLSKIE: 34,
                 State.ZACHODNIOPOMORSKIE: 35,
                 }
-

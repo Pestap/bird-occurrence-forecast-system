@@ -1,19 +1,15 @@
 from datetime import datetime
 from statsmodels.tsa.ar_model import AutoReg
 from abc import abstractmethod
-
 from dateutil import rrule, relativedelta
 from statsmodels.tsa.statespace.sarimax import SARIMAX
-
 from repositories.data_extraction_from_file import get_observations
 from entities import enums
-
 from constants import LAST_OBSERVATION_DATE_STRING
 from entities.prediction_models.models import AutoregressionModel, ArmaModel, ArimaModel, SarimaModel
 
-from repositories.mongodbrepository import repository
 
-class Specie:
+class Species:
 
     def __init__(self):
         self.observation_data_grouped = None
@@ -22,10 +18,6 @@ class Specie:
         self.default_arma_model = ArmaModel()
         self.default_arima_model = ArimaModel()
         self.default_sarima_model = SarimaModel()
-
-#        print(repository.get_information_for_species("Ardea alba"))
-
-
 
     def get_autoregression_models(self):
         return None
@@ -54,9 +46,9 @@ class Specie:
     def get_csv_filepath(self):
         pass
 
-    def load_observation_data_from_csv(self):
+    def load_observation_data(self):
         self.observation_data_grouped = {}
-        observation_data_grouped_not_translated, observations = get_observations(self.get_csv_filepath())
+        observation_data_grouped_not_translated, observations = get_observations(self.scientific_name)
 
         # Translate states and represent them as dictionary
         for state in observation_data_grouped_not_translated:
@@ -69,43 +61,40 @@ class Specie:
         df = self.observations_df
         filtered_observations = df.loc[(df['OBSERVATION DATE'] >= date_from) & (df['OBSERVATION DATE'] <= date_to)]
         filtered_observations.sort_values(by='OBSERVATION DATE', ascending=True, inplace=True)
-        dictionaries_list = filtered_observations.to_dict('records')
+        observations_dictionaries_list = filtered_observations.to_dict('records')
 
-        # change keys
-        for obsevation_fact in dictionaries_list:
-            obsevation_fact['observation count'] = obsevation_fact['OBSERVATION COUNT']
-            del obsevation_fact['OBSERVATION COUNT']
-            obsevation_fact['observation date'] = obsevation_fact['OBSERVATION DATE']
-            del obsevation_fact['OBSERVATION DATE']
-            obsevation_fact['latitude'] = obsevation_fact['LATITUDE']
-            del obsevation_fact['LATITUDE']
-            obsevation_fact['longitude'] = obsevation_fact['LONGITUDE']
-            del obsevation_fact['LONGITUDE']
+        # change keys to lower case
+        converted_observations_dictionaries_list = []
+        for observation_fact in observations_dictionaries_list:
+            new_observation_fact = {key.lower(): value for key,value in observation_fact.items()}
+            converted_observations_dictionaries_list.append(new_observation_fact)
 
-        return dictionaries_list
+        return converted_observations_dictionaries_list
 
     def predict_autoregression(self, state, months, model_params=None):
         steps = model_params['autoregression_order']
         if steps is None:
             try:
+                # TODO: evaluate if really needed
                 steps = self.default_autoregression_model.params['autoregression_order']['default']
+                steps = self.get_autoregression_models()[state]
             except AttributeError:
                 return None
 
         model = AutoReg(self.observation_data_grouped[state]['OBSERVATION COUNT'], lags=steps, seasonal=True, period=12).fit()
+        # TODO: maybe add second autoregression without the seasonality ?
         result = list(model.forecast(steps=months))
         result_non_negative = [val if val >= 0 else 0 for val in result]
 
         return result_non_negative
 
     def predict_arma(self, state, months, model_params=None):
-        #steps = self.get_autoregression_models()[state]
         ar_steps = model_params['autoregression_order']
         ma_steps = model_params['moving_average_order']
 
         if ar_steps is None:
             try:
-                ar_steps = self.default_arma_model.params['autoregression_order']['default']
+                ar_steps = self.default_arma_model.params['autoregression_order']['default'] # TODO: relating to previous todo
             except AttributeError:
                 return None
 
@@ -117,8 +106,6 @@ class Specie:
 
         model = SARIMAX(self.observation_data_grouped[state]['OBSERVATION COUNT'], order=(ar_steps, 0, ma_steps), alpha=0.95)
         results = model.fit()
-        #results = list(model.predict(start=len(self.observation_data_grouped[state]['OBSERVATION COUNT']), end=len(self.observation_data_grouped[state]['OBSERVATION COUNT'])) + months)
-
         predictions = list(results.forecast(steps=months))
         predictions_non_negative = [val if val >= 0 else 0 for val in predictions]
 
@@ -154,7 +141,7 @@ class Specie:
 
         return predictions_non_negative
 
-    def predict_sarima(self, state, months, model_params):
+    def predict_sarima(self, state, months, model_params): # Not really used - taking to long
         ar_steps = model_params['autoregression_order']
         ma_steps = model_params['moving_average_order']
         i_steps = model_params['differencing_order']

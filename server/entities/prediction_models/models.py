@@ -1,5 +1,8 @@
 import entities.enums
 from entities.enums import Model as ModelType
+"""
+Module for handling models with default parameters
+"""
 
 
 def get_model_params(model_name):

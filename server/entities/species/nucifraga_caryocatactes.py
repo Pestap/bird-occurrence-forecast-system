@@ -1,8 +1,8 @@
-from entities.species_base import Specie
+from entities.species_base import Species
 from entities.enums import State, Model
 
 
-class NucifragaCaryocatactes(Specie):
+class NucifragaCaryocatactes(Species):
 
     def __init__(self):
         super().__init__()
@@ -11,7 +11,7 @@ class NucifragaCaryocatactes(Specie):
         self.description = "Nucifraga caryocatactes sample description"
         self.habitat = "Nucifraga caryocatactes sample habititat"
         self.observation_csv_path = "static/data/nucifraga_caryocatactes.csv" # path is relative from app.py
-        self.load_observation_data_from_csv()
+        self.load_observation_data()
 
     def get_csv_filepath(self):
         return self.observation_csv_path
@@ -37,4 +37,3 @@ class NucifragaCaryocatactes(Specie):
                 State.WIELKOPOLSKIE: 34,
                 State.ZACHODNIOPOMORSKIE: 35,
                 }
-

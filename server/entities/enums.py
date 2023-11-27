@@ -1,79 +1,6 @@
 from enum import Enum
 
 
-def translate_state_to_enum(state_name):
-    if state_name == 'województwo dolnośląskie':
-        return State.DOLNOSLASKIE
-    elif state_name == 'województwo kujawsko-pomorskie':
-        return State.KUJAWSKO_POMORSKIE
-    elif state_name == 'województwo lubelskie':
-        return State.LUBELSKIE
-    elif state_name == 'województwo lubuskie':
-        return State.LUBUSKIE
-    elif state_name == 'województwo łódzkie':
-        return State.LODZKIE
-    elif state_name == 'województwo małopolskie':
-        return State.MALOPOLSKIE
-    elif state_name == 'województwo mazowieckie':
-        return State.MAZOWIECKIE
-    elif state_name == 'województwo opolskie':
-        return State.OPOLSKIE
-    elif state_name == 'województwo podkarpackie':
-        return State.PODKARPACKIE
-    elif state_name == 'województwo podlaskie':
-        return State.PODLASKIE
-    elif state_name == 'województwo pomorskie':
-        return State.POMORSKIE
-    elif state_name == 'województwo śląskie':
-        return State.SLASKIE
-    elif state_name == 'województwo świętokrzyskie':
-        return State.SWIETOKRZYSKIE
-    elif state_name == 'województwo warmińsko-mazurskie':
-        return State.WARMINSKO_MAZURSKIE
-    elif state_name == 'województwo wielkopolskie':
-        return State.WIELKOPOLSKIE
-    elif state_name == 'województwo zachodniopomorskie':
-        return State.ZACHODNIOPOMORSKIE
-    else:
-        return None
-
-# TODO: refactor
-def translate_enum_to_state(state):
-    if state == State.DOLNOSLASKIE.name:
-        return 'dolnośląskie'
-    elif state == State.KUJAWSKO_POMORSKIE.name:
-        return 'kujawsko-pomorskie'
-    elif state == State.LUBELSKIE.name:
-        return 'lubelskie'
-    elif state == State.LUBUSKIE.name:
-        return 'lubuskie'
-    elif state == State.LODZKIE.name:
-        return 'łódzkie'
-    elif state == State.MALOPOLSKIE.name:
-        return 'małopolskie'
-    elif state == State.MAZOWIECKIE.name:
-        return 'mazowieckie'
-    elif state == State.OPOLSKIE.name:
-        return 'opolskie'
-    elif state == State.PODKARPACKIE.name:
-        return 'podkarpackie'
-    elif state == State.PODLASKIE.name:
-        return 'podlaskie'
-    elif state == State.POMORSKIE.name:
-        return 'pomorskie'
-    elif state == State.SLASKIE.name:
-        return 'śląskie'
-    elif state == State.SWIETOKRZYSKIE.name:
-        return 'świętokrzyskie'
-    elif state == State.WARMINSKO_MAZURSKIE.name:
-        return 'warmińsko-mazurskie'
-    elif state == State.WIELKOPOLSKIE.name:
-        return 'wielkopolskie'
-    elif state == State.ZACHODNIOPOMORSKIE.name:
-        return 'zachodniopomorskie'
-    else:
-        return None
-
 
 class State(Enum):
     DOLNOSLASKIE = 1
@@ -100,3 +27,36 @@ class Model(Enum):
     ARIMA = 3
     SARIMA = 4
     NEURAL_NETWORK = 5
+
+
+state_translation_dictionary = {
+    State.DOLNOSLASKIE: 'województwo dolnośląskie',
+    State.KUJAWSKO_POMORSKIE: 'województwo kujawsko-pomorskie',
+    State.LUBELSKIE: 'województwo lubelskie',
+    State.LUBUSKIE: 'województwo lubuskie',
+    State.LODZKIE: 'województwo łódzkie',
+    State.MALOPOLSKIE: 'województwo małopolskie',
+    State.MAZOWIECKIE: 'województwo mazowieckie',
+    State.OPOLSKIE: 'województwo opolskie',
+    State.PODKARPACKIE: 'województwo podkarpackie',
+    State.PODLASKIE: 'województwo podlaskie',
+    State.POMORSKIE: 'województwo pomorskie',
+    State.SLASKIE: 'województwo śląskie',
+    State.SWIETOKRZYSKIE: 'województwo świętokrzyskie',
+    State.WARMINSKO_MAZURSKIE: 'województwo warmińsko-mazurskie',
+    State.WIELKOPOLSKIE: 'województwo wielkopolskie',
+    State.ZACHODNIOPOMORSKIE: 'województwo zachodniopomorskie'
+}
+
+
+def translate_state_to_enum(state_name):
+    position = list(state_translation_dictionary.values()).index(state_name)
+    return list(state_translation_dictionary.keys())[position]
+
+
+def translate_enum_to_state(state_enum_name):
+    try:
+        state_name = state_translation_dictionary[State[state_enum_name.upper()]]
+        return state_name.split(" ")[-1]
+    except KeyError:
+        return ""

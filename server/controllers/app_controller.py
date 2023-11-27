@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask import Flask, request, jsonify, Response
+from flask import request, jsonify, Response
 import constants
 from cache.cache_module import cache
 from entities.enums import translate_enum_to_state
@@ -8,15 +8,19 @@ from entities.prediction_models.models import get_model_params
 from constants import LAST_OBSERVATION_DATE_STRING, EDGE_DATE_DEFAULT
 
 
+@cache.cached(timeout=constants.CACHE_TIMEOUT, query_string=True)
 def get_species():
     """
     Handle fetching all species
     """
     response = app_service.get_species()
+
+    # create response in JSON format
     response_prepared = {"species": response}
     return jsonify(response_prepared)
 
 
+@cache.cached(timeout=constants.CACHE_TIMEOUT, query_string=True)
 def get_species_info(species_name):
     """
     Handle fetching specified species information
@@ -29,6 +33,7 @@ def get_species_info(species_name):
     return Response("Invalid species name", status=400)
 
 
+@cache.cached(timeout=constants.CACHE_TIMEOUT, query_string=True)
 def get_species_available_models(species_name):
     """
     Handle fetching available models
@@ -39,11 +44,12 @@ def get_species_available_models(species_name):
     response_prepared = {"supported_models": response}
 
     if response is not None:
-        return jsonify(response_prepared) # throws 500 for now
+        return jsonify(response_prepared)
 
     return Response("Invalid species name", status=400)
 
 
+@cache.cached(timeout=constants.CACHE_TIMEOUT, query_string=True)
 def get_species_model_information(species_name, model):
     """
     Handle fetching specified model information for species
@@ -64,25 +70,29 @@ def get_species_model_information(species_name, model):
 
 @cache.cached(timeout=constants.CACHE_TIMEOUT, query_string=True)
 def get_observations(species_name):
-    try:
+    """
+    Handle fetching observations
+    """
+    try: # Try to parse dates
         date_from = datetime.strptime(request.args.get("from"), '%Y-%m-%d')
         date_to = datetime.strptime(request.args.get("to"), '%Y-%m-%d')
     except ValueError:
         return Response("Invalid date format", status=400)
 
     response = app_service.get_observations(species_name, date_from, date_to)
-
     response_prepared = {"observations": response}
 
     if response is not None:
-        return jsonify(response_prepared)  # throws 500 for now
+        return jsonify(response_prepared)
 
     return Response("Invalid species name", status=400)
 
 
 @cache.cached(timeout=constants.CACHE_TIMEOUT, query_string=True)
 def predict_species_with_model(species_name, model):
-
+    """
+    Handle predictions
+    """
     try:
         date_from_datetime = datetime.strptime(request.args.get("from"), '%Y-%m')
         date_to_datetime = datetime.strptime(request.args.get("to"), '%Y-%m')
@@ -91,32 +101,30 @@ def predict_species_with_model(species_name, model):
         if date_from_datetime > date_to_datetime:
             return Response("Invalid data range, (from after to)", status=400)
 
-        # Get edge date (for now no validation)
     except ValueError:
         return Response("Invalid date format: should be %Y-%m-%d", status=400)
     except TypeError:
         return Response("Missing query parameters: from, to", status=400)
 
-    # check edge date
+    # get edge date
     edge_date_from_query = request.args.get("edge")
 
-    if edge_date_from_query is None:
+    if edge_date_from_query is None: # if none set to default
         edge_date_from_query = EDGE_DATE_DEFAULT
 
-    try:
-        edge_date = datetime.strptime(edge_date_from_query, '%Y-%m-%d')
+    try: # try to parse
+        edge_date = datetime.strptime(edge_date_from_query, '%Y-%m')
     except ValueError:
-        edge_date = datetime.strptime(EDGE_DATE_DEFAULT, '%Y-%m-%d')
+        edge_date = datetime.strptime(EDGE_DATE_DEFAULT, '%Y-%m')
 
+    # check if edge date is valid
     if edge_date > datetime.strptime(LAST_OBSERVATION_DATE_STRING, '%Y-%m-%d'):
         return Response("Parameter (edge) cannot exceed 2023-1-1 and cannot be before date_from", status=400)
 
     # Get model params from body and validate them
-    model_params = {}
-
-    model_params['autoregression_order'] = request.args.get("autoregression_order")
-    model_params['moving_average_order'] = request.args.get("moving_average_order")
-    model_params['differencing_order'] = request.args.get("differencing_order")
+    model_params = {'autoregression_order': request.args.get("autoregression_order"),
+                    'moving_average_order': request.args.get("moving_average_order"),
+                    'differencing_order': request.args.get("differencing_order")}
 
     validate_model_params(model_params)
 
@@ -126,13 +134,13 @@ def predict_species_with_model(species_name, model):
         return Response("Something went wrong while caluculating predictions,"
                         " make sure the model parameters are correct", status=400)
 
-
     predictions = response[0]
     tests = response[1]
-    prediction_errors = response[2]
+    mae_errors = response[2]
+    mape_errors = response[3]
+    rmse_errors = response[4]
 
     # Translate dates
-    #{state: round(observation_value, 2)
     predictions_translated = {f"{date.year}-{date.month:0>{2}}": value for date, value in predictions.items()}
     tests_translated = {f"{date.year}-{date.month:0>{2}}": value for date, value in tests.items()}
 
@@ -149,10 +157,15 @@ def predict_species_with_model(species_name, model):
             if observation_value is not None:
                 tests_translated[date][state] = round(observation_value, 2)
 
-    for state, data in prediction_errors.items():
-        prediction_errors[state] = round(data, 2)
+    for state, data in mae_errors.items():
+        mae_errors[state] = round(data, 2)
 
-    # TODO: refactor
+    for state, data in mape_errors.items():
+        mape_errors[state] = round(data, 2)
+
+    for state, data in rmse_errors.items():
+        rmse_errors[state] = round(data, 2)
+
     predictions_v2 = {date: {} for date in predictions_translated.keys()}
 
     for date, empty_dict in predictions_v2.items():
@@ -165,15 +178,18 @@ def predict_species_with_model(species_name, model):
         for state, value in tests_translated[date].items():
             empty_dict[translate_enum_to_state(state)] = value
 
-    prediction_errors_v2 = {translate_enum_to_state(state): value for state, value in prediction_errors.items()}
-
+    mae_errors_v2 = {translate_enum_to_state(state): value for state, value in mae_errors.items()}
+    mape_errors_v2 = {translate_enum_to_state(state): value for state, value in mape_errors.items()}
+    rmse_errors_v2 = {translate_enum_to_state(state): value for state, value in rmse_errors.items()}
 
     response_object = {
         "predictions" : predictions_v2,
         "tests": tests_v2,
-        "mae_errors": prediction_errors_v2
-
+        "mae_errors": mae_errors_v2,
+        "mape_errors": mape_errors_v2,
+        "rmse_errors": rmse_errors_v2
     }
+
     return jsonify(response_object)
 
 
