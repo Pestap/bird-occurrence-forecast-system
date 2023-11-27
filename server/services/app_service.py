@@ -111,7 +111,8 @@ def calculate_mape(observations_by_state, predictions_by_state):
             else:
                 state_errors.append(abs(observed-predicted)/observed)
 
-        errors_by_state[state] = sum(state_errors) / len(state_errors)
+        errors_by_state[state] = sum(state_errors) / len(state_errors) if len(state_errors) > 0 else None
+
 
     return errors_by_state
 
