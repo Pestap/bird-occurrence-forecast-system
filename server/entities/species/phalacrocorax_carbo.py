@@ -1,23 +1,22 @@
-from entities.specie import Specie
+from entities.species_base import Species
 from entities.enums import State, Model
 
 
-class PhalacrocoraxCarbo(Specie):
+class PhalacrocoraxCarbo(Species):
     def __init__(self):
+        super().__init__()
         self.common_name = "Great cormorant"
         self.scientific_name = "Phalacrocorax carbo"
         self.description = "Phalacrocorax carbo sample description"
         self.habitat = "Phalacrocorax carbo sample habititat"
         self.observation_csv_path = "static/data/phalacrocorax_carbo.csv" # path is relative from app.py
-        self.load_observation_data_from_csv()
-
+        self.load_observation_data()
 
     def get_csv_filepath(self):
         return self.observation_csv_path
 
-    def get_available_models(self):
-        return [Model.AUTOREGRESSION.name.lower(),
-                Model.ARMA.name.lower()]
+    def get_available_models_for_species(self):
+        return []
 
     def get_autoregression_models(self):
         return {State.DOLNOSLASKIE: 34,
@@ -37,4 +36,3 @@ class PhalacrocoraxCarbo(Specie):
                 State.WIELKOPOLSKIE: 34,
                 State.ZACHODNIOPOMORSKIE: 35,
                 }
-

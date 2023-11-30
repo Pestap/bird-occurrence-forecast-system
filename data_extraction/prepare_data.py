@@ -85,6 +85,7 @@ def translate_dates(df):
     df['OBSERVATION DATE'] = df['OBSERVATION DATE'].dt.strftime('%d.%m.%Y')
     return df
 
+
 # for the whole process for data preperation
 def prepare_data(df, type_dict={'SCIENTIFIC NAME': str, 'OBSERVATION COUNT': int, 'LATITUDE': float, 'LONGITUDE': float,
              'OBSERVATION DATE': 'datetime64[s]'}):

@@ -1,24 +1,23 @@
-from entities.specie import Specie
+from entities.species_base import Species
 from entities.enums import State, Model
 
 
-class CircusAeruginosus(Specie):
+class CircusAeruginosus(Species):
 
     def __init__(self):
+        super().__init__()
         self.common_name = "Western marsh harrier"
-        self.scientific_name = "Circus Aeruginosus"
+        self.scientific_name = "Circus aeruginosus"
         self.description = "Western marsh harrier sample description"
         self.habitat = "Western marsh harrier sample habitat"
         self.observation_csv_path = "static/data/circus_aeruginosus.csv" # path is relative from app.py
-        self.load_observation_data_from_csv()
-
+        self.load_observation_data()
 
     def get_csv_filepath(self):
         return self.observation_csv_path
 
-    def get_available_models(self):
-        return [Model.AUTOREGRESSION.name.lower(),
-                Model.ARMA.name.lower()]
+    def get_available_models_for_species(self):
+        return []
 
     def get_autoregression_models(self):
         return {State.DOLNOSLASKIE: 34,

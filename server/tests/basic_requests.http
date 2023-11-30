@@ -1,0 +1,159 @@
+### GET available species
+GET http://localhost:5000/api/birds
+
+### Ardea alba
+### Get info
+GET http://localhost:5000/api/birds/ardea_alba
+### Get models
+GET http://127.0.0.1:5000/api/birds/ardea_alba/models
+### Get autoreg
+GET http://127.0.0.1:5000/api/birds/ardea_alba/models/autoregression
+### Get arma
+GET http://127.0.0.1:5000/api/birds/ardea_alba/models/arma
+### Get autoreg
+GET http://127.0.0.1:5000/api/birds/ardea_alba/models/arima
+
+### Circus aeruginosus
+### Get info
+GET http://localhost:5000/api/birds/circus_aeruginosus
+### Get models
+GET http://127.0.0.1:5000/api/birds/circus_aeruginosus/models
+### Get autoreg
+GET http://127.0.0.1:5000/api/birds/circus_aeruginosus/models/autoregression
+### Get arma
+GET http://127.0.0.1:5000/api/birds/circus_aeruginosus/models/arma
+### Get autoreg
+GET http://127.0.0.1:5000/api/birds/circus_aeruginosus/models/arima
+
+### Ciconia ciconia
+### Get info
+GET http://localhost:5000/api/birds/ciconia_ciconia
+### Get models
+GET http://127.0.0.1:5000/api/birds/ciconia_ciconia/models
+### Get autoreg
+GET http://127.0.0.1:5000/api/birds/ciconia_ciconia/models/autoregression
+### Get arma
+GET http://127.0.0.1:5000/api/birds/ciconia_ciconia/models/arma
+### Get autoreg
+GET http://127.0.0.1:5000/api/birds/ciconia_ciconia/models/arima
+
+### Clanga clanga
+### Get info
+GET http://localhost:5000/api/birds/clanga_clanga
+### Get models
+GET http://127.0.0.1:5000/api/birds/clanga_clanga/models
+### Get autoreg
+GET http://127.0.0.1:5000/api/birds/clanga_clanga/models/autoregression
+### Get arma
+GET http://127.0.0.1:5000/api/birds/clanga_clanga/models/arma
+### Get autoreg
+GET http://127.0.0.1:5000/api/birds/clanga_clanga/models/arima
+
+
+### Motacilla alba
+### Get info
+GET http://localhost:5000/api/birds/motacilla_alba
+### Get models
+GET http://127.0.0.1:5000/api/birds/motacilla_alba/models
+### Get autoreg
+GET http://127.0.0.1:5000/api/birds/motacilla_alba/models/autoregression
+### Get arma
+GET http://127.0.0.1:5000/api/birds/motacilla_alba/models/arma
+### Get autoreg
+GET http://127.0.0.1:5000/api/birds/motacilla_alba/models/arima
+
+### Motacilla citreola
+### Get info
+GET http://localhost:5000/api/birds/motacilla_citreola
+### Get models
+GET http://127.0.0.1:5000/api/birds/motacilla_citreola/models
+### Get autoreg
+GET http://127.0.0.1:5000/api/birds/motacilla_citreola/models/autoregression
+### Get arma
+GET http://127.0.0.1:5000/api/birds/motacilla_citreola/models/arma
+### Get autoreg
+GET http://127.0.0.1:5000/api/birds/motacilla_citreola/models/arima
+
+### Merops apiaster
+### Get info
+GET http://localhost:5000/api/birds/merops_apiaster
+### Get models
+GET http://127.0.0.1:5000/api/birds/merops_apiaster/models
+### Get autoreg
+GET http://127.0.0.1:5000/api/birds/merops_apiaster/models/autoregression
+### Get arma
+GET http://127.0.0.1:5000/api/birds/merops_apiaster/models/arma
+### Get autoreg
+GET http://127.0.0.1:5000/api/birds/merops_apiaster/models/arima
+
+### Buteo buteo
+### Get info
+GET http://localhost:5000/api/birds/buteo_buteo
+### Get models
+GET http://127.0.0.1:5000/api/birds/buteo_buteo/models
+### Get autoreg
+GET http://127.0.0.1:5000/api/birds/buteo_buteo/models/autoregression
+### Get arma
+GET http://127.0.0.1:5000/api/birds/buteo_buteo/models/arma
+### Get autoreg
+GET http://127.0.0.1:5000/api/birds/buteo_buteo/models/arima
+
+### Nucifraga caryocatactes
+### Get info
+GET http://localhost:5000/api/birds/nucifraga_caryocatactes
+### Get models
+GET http://127.0.0.1:5000/api/birds/nucifraga_caryocatactes/models
+### Get autoreg
+GET http://127.0.0.1:5000/api/birds/nucifraga_caryocatactes/models/autoregression
+### Get arma
+GET http://127.0.0.1:5000/api/birds/nucifraga_caryocatactes/models/arma
+### Get autoreg
+GET http://127.0.0.1:5000/api/birds/nucifraga_caryocatactes/models/arima
+
+### Grus grus
+### Get info
+GET http://localhost:5000/api/birds/grus_grus
+### Get models
+GET http://127.0.0.1:5000/api/birds/grus_grus/models
+### Get autoreg
+GET http://127.0.0.1:5000/api/birds/grus_grus/models/autoregression
+### Get arma
+GET http://127.0.0.1:5000/api/birds/grus_grus/models/arma
+### Get autoreg
+GET http://127.0.0.1:5000/api/birds/grus_grus/models/arima
+
+### Calidris pugnax
+### Get info
+GET http://localhost:5000/api/birds/calidris_pugnax
+### Get models
+GET http://127.0.0.1:5000/api/birds/calidris_pugnax/models
+### Get autoreg
+GET http://127.0.0.1:5000/api/birds/calidris_pugnax/models/autoregression
+### Get arma
+GET http://127.0.0.1:5000/api/birds/calidris_pugnax/models/arma
+### Get autoreg
+GET http://127.0.0.1:5000/api/birds/calidris_pugnax/models/arima
+
+### Calidris alpina
+### Get info
+GET http://localhost:5000/api/birds/calidris_alpina
+### Get models
+GET http://127.0.0.1:5000/api/birds/calidris_alpina/models
+### Get autoreg
+GET http://127.0.0.1:5000/api/birds/calidris_alpina/models/autoregression
+### Get arma
+GET http://127.0.0.1:5000/api/birds/calidris_alpina/models/arma
+### Get autoreg
+GET http://127.0.0.1:5000/api/birds/calidris_alpina/models/arima
+
+### Phalacrocorax carbo
+### Get info
+GET http://localhost:5000/api/birds/phalacrocorax_carbo
+### Get models
+GET http://127.0.0.1:5000/api/birds/phalacrocorax_carbo/models
+### Get autoreg
+GET http://127.0.0.1:5000/api/birds/phalacrocorax_carbo/models/autoregression
+### Get arma
+GET http://127.0.0.1:5000/api/birds/phalacrocorax_carbo/models/arma
+### Get autoreg
+GET http://127.0.0.1:5000/api/birds/phalacrocorax_carbo/models/arima

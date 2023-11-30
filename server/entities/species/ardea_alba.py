@@ -1,25 +1,24 @@
-from entities.specie import Specie
+from entities.species_base import Species
 from entities.enums import State, Model
 
 
 
-class ArdeaAlba(Specie):
+class ArdeaAlba(Species):
 
     def __init__(self):
+        super().__init__()
         self.common_name = "Great egret"
         self.scientific_name = "Ardea alba"
         self.description = "Ardea Alba sample description"
         self.habitat = "Ardea Alba sample habititat"
         self.observation_csv_path = "static/data/ardea_alba.csv" # path is relative from app.py
-        self.load_observation_data_from_csv()
-
+        self.load_observation_data()
 
     def get_csv_filepath(self):
         return self.observation_csv_path
 
-    def get_available_models(self):
-        return [Model.AUTOREGRESSION.name.lower(),
-                Model.ARMA.name.lower()]
+    def get_available_models_for_species(self):
+        return []
 
     def get_autoregression_models(self):
         return {State.DOLNOSLASKIE: 34,

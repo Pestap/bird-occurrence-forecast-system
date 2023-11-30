@@ -1,3 +1,5 @@
+import math
+
 from entities.species.ardea_alba import ArdeaAlba
 from entities.species.buteo_buteo import ButeoButeo
 from entities.species.calidris_alpina import CalidrisAlpina
@@ -11,6 +13,8 @@ from entities.species.motacilla_alba import MotacillaAlba
 from entities.species.motacilla_citreola import MotacillaCitreola
 from entities.species.nucifraga_caryocatactes import NucifragaCaryocatactes
 from entities.species.phalacrocorax_carbo import PhalacrocoraxCarbo
+
+from sklearn.metrics import mean_absolute_error, mean_squared_error, mean_absolute_percentage_error
 
 # species dictionary
 species = {
@@ -35,32 +39,40 @@ def get_species():
     return list(species.keys())
 
 
-def get_specie_info(specie_name):
+def get_species_info(species_name):
     try:
-        return species[specie_name].get_info()
+        return species[species_name].get_info()
     except KeyError:
         return None
 
 
-def get_specie_models(specie_name):
+def get_species_models(species_name):
     try:
-        return species[specie_name].get_available_models()
+        return species[species_name].get_available_models()
     except KeyError:
         return None
 
 
-def predict_specie_with_model(specie_name, model, date_from, date_to, model_params, edge_date):
+def get_observations(species_name, date_from, date_to):
     try:
+        return species[species_name].get_observations(date_from, date_to)
+    except KeyError:
+        return None
+
+
+def predict_species_with_model(specie_name, model, date_from, date_to, model_params, edge_date):
+    try: # add try catch  - in case of None from predictions
         predicted, test = species[specie_name].make_predictions(model, date_from, date_to, model_params, edge_date)
-        prediction_error = calculate_mae_prediction(predicted, test)
-        #return species[specie_name].make_predictions(model, date_from, date_to, model_params, edge_date)
-        return predicted, test, prediction_error
-    except KeyError:
+        mae_errors = calculate_prediction_error(predicted, test, calculate_mae)
+        mape_errors = calculate_prediction_error(predicted, test, calculate_mape)
+        rmse_errors = calculate_prediction_error(predicted, test, calculate_rmse)
+        custom_errors = calculate_prediction_error(predicted, test, calculate_20p_error)
+        return predicted, test, mae_errors, mape_errors, rmse_errors, custom_errors
+    except (KeyError, TypeError) as ex:
         return None
 
 
-
-def calculate_mae_prediction(predicted, test):
+def calculate_prediction_error(predicted, test, error_function):
     predictions_to_test = {}
     for date, data in predicted.items():
         # if date is not in test
@@ -82,17 +94,83 @@ def calculate_mae_prediction(predicted, test):
                 observations_by_state[state] = {}
             observations_by_state[state][date] = observation_count
 
+    # calculate and return approperiate error
+    return error_function(observations_by_state, predictions_by_state)
+
+
+def calculate_mape(observations_by_state, predictions_by_state):
     errors_by_state = {}
 
     for state, data in observations_by_state.items():
         state_errors = []
         for date in data.keys():
-            state_errors.append(abs((observations_by_state[state][date] - predictions_by_state[state][date])))
+            predicted = predictions_by_state[state][date]
+            observed = observations_by_state[state][date]
 
-        errors_by_state[state] = sum(state_errors)/len(state_errors)
+            if observed == 0:
+                continue # we do not take records with zero into account TODO: maybe put 1?
+            else:
+                state_errors.append(abs(observed-predicted)/observed)
+
+        errors_by_state[state] = sum(state_errors) / len(state_errors) if len(state_errors) > 0 else None
+
 
     return errors_by_state
 
+
+def calculate_mae(observations_by_state, predictions_by_state):
+    errors_by_state = {}
+
+    for state, data in observations_by_state.items():
+        predicted = []
+        observed = []
+
+        for date in data.keys():
+            predicted.append(predictions_by_state[state][date])
+            observed.append(observations_by_state[state][date])
+
+        errors_by_state[state] = mean_absolute_error(observed, predicted)
+
+    return errors_by_state
+
+
+def calculate_rmse(observations_by_state, predictions_by_state):
+    errors_by_state = {}
+
+    for state, data in observations_by_state.items():
+        predicted = []
+        observed = []
+        for date in data.keys():
+            predicted.append(predictions_by_state[state][date])
+            observed.append(observations_by_state[state][date])
+
+        errors_by_state[state] = math.sqrt(mean_squared_error(observed, predicted))
+
+    return errors_by_state
+
+
+def calculate_20p_error(observations_by_state, predictions_by_state):
+    errors_by_state = {}
+
+    for state, data in observations_by_state.items():
+        state_errors = []
+        for date in data.keys():
+            predicted = predictions_by_state[state][date]
+            observed = observations_by_state[state][date]
+
+            margin = observed * 0.25
+            # margin cannot be less than one
+            if margin <= 1:
+                margin = 1
+
+            diff = abs(predicted-observed)
+            if diff <= margin:
+                state_errors.append(0)
+            else:
+                state_errors.append(1)
+        errors_by_state[state] = sum(state_errors)/len(state_errors)
+
+    return errors_by_state
 
 
 

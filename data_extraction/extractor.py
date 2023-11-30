@@ -1,5 +1,5 @@
 from load_data import load_data
-from prepare_data import prepare_data\
+from prepare_data import prepare_data
 
 
 # save extracted data to file
@@ -15,7 +15,7 @@ type_dict = {'SCIENTIFIC NAME': str, 'OBSERVATION COUNT': int, 'LATITUDE': float
 df = load_data(col_list, 'SCIENTIFIC NAME', 'Phalacrocorax carbo')#, filepath='../data/ebd_PL_relJan-2023/ebd_PL_relJan-2023.txt')
 df = prepare_data(df, type_dict)
 
-save_df_to_file(df,'../data/phalacrocorax_carbo.csv')
+save_df_to_file(df, '../data/phalacrocorax_carbo.csv')
 
 
 

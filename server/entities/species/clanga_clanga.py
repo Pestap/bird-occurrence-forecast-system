@@ -1,24 +1,23 @@
-from entities.specie import Specie
+from entities.species_base import Species
 from entities.enums import State, Model
 
 
-class ClangaClanga(Specie):
+class ClangaClanga(Species):
 
     def __init__(self):
+        super().__init__()
         self.common_name = "Greater spotted eagle"
         self.scientific_name = "Clanga clanga"
         self.description = "Clanga clanga sample description"
         self.habitat = "Clanga clanga sample habititat"
         self.observation_csv_path = "static/data/clanga_clanga.csv" # path is relative from app.py
-        self.load_observation_data_from_csv()
-
+        self.load_observation_data()
 
     def get_csv_filepath(self):
         return self.observation_csv_path
 
-    def get_available_models(self):
-        return [Model.AUTOREGRESSION.name.lower(),
-                Model.ARMA.name.lower()]
+    def get_available_models_for_species(self):
+        return []
 
     def get_autoregression_models(self):
         return {State.DOLNOSLASKIE: 34,
@@ -38,4 +37,3 @@ class ClangaClanga(Specie):
                 State.WIELKOPOLSKIE: 34,
                 State.ZACHODNIOPOMORSKIE: 35,
                 }
-
