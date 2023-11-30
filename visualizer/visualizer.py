@@ -52,13 +52,13 @@ if __name__ == '__main__':
     base_url = "http://127.0.0.1:5000"
 
     model = "autoregression"
-    specie = "merops_apiaster"
+    specie = "motacilla_alba"
     from_date = "2021-01"
-    to_date = "2022-12"
-    ar_order = 12
+    to_date = "2023-01"
+    ar_order = 24
     am_order = 12
 
-    resource = f"api/birds/{specie}/models/{model}/predict?from={from_date}&to={to_date}&autoregression_order={ar_order}&edge=2021-12"
+    resource = f"api/birds/{specie}/models/{model}/predict?from={from_date}&to={to_date}&autoregression_order={ar_order}"
     #resource2 = f"api/birds/{specie}/models/arima/predict?from={from_date}&to={to_date}&autoregression_order={ar_order}&moving_average_order={am_order}&differencing_order=2&edge={edge}"
     #resource3 = f"api/birds/{specie}/models/arma/predict?from={from_date}&to={to_date}&autoregression_order={ar_order}&moving_average_order={am_order}&edge={edge}"
     #resource2 = f"api/birds/{specie}/models/autoregression/predict?from={from_date}&to={to_date}&autoregression_order={ar_order // 2}&edge={edge}"
@@ -75,7 +75,7 @@ if __name__ == '__main__':
 
     #r2 = requests.get(url2, headers=headers)
 
-    state = "pomorskie"
+    state = "wielkopolskie"
     print(r.reason)
     print(r.content)
     print(r.json()['custom_errors'])
