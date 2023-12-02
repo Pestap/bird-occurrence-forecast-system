@@ -6,12 +6,13 @@ class ButeoButeo(Species):
 
     def __init__(self):
         super().__init__()
-        self.common_name = "Common buzzard"
         self.scientific_name = "Buteo buteo"
+        self.common_name = "Common buzzard"
         self.description = "Buteo buteo sample description"
         self.habitat = "Buteo buteo sample habititat"
         self.observation_csv_path = "static/data/buteo_buteo.csv" # path is relative from app.py
         self.load_observation_data()
+        self.load_species_info()
 
     def get_csv_filepath(self):
         return self.observation_csv_path

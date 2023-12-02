@@ -12,6 +12,7 @@ class MotacillaCitreola(Species):
         self.habitat = "Motacilla citreola sample habititat"
         self.observation_csv_path = "static/data/motacilla_citreola.csv" # path is relative from app.py
         self.load_observation_data()
+        self.load_species_info()
 
     def get_csv_filepath(self):
         return self.observation_csv_path

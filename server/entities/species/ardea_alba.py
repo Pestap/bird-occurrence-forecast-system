@@ -2,17 +2,17 @@ from entities.species_base import Species
 from entities.enums import State, Model
 
 
-
 class ArdeaAlba(Species):
 
     def __init__(self):
         super().__init__()
-        self.common_name = "Great egret"
         self.scientific_name = "Ardea alba"
+        self.common_name = "Great egret"
         self.description = "Ardea Alba sample description"
         self.habitat = "Ardea Alba sample habititat"
         self.observation_csv_path = "static/data/ardea_alba.csv" # path is relative from app.py
         self.load_observation_data()
+        self.load_species_info()
 
     def get_csv_filepath(self):
         return self.observation_csv_path

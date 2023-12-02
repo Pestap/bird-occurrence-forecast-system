@@ -3,10 +3,13 @@ from statsmodels.tsa.ar_model import AutoReg
 from abc import abstractmethod
 from dateutil import rrule, relativedelta
 from statsmodels.tsa.statespace.sarimax import SARIMAX
-from repositories.data_extraction_from_file import get_observations
+from repositories.data_processing import get_observations
 from entities import enums
 from constants import LAST_OBSERVATION_DATE_STRING
 from entities.prediction_models.models import AutoregressionModel, ArmaModel, ArimaModel, SarimaModel
+from repositories import mongodbrepository
+
+repository = mongodbrepository.repository
 
 
 class Species:
@@ -14,6 +17,12 @@ class Species:
     def __init__(self):
         self.observation_data_grouped = None
         self.observations_df = None
+        self.wiki = None
+        self.ebird = None
+        self.common_name = None
+        self.scientific_name = None
+        self.description = None
+        self.habitat = None
         self.default_autoregression_model = AutoregressionModel()
         self.default_arma_model = ArmaModel()
         self.default_arima_model = ArimaModel()
@@ -27,15 +36,19 @@ class Species:
         return {"scientific_name": self.scientific_name,
                 "common_name": self.common_name,
                 "description": self.description,
-                "habitat": self.habitat}
+                "habitat": self.habitat,
+                "wiki": self.wiki,
+                "ebird": self.ebird}
 
     def get_available_models(self):
         """
         Get models available for species and append models supported frir akk
         """
+
         result = self.get_available_models_for_species()
-        result += [enums.Model.AUTOREGRESSION.name.lower(),
-                   enums.Model.ARMA.name.lower(), enums.Model.ARIMA.name.lower()]
+        result += [self.default_autoregression_model.to_json(),
+                   self.default_arma_model.to_json(),
+                   self.default_arima_model.to_json()]
         return result
 
     @abstractmethod
@@ -48,7 +61,7 @@ class Species:
 
     def load_observation_data(self):
         self.observation_data_grouped = {}
-        observation_data_grouped_not_translated, observations = get_observations(self.scientific_name)
+        observation_data_grouped_not_translated, observations = repository.get_observations_for_species(self.scientific_name) #get_observations(self.scientific_name)
 
         # Translate states and represent them as dictionary
         for state in observation_data_grouped_not_translated:
@@ -56,6 +69,15 @@ class Species:
 
         self.observations_df = observations
         print(f"SPECIES LOADED: {self.scientific_name}")
+
+    def load_species_info(self):
+        res = repository.get_information_for_species(self.scientific_name)
+        self.common_name = res['COMMON NAME']
+        self.wiki = res['WIKI LINK']
+        self.ebird = res['EBIRD LINK']
+        self.description = res['DESCRIPTION']
+        self.habitat = res['HABITAT']
+
 
     def get_observations(self, date_from, date_to):
         df = self.observations_df
