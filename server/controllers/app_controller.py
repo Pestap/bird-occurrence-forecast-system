@@ -176,13 +176,15 @@ def predict_species_with_model(species_name, model):
 
     for date, empty_dict in predictions_v2.items():
         for state, value in predictions_translated[date].items():
-            empty_dict[translate_enum_to_state(state)] = value
+            if value is not None:
+                empty_dict[translate_enum_to_state(state)] = value
 
     tests_v2 = {date: {} for date in tests_translated.keys()}
 
     for date, empty_dict in tests_v2.items():
         for state, value in tests_translated[date].items():
-            empty_dict[translate_enum_to_state(state)] = value
+            if value is not None:
+                empty_dict[translate_enum_to_state(state)] = value
 
     mae_errors_v2 = {translate_enum_to_state(state): value for state, value in mae_errors.items()}
     mape_errors_v2 = {translate_enum_to_state(state): value for state, value in mape_errors.items()}
