@@ -1,4 +1,5 @@
 import pandas as pd
+import os
 from pymongo import MongoClient
 
 from repositories.data_processing import process_observations
@@ -8,8 +9,8 @@ class MongoDBRepository():
     def __init__(self, username="bird_app", password="Czapla#123", host="localhost", port=27017):
         self.username = username
         self.password = password
-        self.host = host
-        self.port = port
+        self.host = host if os.getenv('MONGODB_HOST') is None else os.getenv('MONGODB_HOST')
+        self.port = port if os.getenv('MONGODB_PORT') is None else int(os.getenv('MONGODB_PORT'))
 
         self.database_name = "bird_occurrence_forecast_system"
         self.observation_collection_name = "observation_data"

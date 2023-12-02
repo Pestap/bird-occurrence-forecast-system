@@ -20,8 +20,6 @@ class Model:
     def __init__(self, type, params):
         self.type = type
         self.params = params
-        self.pl_name = "Model"
-        self.en_name = "Model"
 
     def to_json(self):
         return {"value": self.type.name.lower(), "display": self.pl_name}
