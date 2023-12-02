@@ -44,9 +44,11 @@ class Species:
         """
         Get models available for species and append models supported frir akk
         """
+
         result = self.get_available_models_for_species()
-        result += [enums.Model.AUTOREGRESSION.name.lower(),
-                   enums.Model.ARMA.name.lower(), enums.Model.ARIMA.name.lower()]
+        result += [self.default_autoregression_model.to_json(),
+                   self.default_arma_model.to_json(),
+                   self.default_arima_model.to_json()]
         return result
 
     @abstractmethod
