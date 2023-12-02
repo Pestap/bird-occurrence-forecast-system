@@ -453,6 +453,34 @@ input[type="radio"] {
   animation: 0.5s ease-out 0s slideInFromBottom;
 }
 
+.bird-info {
+  display: inline-block;
+  margin-left: 5px;
+}
+.bird-info-icon {
+  color: #0e71c2;
+  width: 700px;
+}
+.bird-info-links {
+  text-align: left;
+  color: black;
+  display: none;
+  position: absolute;
+  background: #ffffff;
+  border: #394455 1px solid;
+  padding: 5px;
+}
+.bird-info:hover .bird-info-links {
+  display: block;
+}
+.bird-info-link {
+  margin: 5px;
+}
+.bird-info-link a{
+  text-decoration: none;
+  color: #0e71c2;
+}
+
 .anchor-button {
   background-color: #394455;
   text-align: center;

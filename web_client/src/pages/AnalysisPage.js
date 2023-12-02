@@ -81,8 +81,9 @@ function AnalysisPage() {
         }
     }
 
-    function handleModelChange(event) {
+    function handleModelChange(event, textName) {
         setChosenModel(event.target.value);
+        setChosenModelName(textName);
         console.log(event.target.value);
     }
 
@@ -151,6 +152,7 @@ function AnalysisPage() {
         await Promise.all(analysisModels.map(analysisModel => {
 
             let customOptions = Object.assign({}, analysisModel);
+            delete customOptions.name;
             delete customOptions.type;
             delete customOptions.color;
             delete customOptions.id;
@@ -164,9 +166,9 @@ function AnalysisPage() {
             })
             let url = "";
             if (!analysisModel.defaultOptions) {
-                url = `${source}birds/${chosenBirdScientificName}/models/${analysisModel.type}/predict?from=${chosenDateFrom}&to=${chosenDateTo}${optionParms}&edge=2022-01-01`;
+                url = `${source}birds/${chosenBirdScientificName}/models/${analysisModel.type}/predict?from=${chosenDateFrom}&to=${chosenDateTo}${optionParms}&edge=2021-12`;
             } else {
-                url = `${source}birds/${chosenBirdScientificName}/models/${analysisModel.type}/predict?from=${chosenDateFrom}&to=${chosenDateTo}&edge=2022-01-01`;
+                url = `${source}birds/${chosenBirdScientificName}/models/${analysisModel.type}/predict?from=${chosenDateFrom}&to=${chosenDateTo}&edge=2021-12`;
             }
 
             return fetch(url)
@@ -190,7 +192,7 @@ function AnalysisPage() {
                         });
                         wholePrediction.push(monthlyPrediction);
                     });
-                    let generatedModelPredictionWithInfo = {"prediction": wholePrediction, "type": analysisModel.type, "id": analysisModel.id};
+                    let generatedModelPredictionWithInfo = {"prediction": wholePrediction, "type": analysisModel.type, "id": analysisModel.id, "name": analysisModel.name};
                     return generatedModelPredictionWithInfo;
                 })
                 .catch(error => console.error(error));
@@ -239,6 +241,7 @@ function AnalysisPage() {
 
         let modelsInfo = {};
         modelsInfo["type"] = chosenModel;
+        modelsInfo["name"] = chosenModelName;
         modelsInfo["color"] = chosenColor;
         modelsInfo["id"] = currentModelId;
         modelsInfo["visibility"] = true;
@@ -319,6 +322,7 @@ function AnalysisPage() {
     const [chosenBirdCommonName, setChosenBirdCommonName] = useState("");
     const [chosenBirdScientificName, setChosenBirdScientificName] = useState("");
     const [chosenModel, setChosenModel] = useState("");
+    const [chosenModelName, setChosenModelName] = useState("");
     const [chosenDateFrom, setChosenDateFrom] = useState("");
     const [chosenDateTo, setChosenDateTo] = useState("");
     const [chosenColor, setChosenColor] = useState(DEFAULT_PLOT_COLOR);
@@ -334,6 +338,7 @@ function AnalysisPage() {
     const [anyError, setAnyError] = useState("");
 
     // Prediction visualization
+    const [optionNamesDictionary, setOptionNamesDictionary] = useState({});
     const [modelsPredictions, setModelsPredictions] = useState([]);
     const [predictionState, predictionDispatch] = useReducer(predictionReducer, {currentMonth: 0, maxMonth: 1});
     const [currentPredictionMonth, setCurrentPredictionMonth] = useState(months[0]);
@@ -380,7 +385,7 @@ function AnalysisPage() {
                     return fetch(source + "birds/" + species)
                         .then(response => response.json())
                         .then(birdData => {
-                            let bird = {name: species, text: birdData.common_name};
+                            let bird = {name: species, text: birdData.common_name, wiki: birdData.wiki, ebird: birdData.ebird};
                             return bird;
                         })
                         .catch(error => console.error(error));
@@ -403,7 +408,7 @@ function AnalysisPage() {
             fetch(source + "birds/" + chosenBirdScientificName + "/models")
                 .then(response => response.json())
                 .then(modelsData => modelsData.supported_models.map(model => {
-                    return ({name: model, text: model})
+                    return ({name: model.value, text: model.display})
                 }))
                 .then(models => {
                     setPredictionTypes(models);
@@ -437,15 +442,18 @@ function AnalysisPage() {
                 .then(response => response.json())
                 .then(options => {
                     let availableOptions = [];
+                    let opts = optionNamesDictionary;
                     let chosenOptions = {};
                     const optionNames = Object.keys(options);
                     optionNames.forEach(optionName => {
-                        availableOptions.push({option_type: optionName, option_name: optionName,
+                        availableOptions.push({option_type: optionName, option_name: options[optionName]["pl_name"],
                             option_default: options[optionName]["default"], option_max: options[optionName]["max"], option_min: options[optionName]["min"]});
                         chosenOptions[optionName] = options[optionName]["default"];
+                        opts[optionName] = options[optionName]["pl_name"];
                     });
                     setPredictionOptions(availableOptions);
                     setChosenCustomOptions(chosenOptions);
+                    setOptionNamesDictionary(opts);
                 })
                 .catch(error => {
                     console.error(error);
@@ -485,7 +493,7 @@ function AnalysisPage() {
     useEffect(() => {
         if (modelsPredictions.length > 0) {
             let predictionsToVisualize = modelsPredictions.map(modelPrediction => {
-                let modelNameWithId = modelPrediction.type + "#" + String(modelPrediction.id);
+                let modelNameWithId = modelPrediction.name + "#" + String(modelPrediction.id);
                 let predictionToVisualize = {name: modelNameWithId}
                 let regionsPredictions = [];
                 modelPrediction.prediction.forEach(monthlyPrediction => {
@@ -601,15 +609,15 @@ function AnalysisPage() {
                                         <div className={analysisModel.visibility ? "model-block" : "model-block invisible-model-block"}>
                                             <div className="model-block-color" style={{backgroundColor: analysisModel.color}}></div>
                                             <div className={"model-name"}>
-                                                <span>{analysisModel.type}</span>
+                                                <span>{analysisModel.name}</span>
                                                 <div className={"model-additional-info"}>
                                                     <div>id: #{analysisModel.id}</div>
                                                     {analysisModel.defaultOptions
                                                         ? <div className={"model-additional-info-row"}>Standardowe opcje</div>
                                                         : <div>
                                                             {Object.keys(analysisModel).map( key =>
-                                                                (key !== "color" && key !== "defaultOptions" && key !== "id" && key !== "type" && key !== "visibility")
-                                                                && <div className={"model-additional-info-row"}>{key}: {analysisModel[key]}</div>
+                                                                (key !== "name" && key !== "color" && key !== "defaultOptions" && key !== "id" && key !== "type" && key !== "visibility")
+                                                                && <div className={"model-additional-info-row"}>{optionNamesDictionary[key]}: {analysisModel[key]}</div>
                                                             )}
                                                         </div>
                                                     }
@@ -716,7 +724,7 @@ function AnalysisPage() {
                                                          className='prediction-type-container'>
                                                         <input type="radio" id={predictionType.name}
                                                                value={predictionType.name} name="prediction-type"
-                                                               onChange={e => handleModelChange(e)}/>
+                                                               onChange={e => handleModelChange(e, predictionType.text)}/>
                                                         <label className="radio-label"
                                                                htmlFor={predictionType.name}>{predictionType.text}</label>
                                                     </div>
@@ -766,6 +774,17 @@ function AnalysisPage() {
                                                                onChange={e => handleSpeciesChange(e, species.text)}/>
                                                         <label className="radio-label"
                                                                htmlFor={species.name}>{species.text}</label>
+                                                        {(species.wiki || species.ebird) && <div className={"bird-info"}>
+                                                            <span className={"bird-info-icon"}>INFO</span>
+                                                            <div className={"bird-info-links"}>
+                                                                <div className={"bird-info-link"}>
+                                                                    {species.wiki && <a href={species.wiki}>Wikipedia</a>}
+                                                                </div>
+                                                                <div className={"bird-info-link"}>
+                                                                    {species.ebird && <a href={species.ebird}>Ebird</a>}
+                                                                </div>
+                                                            </div>
+                                                        </div>}
                                                     </div>
                                                 ))}
                                             </div>

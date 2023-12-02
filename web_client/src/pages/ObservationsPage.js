@@ -330,7 +330,7 @@ function ObservationsPage() {
                     return fetch(source + "birds/" + species)
                         .then(response => response.json())
                         .then(birdData => {
-                            let bird = {name: species, text: birdData.common_name};
+                            let bird = {name: species, text: birdData.common_name, wiki: birdData.wiki, ebird: birdData.ebird};
                             return bird;
                         })
                         .catch(error => console.error(error));
@@ -410,6 +410,17 @@ function ObservationsPage() {
                                                            onChange={e => handleSpeciesChange(e, species.text)}/>
                                                     <label className="radio-label"
                                                            htmlFor={species.name}>{species.text}</label>
+                                                    {(species.wiki || species.ebird) && <div className={"bird-info"}>
+                                                        <span className={"bird-info-icon"}>INFO</span>
+                                                        <div className={"bird-info-links"}>
+                                                            <div className={"bird-info-link"}>
+                                                                {species.wiki && <a href={species.wiki}>Wikipedia</a>}
+                                                            </div>
+                                                            <div className={"bird-info-link"}>
+                                                                {species.ebird && <a href={species.ebird}>Ebird</a>}
+                                                            </div>
+                                                        </div>
+                                                    </div>}
                                                 </div>
                                             ))}
                                         </div>

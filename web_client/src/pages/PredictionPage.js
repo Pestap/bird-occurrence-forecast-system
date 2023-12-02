@@ -218,9 +218,9 @@ function PredictionPage() {
         let url = "";
         if (!defaultOptions) {
             //modelOptions["autoregression_order"] = rangeValue1;
-            url = `${source}birds/${chosenBirdScientificName}/models/${chosenModel}/predict?from=${chosenDateFrom}&to=${chosenDateTo}${optionParms}&edge=2022-01-01`;
+            url = `${source}birds/${chosenBirdScientificName}/models/${chosenModel}/predict?from=${chosenDateFrom}&to=${chosenDateTo}${optionParms}&edge=2021-12`;
         } else {
-            url = `${source}birds/${chosenBirdScientificName}/models/${chosenModel}/predict?from=${chosenDateFrom}&to=${chosenDateTo}&edge=2022-01-01`;
+            url = `${source}birds/${chosenBirdScientificName}/models/${chosenModel}/predict?from=${chosenDateFrom}&to=${chosenDateTo}&edge=2021-12`;
         }
 
         /* 
@@ -410,7 +410,7 @@ function PredictionPage() {
                     return fetch(source + "birds/" + species)
                         .then(response => response.json())
                         .then(birdData => {
-                            let bird = {name: species, text: birdData.common_name};
+                            let bird = {name: species, text: birdData.common_name, wiki: birdData.wiki, ebird: birdData.ebird};
                             return bird;
                         })
                         .catch(error => console.error(error));
@@ -433,7 +433,7 @@ function PredictionPage() {
             fetch(source + "birds/" + chosenBirdScientificName + "/models")
                 .then(response => response.json())
                 .then(modelsData => modelsData.supported_models.map(model => {
-                    return ({name: model, text: model})
+                    return ({name: model.value, text: model.display})
                 }))
                 .then(models => {
                     setPredictionTypes(models);
@@ -470,7 +470,7 @@ function PredictionPage() {
                     let chosenOptions = {};
                     const optionNames = Object.keys(options);
                     optionNames.forEach(optionName => {
-                        availableOptions.push({option_type: optionName, option_name: optionName,
+                        availableOptions.push({option_type: optionName, option_name: options[optionName]["pl_name"],
                             option_default: options[optionName]["default"], option_max: options[optionName]["max"], option_min: options[optionName]["min"]});
                         chosenOptions[optionName] = options[optionName]["default"];
                     });
@@ -639,6 +639,17 @@ function PredictionPage() {
                                                            onChange={e => handleSpeciesChange(e, species.text)}/>
                                                     <label className="radio-label"
                                                            htmlFor={species.name}>{species.text}</label>
+                                                    {(species.wiki || species.ebird) && <div className={"bird-info"}>
+                                                        <span className={"bird-info-icon"}>INFO</span>
+                                                        <div className={"bird-info-links"}>
+                                                            <div className={"bird-info-link"}>
+                                                                {species.wiki && <a href={species.wiki}>Wikipedia</a>}
+                                                            </div>
+                                                            <div className={"bird-info-link"}>
+                                                                {species.ebird && <a href={species.ebird}>Ebird</a>}
+                                                            </div>
+                                                        </div>
+                                                    </div>}
                                                 </div>
                                             ))}
                                         </div>
