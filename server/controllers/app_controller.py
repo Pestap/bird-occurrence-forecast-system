@@ -60,7 +60,7 @@ def get_species_model_information(species_name, model):
     if available_models is None:
         return Response("Invalid species name", status=404)
 
-    if model in available_models:
+    if model in [m['value'] for m in available_models]:
         result = get_model_params(model)
         if result is not None:
             return jsonify(result)
