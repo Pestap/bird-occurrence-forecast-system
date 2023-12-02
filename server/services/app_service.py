@@ -36,7 +36,7 @@ species = {
 
 
 def get_species():
-    return list(species.keys())
+    return sorted(list(species.keys()))
 
 
 def get_species_info(species_name):
