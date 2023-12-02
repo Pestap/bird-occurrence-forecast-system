@@ -1,28 +1,5 @@
 import pandas as pd
 pd.options.mode.chained_assignment = None
-from repositories.mongodbrepository import repository
-
-
-def load_from_file(filepath: str):
-    """
-    Load data from created CSV file for give specie
-    """
-    df = pd.read_csv(filepath, sep=";")
-    # -100 was set when extracting data from root file and replaced X
-    df['OBSERVATION COUNT'].replace({-100: 1}, inplace=True)
-
-    # type dictionary for casting types
-    type_dict = {'SCIENTIFIC NAME': str, 'OBSERVATION COUNT': int, 'LATITUDE': float, 'LONGITUDE': float,
-             'OBSERVATION DATE': 'datetime64[D]', 'YEAR': int, 'WEEK OF YEAR': int, 'STATE': str}
-
-    # cast types
-    for col_name, type_name in type_dict.items():
-        if col_name == 'OBSERVATION DATE':
-            df[col_name] = pd.to_datetime(df[col_name], format="%d.%m.%Y")
-        else:
-            df[col_name] = df[col_name].astype(type_name)
-
-    return df
 
 
 def handle_same_place_same_time(df):
@@ -114,12 +91,28 @@ def divide_by_state(df):
     return groups_with_zeroes
 
 
-def get_observations(species_name):
-
+def get_observations(filename):
+    pass
     #observations = load_from_file(filename) # for loading from file
+    #return process_observations(observations)
+    #observations = repository.get_observations_for_species(species_name) # loading from mongodb
 
-    observations = repository.get_observations_for_species(species_name) # loading from mongodb
+    # group data
+    #df = handle_same_place_same_time(observations)
+    #groups = divide_by_state(df)
 
+    #group_tuples = []
+    ##for group in groups:
+     #   group_tuples.append((group.loc[0, 'STATE'], group))
+
+    # handle observations
+    #observations = get_columns_from_dataframe(observations,
+                                              #["OBSERVATION COUNT", "OBSERVATION DATE", "LATITUDE", "LONGITUDE"])
+
+    #return group_tuples, observations
+
+
+def process_observations(observations):
     # group data
     df = handle_same_place_same_time(observations)
     groups = divide_by_state(df)
@@ -129,7 +122,7 @@ def get_observations(species_name):
         group_tuples.append((group.loc[0, 'STATE'], group))
 
     # handle observations
-    observations = get_columns_from_dataframe(observations,
+    observation_facts = get_columns_from_dataframe(observations,
                                               ["OBSERVATION COUNT", "OBSERVATION DATE", "LATITUDE", "LONGITUDE"])
 
-    return group_tuples, observations
+    return group_tuples, observation_facts

@@ -1,6 +1,8 @@
 import pandas as pd
 from pymongo import MongoClient
 
+from repositories.data_processing import process_observations
+
 
 class MongoDBRepository():
     def __init__(self, username="bird_app", password="Czapla#123", host="localhost", port=27017):
@@ -20,7 +22,7 @@ class MongoDBRepository():
 
     def get_observations_for_species(self, species_scientific_name):
         results = self.observation_collection.find({"SCIENTIFIC NAME": species_scientific_name})
-        return pd.DataFrame(results)
+        return process_observations(pd.DataFrame(results))
 
     def get_information_for_species(self, species_scientific_name):
         results = self.information_collection.find_one({"SCIENTIFIC NAME": species_scientific_name})
