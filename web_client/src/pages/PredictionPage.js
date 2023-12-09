@@ -240,7 +240,7 @@ function PredictionPage() {
                 let dataPlaceholder = data.predictions; // change dataPlaceholder to another name
                 let wholePrediction = [];
                 let maxPredictionValue = 0;
-                console.log(data.mae_errors);
+                console.log(data.custom_errors);
                 const months = Object.keys(dataPlaceholder);
                 months.forEach(month => {
                     const places = Object.keys(dataPlaceholder[month]);
@@ -255,8 +255,8 @@ function PredictionPage() {
                 });
 
                 // Prediction error
-                let errorData = data.mae_errors;
-                console.log(data.mae_errors);
+                let errorData = data.custom_errors;
+                console.log(data.custom_errors);
                 console.log(data.predictions)
                 let predictionErrors = [["Region", "Błąd predykcji"]];
                 const regions = Object.keys(errorData);
@@ -264,9 +264,9 @@ function PredictionPage() {
                 let maxPredictionError = 0;
                 regions.forEach(region => {
                     console.log(region);
-                    predictionErrors.push([region, data.mae_errors[region]]);
-                    if (maxPredictionError < data.mae_errors[region]) {
-                        maxPredictionError = data.mae_errors[region];
+                    predictionErrors.push([region, data.custom_errors[region]]);
+                    if (maxPredictionError < data.custom_errors[region]) {
+                        maxPredictionError = data.custom_errors[region];
                     }
                 })
                 if (regions.length > 0) {
@@ -279,7 +279,7 @@ function PredictionPage() {
                     region: "PL",
                     displayMode: "regions",
                     resolution: "provinces",
-                    colorAxis: {minValue: 0, maxValue: maxPredictionError, colors: ["#ffffff", "#0000ff"]}
+                    colorAxis: {minValue: 0, maxValue: 1, colors: ["#ffffff", "#0000ff"]}
                 });
                 console.log(predictionErrors);
 
@@ -574,12 +574,16 @@ function PredictionPage() {
                                             <span className="form-error">{chosenDateFromError}</span>}
                                         <label className={chosenDateToError ? "form-error-label" : "form-default-label"}
                                                htmlFor="prediction-date-to">Wybierz datę końcową predykcji</label>
-                                        <div className="pg-custom-mui-input"><DatePicker views={['month', 'year']} onChange={(v) => handleDateToChange(v)}
-                                                    slotProps={{
-                                                        field:{
-                                                            id:'prediction-date-to'
+                                        <div className="pg-custom-mui-input">
+                                            <DatePicker views={['month', 'year']}
+                                                        onChange={(v) => handleDateToChange(v)}
+                                                        slotProps={{
+                                                            field:{
+                                                                id:'prediction-date-to'
+                                                            }
                                                         }
-                                                    }} /></div>
+                                            } />
+                                        </div>
                                         {chosenDateToError && <span className="form-error">{chosenDateToError}</span>}
                                     </li>
                                     <li key='form-part-3'>

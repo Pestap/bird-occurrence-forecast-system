@@ -396,12 +396,15 @@ function ObservationsPage() {
                                         <label className={chosenDateToError ? "form-error-label" : "form-default-label"}
                                                htmlFor="prediction-date-to">Wybierz datę końcową okresu
                                             obserwacji</label>
-                                        <div className="pg-custom-mui-input"><DatePicker views={['day', 'month', 'year']} onChange={(v) => handleDateToChange(v)}
-                                                                                         slotProps={{
-                                                                                             field:{
-                                                                                                 id:'prediction-date-to'
-                                                                                             }
-                                                                                         }} /></div>
+                                        <div className="pg-custom-mui-input">
+                                            <DatePicker views={['day', 'month', 'year']}
+                                                        onChange={(v) => handleDateToChange(v)}
+                                                        slotProps={{
+                                                            field:{
+                                                                id:'prediction-date-to'
+                                                            }
+                                            }} />
+                                        </div>
                                         {chosenDateToError && <span className="form-error">{chosenDateToError}</span>}
                                     </li>
                                     <li key='form-part-3'>

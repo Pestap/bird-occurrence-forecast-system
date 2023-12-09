@@ -425,6 +425,10 @@ label.form-error-label, span.form-error-label {
   background-color: #F0F0F0;
 }
 
+input[type="submit"]:hover {
+  cursor: pointer;
+}
+
 input[type="radio"] {
   display: inline-block;
   width: auto;
