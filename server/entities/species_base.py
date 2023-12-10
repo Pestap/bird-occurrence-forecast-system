@@ -93,30 +93,28 @@ class Species:
 
         return converted_observations_dictionaries_list
 
-    def predict_autoregression(self, state, months, model_params=None):
+    def predict_autoregression(self, state, months, reduce_training_by, model_params=None):
         steps = model_params['autoregression_order']
         if steps is None:
             try:
-                # TODO: evaluate if really needed
                 steps = self.default_autoregression_model.params['autoregression_order']['default']
                 steps = self.get_autoregression_models()[state]
             except AttributeError:
                 return None
 
-        model = AutoReg(self.observation_data_grouped[state]['OBSERVATION COUNT'], lags=steps, seasonal=True, period=12).fit()
-        # TODO: maybe add second autoregression without the seasonality ?
+        model = AutoReg(self.observation_data_grouped[state]['OBSERVATION COUNT'].head(-reduce_training_by), lags=steps, seasonal=True, period=12).fit()
         result = list(model.forecast(steps=months))
         result_non_negative = [val if val >= 0 else 0 for val in result]
 
         return result_non_negative
 
-    def predict_arma(self, state, months, model_params=None):
+    def predict_arma(self, state, months, reduce_training_by, model_params=None):
         ar_steps = model_params['autoregression_order']
         ma_steps = model_params['moving_average_order']
 
         if ar_steps is None:
             try:
-                ar_steps = self.default_arma_model.params['autoregression_order']['default'] # TODO: relating to previous todo
+                ar_steps = self.default_arma_model.params['autoregression_order']['default']
             except AttributeError:
                 return None
 
@@ -126,14 +124,14 @@ class Species:
             except AttributeError:
                 return None
 
-        model = SARIMAX(self.observation_data_grouped[state]['OBSERVATION COUNT'], order=(ar_steps, 0, ma_steps), alpha=0.95)
+        model = SARIMAX(self.observation_data_grouped[state]['OBSERVATION COUNT'].head(-reduce_training_by), order=(ar_steps, 0, ma_steps), alpha=0.95)
         results = model.fit()
         predictions = list(results.forecast(steps=months))
         predictions_non_negative = [val if val >= 0 else 0 for val in predictions]
 
         return predictions_non_negative
 
-    def predict_arima(self, state, months, model_params):
+    def predict_arima(self, state, months, reduce_training_by, model_params):
         ar_steps = model_params['autoregression_order']
         ma_steps = model_params['moving_average_order']
         i_steps = model_params['differencing_order']
@@ -155,7 +153,7 @@ class Species:
                 i_steps = self.default_arima_model.params['differencing_order']['default']
             except AttributeError:
                 return None
-        model = SARIMAX(self.observation_data_grouped[state]['OBSERVATION COUNT'], order=(ar_steps, i_steps, ma_steps), alpha=0.95)
+        model = SARIMAX(self.observation_data_grouped[state]['OBSERVATION COUNT'].head(-reduce_training_by), order=(ar_steps, i_steps, ma_steps), alpha=0.95)
         results = model.fit()
 
         predictions = list(results.forecast(steps=months))
@@ -195,15 +193,13 @@ class Species:
         return predictions_non_negative
 
 
-    def make_predictions_with_model(self, model, model_params, state, steps):
+    def make_predictions_with_model(self, model, model_params, state, steps, reduce_training_by):
         if model.upper() == enums.Model.AUTOREGRESSION.name:
-            return self.predict_autoregression(state, steps, model_params)
+            return self.predict_autoregression(state, steps, reduce_training_by, model_params)
         elif model.upper() == enums.Model.ARMA.name:
-            return self.predict_arma(state, steps, model_params)
+            return self.predict_arma(state, steps, reduce_training_by, model_params)
         elif model.upper() == enums.Model.ARIMA.name:
-            return self.predict_arima(state, steps, model_params)
-        elif model.upper() == enums.Model.SARIMA.name:
-            return self.predict_sarima(state, steps, model_params)
+            return self.predict_arima(state, steps, reduce_training_by, model_params)
         else:
             return None
 
@@ -267,9 +263,15 @@ class Species:
         delta = relativedelta.relativedelta(date_to, edge_date)
         months_from_last_observation_data = delta.months + (delta.years * 12)
 
+
+
         if months_from_last_observation_data > 0: # predict only if needed
             prediction_date_list = []
 
+            # caluclate by how much to reduce the training set
+            delta_training_set = relativedelta.relativedelta(datetime.strptime(LAST_OBSERVATION_DATE_STRING, '%Y-%m-%d'),
+                                                            edge_date)
+            delta_training_set_value = delta_training_set.months + (delta_training_set.years * 12)
             # TODO: maybe add constant for dtstart
             for dt in rrule.rrule(rrule.MONTHLY, dtstart=edge_date, until=date_to): # start date hardcoded - 2023.02.01 - first month for which we do not have observations
                 prediction_date_list.append(dt)
@@ -280,7 +282,7 @@ class Species:
             for state in self.observation_data_grouped.keys():
                 # make predictions with model: implementation by desired specie
                 try:
-                    predictions = self.make_predictions_with_model(model, model_params, state, months_from_last_observation_data)
+                    predictions = self.make_predictions_with_model(model, model_params, state, months_from_last_observation_data, delta_training_set_value)
                 except (ValueError, ZeroDivisionError) as e:
                     predictions = months_from_last_observation_data*[0]
                 # If incorrect model selected

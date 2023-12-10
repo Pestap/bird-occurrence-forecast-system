@@ -66,19 +66,13 @@ def predict_species_with_model(specie_name, model, date_from, date_to, model_par
         mae_errors = calculate_prediction_error(predicted, test, calculate_mae)
         mape_errors = calculate_prediction_error(predicted, test, calculate_mape)
         rmse_errors = calculate_prediction_error(predicted, test, calculate_rmse)
-        custom_errors = calculate_prediction_error(predicted, test, calculate_20p_error)
+        custom_errors = calculate_prediction_error(predicted, test, calculate_custom_error)
         return predicted, test, mae_errors, mape_errors, rmse_errors, custom_errors
     except (KeyError, TypeError) as ex:
         return None
 
 
 def calculate_prediction_error(predicted, test, error_function):
-    predictions_to_test = {}
-    for date, data in predicted.items():
-        # if date is not in test
-        if test.get(date) is None:
-            continue
-        predictions_to_test[date] = data
 
     predictions_by_state = {}
     observations_by_state = {}
@@ -149,7 +143,7 @@ def calculate_rmse(observations_by_state, predictions_by_state):
     return errors_by_state
 
 
-def calculate_20p_error(observations_by_state, predictions_by_state):
+def calculate_custom_error(observations_by_state, predictions_by_state):
     errors_by_state = {}
 
     for state, data in observations_by_state.items():
@@ -158,16 +152,14 @@ def calculate_20p_error(observations_by_state, predictions_by_state):
             predicted = predictions_by_state[state][date]
             observed = observations_by_state[state][date]
 
-            margin = observed * 0.25
-            # margin cannot be less than one
-            if margin <= 1:
-                margin = 1
-
-            diff = abs(predicted-observed)
-            if diff <= margin:
+            if predicted > 0.2 and observed > 0:
+                state_errors.append(0)
+            elif predicted <= 0.2 and observed == 0:
                 state_errors.append(0)
             else:
                 state_errors.append(1)
+
+
         errors_by_state[state] = sum(state_errors)/len(state_errors)
 
     return errors_by_state

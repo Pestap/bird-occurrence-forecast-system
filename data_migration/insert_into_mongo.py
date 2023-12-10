@@ -71,7 +71,7 @@ species_information = [
      "WIKI LINK": "https://pl.wikipedia.org/wiki/Myszo%C5%82%C3%B3w_zwyczajny",
      "EBIRD LINK": "https://ebird.org/species/combuz1/PL"
      },
-    {"COMMON NAME": "Biegus ziemny",
+    {"COMMON NAME": "Biegus zmienny",
      "SCIENTIFIC NAME": "Calidris alpina",
      "DESCRIPTION": "Sample description",
      "HABITAT": "Sample habitat",
