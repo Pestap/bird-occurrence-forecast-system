@@ -470,6 +470,11 @@ function AnalysisPage() {
             let colorsArr = [];
             let i= 0;
             for(i=0;i<analysisModels.length;i++) {
+                if(chartFinalDataFiltered.length > 0) {
+                    if(!chartFinalDataFiltered[0].includes(analysisModels[i].name + "#" + analysisModels[i].id)) {
+                        continue;
+                    }
+                }
                 if(analysisModels[i].visibility === true) {
                     let id = String(i);
                     colors[id] = analysisModels[i].color;
@@ -487,7 +492,7 @@ function AnalysisPage() {
             console.log(options);
             setChartOptions(options);
         }
-    }, [isLoading, analysisModels, appliedDateFrom, changedVisibility]);
+    }, [isLoading, analysisModels, appliedDateFrom, changedVisibility, chartFinalDataFiltered]);
 
     // parsing data needed to be visualised in chart
     useEffect(() => {
@@ -584,13 +589,13 @@ function AnalysisPage() {
             });
             setChartFinalDataFiltered(filteredData);
             console.log("=========");
-            console.log(chartOptions);
-            console.log(analysisModels);
+            //console.log(chartOptions);
+            //console.log(analysisModels);
             console.log(chartFinalData);
-            console.log(filteredData);
+            //console.log(filteredData);
             console.log("=========");
         }
-    }, [chosenRegion, chartOptions, analysisModels, chartFinalData, changedVisibility]);
+    }, [chosenRegion, analysisModels, chartFinalData, changedVisibility]);
 
     return (
         <div>
