@@ -164,12 +164,24 @@ nav .active a {
   min-height: 90vh;
   color: #394455;
 }
-
+.article-container a {
+  color: #0e71c2;
+  font-weight: 700;
+}
+.article-container h1{
+  font-size: 2em;
+}
+.article-container h2{
+  font-size: 1.5em;
+}
 .article-container img {
   width: 100%;
   height: 400px;
   object-fit: cover;
   object-position:  center 20%;
+}
+.yt-video {
+  max-width: 100%;
 }
 @media (max-width: 767.98px) {
   .article-container img {
