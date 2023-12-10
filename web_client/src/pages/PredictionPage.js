@@ -4,6 +4,9 @@ import {Chart} from "react-google-charts";
 import {useState, useEffect, useReducer} from "react";
 import source from "../backendConfig";
 import {useLocation} from "react-router-dom";
+import {DatePicker} from "@mui/x-date-pickers";
+import dayjs from 'dayjs';
+import {Slider} from "@mui/material";
 
 let dataPlaceholder1 = {
     "2013-07": {
@@ -160,14 +163,12 @@ function PredictionPage() {
         setDefaultOptions(option);
     }
 
-    function handleDateFromChange(event) {
-        setChosenDateFrom(event.target.value);
-        console.log(event.target.value);
+    function handleDateFromChange(value) {
+        setChosenDateFrom(dayjs(value).format('YYYY-MM'));
     }
 
-    function handleDateToChange(event) {
-        setChosenDateTo(event.target.value);
-        console.log(event.target.value);
+    function handleDateToChange(value) {
+        setChosenDateTo(dayjs(value).format('YYYY-MM'));
     }
 
     async function handleSubmit(event) {
@@ -239,7 +240,7 @@ function PredictionPage() {
                 let dataPlaceholder = data.predictions; // change dataPlaceholder to another name
                 let wholePrediction = [];
                 let maxPredictionValue = 0;
-                console.log(data.mae_errors);
+                console.log(data.custom_errors);
                 const months = Object.keys(dataPlaceholder);
                 months.forEach(month => {
                     const places = Object.keys(dataPlaceholder[month]);
@@ -254,8 +255,8 @@ function PredictionPage() {
                 });
 
                 // Prediction error
-                let errorData = data.mae_errors;
-                console.log(data.mae_errors);
+                let errorData = data.custom_errors;
+                console.log(data.custom_errors);
                 console.log(data.predictions)
                 let predictionErrors = [["Region", "Błąd predykcji"]];
                 const regions = Object.keys(errorData);
@@ -263,9 +264,9 @@ function PredictionPage() {
                 let maxPredictionError = 0;
                 regions.forEach(region => {
                     console.log(region);
-                    predictionErrors.push([region, data.mae_errors[region]]);
-                    if (maxPredictionError < data.mae_errors[region]) {
-                        maxPredictionError = data.mae_errors[region];
+                    predictionErrors.push([region, data.custom_errors[region]]);
+                    if (maxPredictionError < data.custom_errors[region]) {
+                        maxPredictionError = data.custom_errors[region];
                     }
                 })
                 if (regions.length > 0) {
@@ -278,7 +279,7 @@ function PredictionPage() {
                     region: "PL",
                     displayMode: "regions",
                     resolution: "provinces",
-                    colorAxis: {minValue: 0, maxValue: maxPredictionError, colors: ["#ffffff", "#0000ff"]}
+                    colorAxis: {minValue: 0, maxValue: 1, colors: ["#ffffff", "#0000ff"]}
                 });
                 console.log(predictionErrors);
 
@@ -563,14 +564,26 @@ function PredictionPage() {
                                         <label
                                             className={chosenDateFromError ? "form-error-label" : "form-default-label"}
                                             htmlFor="prediction-date-from">Wybierz datę początkową predykcji</label>
-                                        <input type="month" id="prediction-date-from" name="prediction-date-from"
-                                               onChange={e => handleDateFromChange(e)}/>
+                                        <div className="pg-custom-mui-input"><DatePicker views={['month', 'year']} onChange={(v) => handleDateFromChange(v)}
+                                                    slotProps={{
+                                                        field:{
+                                                        id:'prediction-date-from'
+                                                        }
+                                                    }} /></div>
                                         {chosenDateFromError &&
                                             <span className="form-error">{chosenDateFromError}</span>}
                                         <label className={chosenDateToError ? "form-error-label" : "form-default-label"}
                                                htmlFor="prediction-date-to">Wybierz datę końcową predykcji</label>
-                                        <input type="month" id="prediction-date-to" name="prediction-date-to"
-                                               onChange={e => handleDateToChange(e)}/>
+                                        <div className="pg-custom-mui-input">
+                                            <DatePicker views={['month', 'year']}
+                                                        onChange={(v) => handleDateToChange(v)}
+                                                        slotProps={{
+                                                            field:{
+                                                                id:'prediction-date-to'
+                                                            }
+                                                        }
+                                            } />
+                                        </div>
                                         {chosenDateToError && <span className="form-error">{chosenDateToError}</span>}
                                     </li>
                                     <li key='form-part-3'>
@@ -600,8 +613,16 @@ function PredictionPage() {
                                                     <div className='prediction-option-container'>
                                                         <span className="form-default-label">{predictionOption["option_name"]}: </span>
                                                         <span className="range-value">{chosenCustomOptions[predictionOption["option_type"]]}</span>
-                                                        <input type="range" name={predictionOption["option_type"]} id={predictionOption["option_type"]} min={predictionOption["option_min"]} max={predictionOption["option_max"]} defaultValue={predictionOption["option_default"]}
-                                                               onChange={e => handleRangeChange(e, 1)}/>
+                                                        <div className="pg-custom-mui-input">
+                                                            <Slider name={predictionOption["option_type"]} min={predictionOption["option_min"]} max={predictionOption["option_max"]} defaultValue={predictionOption["option_default"]}
+                                                                    onChange={e => handleRangeChange(e, 1)}
+                                                                    slotProps={{
+                                                                        input:{
+                                                                            id:predictionOption["option_type"]
+                                                                        }
+                                                                    }}
+                                                            />
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 )

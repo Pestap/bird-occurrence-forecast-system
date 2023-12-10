@@ -388,6 +388,23 @@ label.form-error-label, span.form-error-label {
   border: 1px solid #394455;
   width: 200px;
 }
+.prediction-menu .pg-custom-mui-input input{
+  font-family: 'Montserrat', 'Roboto', 'Helvetica Neue', 'courier-prime.regular', sans-serif;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  border: none;
+  width: auto;
+}
+.prediction-menu .pg-custom-mui-input {
+  margin-bottom: 10px;
+  margin-top: 10px;
+}
+.prediction-menu .pg-custom-mui-input div{
+  max-width: 100%;
+}
+.prediction-menu .pg-custom-mui-input-radio {
+  display: inline-block;
+}
 
 .prediction-menu input:hover {
   cursor: pointer;
@@ -406,6 +423,10 @@ label.form-error-label, span.form-error-label {
 
 .prediction-menu input[type="submit"]:hover {
   background-color: #F0F0F0;
+}
+
+input[type="submit"]:hover {
+  cursor: pointer;
 }
 
 input[type="radio"] {

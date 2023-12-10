@@ -7,6 +7,9 @@ import source from "../backendConfig";
 import {json, useLocation} from "react-router-dom";
 import VisibilityIcon from "../components/svg/VisiblityIcon";
 import InvisibilityIcon from "../components/svg/InvisibiltyIcon";
+import {DatePicker} from "@mui/x-date-pickers";
+import dayjs from "dayjs";
+import {Select, Slider, MenuItem, NativeSelect} from "@mui/material";
 
 export const dataTest = [
     ["Year", "Sales", "Expenses"],
@@ -91,14 +94,12 @@ function AnalysisPage() {
         setDefaultOptions(option);
     }
 
-    function handleDateFromChange(event) {
-        setChosenDateFrom(event.target.value);
-        console.log(event.target.value);
+    function handleDateFromChange(value) {
+        setChosenDateFrom(dayjs(value).format('YYYY-MM'));
     }
 
-    function handleDateToChange(event) {
-        setChosenDateTo(event.target.value);
-        console.log(event.target.value);
+    function handleDateToChange(value) {
+        setChosenDateTo(dayjs(value).format('YYYY-MM'));
     }
 
     async function handleSubmit(event) {
@@ -644,13 +645,13 @@ function AnalysisPage() {
                         </form>
                             <div className="region-choice-container">
                                 <label htmlFor="regions">Wykres dla województwa:</label>
-                                <select id="regions" name="regions" onChange={e => setChosenRegion(e.target.value)}>
-                                    <option value="małopolskie">małopolskie</option>
-                                    <option value="lubuskie">lubuskie</option>
-                                    {availableRegions.map(availableRegion =>
-                                        <option value={availableRegion}>{availableRegion}</option>
-                                    )}
-                                </select>
+                                <div className="pg-custom-mui-input">
+                                    <NativeSelect id="regions" onChange={e => setChosenRegion(e.target.value)}>
+                                        {availableRegions.map(availableRegion =>
+                                            <option value={availableRegion}>{availableRegion}</option>
+                                        )}
+                                    </NativeSelect>
+                                </div>
                             </div>
                         </div>
                         </div>
@@ -708,8 +709,16 @@ function AnalysisPage() {
                                                                     <div className='prediction-option-container'>
                                                                         <span className="form-default-label">{predictionOption["option_name"]}: </span>
                                                                         <span className="range-value">{chosenCustomOptions[predictionOption["option_type"]]}</span>
-                                                                        <input type="range" name={predictionOption["option_type"]} id={predictionOption["option_type"]} min={predictionOption["option_min"]} max={predictionOption["option_max"]} defaultValue={predictionOption["option_default"]}
-                                                                               onChange={e => handleRangeChange(e, 1)}/>
+                                                                        <div className="pg-custom-mui-input">
+                                                                            <Slider name={predictionOption["option_type"]} min={predictionOption["option_min"]} max={predictionOption["option_max"]} defaultValue={predictionOption["option_default"]}
+                                                                                    onChange={e => handleRangeChange(e, 1)}
+                                                                                    slotProps={{
+                                                                                        input:{
+                                                                                            id:predictionOption["option_type"]
+                                                                                        }
+                                                                                    }}
+                                                                            />
+                                                                        </div>
                                                                     </div>
                                                                 </div>
                                                             )
@@ -753,15 +762,23 @@ function AnalysisPage() {
                                             <label
                                                 className={chosenDateFromError ? "form-error-label" : "form-default-label"}
                                                 htmlFor="prediction-date-from">Wybierz datę początkową predykcji</label>
-                                            <input type="month" id="prediction-date-from" name="prediction-date-from"
-                                                   onChange={e => handleDateFromChange(e)}/>
+                                            <div className="pg-custom-mui-input"><DatePicker views={['month', 'year']} onChange={(v) => handleDateFromChange(v)}
+                                                                                             slotProps={{
+                                                                                                 field:{
+                                                                                                     id:'prediction-date-from'
+                                                                                                 }
+                                                                                             }} /></div>
                                             {chosenDateFromError &&
                                                 <span className="form-error">{chosenDateFromError}</span>}
                                             <label
                                                 className={chosenDateToError ? "form-error-label" : "form-default-label"}
                                                 htmlFor="prediction-date-to">Wybierz datę końcową predykcji</label>
-                                            <input type="month" id="prediction-date-to" name="prediction-date-to"
-                                                   onChange={e => handleDateToChange(e)}/>
+                                            <div className="pg-custom-mui-input"><DatePicker views={['month', 'year']} onChange={(v) => handleDateToChange(v)}
+                                                                                             slotProps={{
+                                                                                                 field:{
+                                                                                                     id:'prediction-date-to'
+                                                                                                 }
+                                                                                             }} /></div>
                                             {chosenDateToError &&
                                                 <span className="form-error">{chosenDateToError}</span>}
                                         </li>

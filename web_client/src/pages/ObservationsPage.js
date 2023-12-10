@@ -4,6 +4,8 @@ import {Chart} from "react-google-charts";
 import {useState, useEffect, useReducer} from "react";
 import source from "../backendConfig";
 import {json, useLocation} from "react-router-dom";
+import dayjs from "dayjs";
+import {DatePicker} from "@mui/x-date-pickers";
 
 let dataPlaceholder1 = {
     "2013-07": {
@@ -130,14 +132,12 @@ function ObservationsPage() {
         setChosenBirdScientificName(event.target.value);
     }
 
-    function handleDateFromChange(event) {
-        setChosenDateFrom(event.target.value);
-        console.log(event.target.value);
+    function handleDateFromChange(value) {
+        setChosenDateFrom(dayjs(value).format('YYYY-MM-DD'));
     }
 
-    function handleDateToChange(event) {
-        setChosenDateTo(event.target.value);
-        console.log(event.target.value);
+    function handleDateToChange(value) {
+        setChosenDateTo(dayjs(value).format('YYYY-MM-DD'));
     }
 
     async function handleSubmit(event) {
@@ -385,15 +385,26 @@ function ObservationsPage() {
                                             className={chosenDateFromError ? "form-error-label" : "form-default-label"}
                                             htmlFor="prediction-date-from">Wybierz datę początkową okresu
                                             obserwacji</label>
-                                        <input type="date" id="prediction-date-from" name="prediction-date-from"
-                                               onChange={e => handleDateFromChange(e)}/>
+                                        <div className="pg-custom-mui-input"><DatePicker views={['day', 'month', 'year']} onChange={(v) => handleDateFromChange(v)}
+                                                                                         slotProps={{
+                                                                                             field:{
+                                                                                                 id:'prediction-date-from'
+                                                                                             }
+                                                                                         }} /></div>
                                         {chosenDateFromError &&
                                             <span className="form-error">{chosenDateFromError}</span>}
                                         <label className={chosenDateToError ? "form-error-label" : "form-default-label"}
                                                htmlFor="prediction-date-to">Wybierz datę końcową okresu
                                             obserwacji</label>
-                                        <input type="date" id="prediction-date-to" name="prediction-date-to"
-                                               onChange={e => handleDateToChange(e)}/>
+                                        <div className="pg-custom-mui-input">
+                                            <DatePicker views={['day', 'month', 'year']}
+                                                        onChange={(v) => handleDateToChange(v)}
+                                                        slotProps={{
+                                                            field:{
+                                                                id:'prediction-date-to'
+                                                            }
+                                            }} />
+                                        </div>
                                         {chosenDateToError && <span className="form-error">{chosenDateToError}</span>}
                                     </li>
                                     <li key='form-part-3'>
