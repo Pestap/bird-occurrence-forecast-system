@@ -30,7 +30,7 @@ def get_species_info(species_name):
     if response is not None:
         return jsonify(response)
 
-    return Response("Invalid species name", status=400)
+    return Response("Invalid species name", status=404)
 
 
 @cache.cached(timeout=constants.CACHE_TIMEOUT, query_string=True)
@@ -46,7 +46,7 @@ def get_species_available_models(species_name):
     if response is not None:
         return jsonify(response_prepared)
 
-    return Response("Invalid species name", status=400)
+    return Response("Invalid species name", status=404)
 
 
 @cache.cached(timeout=constants.CACHE_TIMEOUT, query_string=True)
@@ -85,7 +85,7 @@ def get_observations(species_name):
     if response is not None:
         return jsonify(response_prepared)
 
-    return Response("Invalid species name", status=400)
+    return Response("Invalid species name", status=404)
 
 
 @cache.cached(timeout=constants.CACHE_TIMEOUT, query_string=True)

@@ -15,7 +15,7 @@ GET http://localhost:5000/api/birds/merops_apiaster/models/autoregression/predic
 ### Buteo buteo
 GET http://localhost:5000/api/birds/buteo_buteo/models/autoregression/predict?from=2022-01&to=2022-12
 ### Nucifraga caryocatactes
-GET http://localhost:5000/api/birds/nucifraga_caryocatactes/models/autoregression/predict?from=2022-01&to=2022-12
+GET http://127.0.0.1:5000/api/birds/nucifraga_caryocatactes/models/autoregression/predict?from=2021-01&to=2022-12
 ### Grus grus
 GET http://localhost:5000/api/birds/grus_grus/models/autoregression/predict?from=2022-01&to=2022-12
 ### Calidris pugnax
