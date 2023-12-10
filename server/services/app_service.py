@@ -152,9 +152,9 @@ def calculate_custom_error(observations_by_state, predictions_by_state):
             predicted = predictions_by_state[state][date]
             observed = observations_by_state[state][date]
 
-            if predicted > 0.2 and observed > 0:
+            if predicted > 0.2 and observed > 0.2:
                 state_errors.append(0)
-            elif predicted <= 0.2 and observed == 0:
+            elif predicted <= 0.2 and observed <= 0.2:
                 state_errors.append(0)
             else:
                 state_errors.append(1)

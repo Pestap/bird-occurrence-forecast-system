@@ -102,7 +102,8 @@ class Species:
             except AttributeError:
                 return None
 
-        model = AutoReg(self.observation_data_grouped[state]['OBSERVATION COUNT'].head(-reduce_training_by), lags=steps, seasonal=True, period=12).fit()
+        model = AutoReg(self.observation_data_grouped[state]['OBSERVATION COUNT'].head(-reduce_training_by),
+                        lags=steps, seasonal=True, period=12).fit()
         result = list(model.forecast(steps=months))
         result_non_negative = [val if val >= 0 else 0 for val in result]
 
@@ -124,7 +125,8 @@ class Species:
             except AttributeError:
                 return None
 
-        model = SARIMAX(self.observation_data_grouped[state]['OBSERVATION COUNT'].head(-reduce_training_by), order=(ar_steps, 0, ma_steps), alpha=0.95)
+        model = SARIMAX(self.observation_data_grouped[state]['OBSERVATION COUNT'].head(-reduce_training_by),
+                        order=(ar_steps, 0, ma_steps))
         results = model.fit()
         predictions = list(results.forecast(steps=months))
         predictions_non_negative = [val if val >= 0 else 0 for val in predictions]
@@ -153,7 +155,8 @@ class Species:
                 i_steps = self.default_arima_model.params['differencing_order']['default']
             except AttributeError:
                 return None
-        model = SARIMAX(self.observation_data_grouped[state]['OBSERVATION COUNT'].head(-reduce_training_by), order=(ar_steps, i_steps, ma_steps), alpha=0.95)
+        model = SARIMAX(self.observation_data_grouped[state]['OBSERVATION COUNT'].head(-reduce_training_by),
+                        order=(ar_steps, i_steps, ma_steps))
         results = model.fit()
 
         predictions = list(results.forecast(steps=months))
