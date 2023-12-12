@@ -1,28 +1,14 @@
-import Footer from "../components/Footer";
 import TopNav from "../components/TopNav";
 import XbuttonSlim from "../components/svg/XbuttonSlim";
 import {Chart} from "react-google-charts";
-import {useState, useEffect, useReducer} from "react";
+import {useState, useEffect} from "react";
 import source from "../backendConfig";
-import {json, useLocation} from "react-router-dom";
+import {useLocation} from "react-router-dom";
 import VisibilityIcon from "../components/svg/VisiblityIcon";
 import InvisibilityIcon from "../components/svg/InvisibiltyIcon";
 import {DatePicker} from "@mui/x-date-pickers";
 import dayjs from "dayjs";
-import {Select, Slider, MenuItem, NativeSelect} from "@mui/material";
-
-export const dataTest = [
-    ["Year", "Sales", "Expenses"],
-    ["2004", 1000, null],
-    ["2005", 1170, null],
-    ["2006", 660, 660],
-    ["2007", 1030, 999],
-];
-export const optionsTest = {
-    title: "Company Performance",
-    curveType: "function",
-    legend: { position: "bottom" },
-};
+import {Slider, NativeSelect} from "@mui/material";
 
 const regionsPlaceHolder = ["dolnośląskie",
     "kujawsko-pomorskie",
@@ -41,15 +27,8 @@ const regionsPlaceHolder = ["dolnośląskie",
     "śląskie",
     "świętokrzyskie"];
 
-let data = [
-    [["Region", "Bird encounters"],
-        ["USA", 100]]
 
-];
-
-let months = ["2023.09", "2023.10"];
-
-let DEFAULT_PLOT_COLOR = "#FF0000"
+let DEFAULT_PLOT_COLOR = "#FF0000";
 
 function AnalysisPage() {
 
@@ -68,26 +47,18 @@ function AnalysisPage() {
     function handleSpeciesChange(event, speciesCommonName) {
         setChosenBirdCommonName(speciesCommonName);
         setChosenBirdScientificName(event.target.value);
-        // TODO - Set chosen model to "" or uncheck radio buttons, if it has different available models, like setChosenModel("");
     }
 
-    function handleRangeChange(event, rangeNumber) {
-        console.log(event.target.name);
-
+    function handleRangeChange(event) {
+        setSliderChange(-sliderChange);
         let optionRanges = chosenCustomOptions;
         optionRanges[event.target.name] = event.target.value;
         setChosenCustomOptions(optionRanges);
-
-        // TODO REMOVE THESE 2 LINES
-        if (rangeNumber === 1) {
-            setRangeValue1(event.target.value);
-        }
     }
 
     function handleModelChange(event, textName) {
         setChosenModel(event.target.value);
         setChosenModelName(textName);
-        console.log(event.target.value);
     }
 
     function handleOptionChange(option) {
@@ -103,8 +74,7 @@ function AnalysisPage() {
     }
 
     async function handleSubmit(event) {
-        // TODO - Instead of checking single model - check if at least one is added
-        // TODO - then map each model to fetch some data and store it in some array
+
         event.preventDefault();
         // Form validation
         setChosenBirdScientificNameError("");
@@ -165,7 +135,7 @@ function AnalysisPage() {
             customOptionsKeys.forEach(customOptionKey => {
                 optionParms += `&${customOptionKey}=${customOptions[customOptionKey]}`;
             })
-            let url = "";
+            let url;
             if (!analysisModel.defaultOptions) {
                 url = `${source}birds/${chosenBirdScientificName}/models/${analysisModel.type}/predict?from=${chosenDateFrom}&to=${chosenDateTo}${optionParms}&edge=2021-12`;
             } else {
@@ -178,7 +148,6 @@ function AnalysisPage() {
                     let dataPlaceholder = data.predictions; // change dataPlaceholder to another name
                     let wholePrediction = [];
                     let maxPredictionValue = 0;
-                    console.log(data.mae_errors);
                     const months = Object.keys(dataPlaceholder);
                     setChartMonths(months);
                     setChartTests(data.tests);
@@ -203,18 +172,22 @@ function AnalysisPage() {
                 return predictions;
             })
             .then(predictions => predictions.map(prediction => {
-                console.log(prediction);
                 allModelsPredictions = [...allModelsPredictions, prediction];
-                //let currentModelsPredictions = [...modelsPredictions];
-                //currentModelsPredictions.push(prediction);
-                //setModelsPredictions(currentModelsPredictions);
             }))
             .then(p => {
                 setModelsPredictions(allModelsPredictions)
+                if (allModelsPredictions.length > 0 && allModelsPredictions[0].prediction.length > 0) {
+                    const regionsOfPrediction = [];
+                    allModelsPredictions[0].prediction[0].forEach(regionPrediction => {
+                        if (regionPrediction[0] !== "Region") {
+                            regionsOfPrediction.push(regionPrediction[0]);
+                        }
+                    });
+                    setPredictedRegions(regionsOfPrediction);
+                }
             })
             .catch(error => console.error(error));
         setIsLoading(false);
-        console.log(modelsPredictions);
     }
 
     function handleModelSubmit(event) {
@@ -256,50 +229,8 @@ function AnalysisPage() {
         setCurrentModelId(currentModelId + 1);
     }
 
-    function predictionReducer(state, action) {
-        switch (action.type) {
-            case 'month_increment': {
-                if (state.currentMonth === state.maxMonth) {
-                    return {
-                        maxMonth: state.maxMonth,
-                        currentMonth: 0
-                    };
-                }
-                return {
-                    maxMonth: state.maxMonth,
-                    currentMonth: state.currentMonth + 1
-                };
-            }
-            case 'month_decrement': {
-                if (state.currentMonth === 0) {
-                    return {
-                        maxMonth: state.maxMonth,
-                        currentMonth: state.maxMonth
-                    };
-                }
-                return {
-                    maxMonth: state.maxMonth,
-                    currentMonth: state.currentMonth - 1
-                };
-            }
-            case 'month_setup': {
-                return {
-                    maxMonth: action.maxMonthNumber,
-                    currentMonth: 0
-                };
-            }
-            default: {
-                return {
-                    maxMonth: state.maxMonth,
-                    currentMonth: state.currentMonth
-                };
-            }
-        }
+    const [sliderChange, setSliderChange] = useState(1);
 
-    }
-
-    const [region, setRegion] = useState("");
-    const [areBirdsFetched, setAreBirdsFetched] = useState("f");
     const [predictionTypes, setPredictionTypes] = useState([]);
     const [birdSpecies, setBirdSpecies] = useState([]);
     const [filteredBirdSpecies, setFilteredBirdSpecies] = useState([]);
@@ -309,6 +240,7 @@ function AnalysisPage() {
     const [currentModelId, setCurrentModelId] = useState(0);
     const [changedVisibility, setChangedVisibility] = useState(false);
     const [availableRegions, setAvailableRegions] = useState([...regionsPlaceHolder]);
+    const [predictedRegions, setPredictedRegions] = useState([...regionsPlaceHolder]);
     const [chosenRegion, setChosenRegion] = useState(regionsPlaceHolder[0]);
     const [chartOptions, setChartOptions] = useState({
         title: "Średnia liczba osobników podczas obserwacji",
@@ -328,7 +260,6 @@ function AnalysisPage() {
     const [chosenDateTo, setChosenDateTo] = useState("");
     const [chosenColor, setChosenColor] = useState(DEFAULT_PLOT_COLOR);
     const [defaultOptions, setDefaultOptions] = useState(true);
-    const [rangeValue1, setRangeValue1] = useState(24); // TODO - change later to get this value fetched after model is chosen
     const [chosenCustomOptions, setChosenCustomOptions] = useState({});
     // Form error information
     const [chosenBirdScientificNameError, setChosenBirdScientificNameError] = useState("");
@@ -341,41 +272,7 @@ function AnalysisPage() {
     // Prediction visualization
     const [optionNamesDictionary, setOptionNamesDictionary] = useState({});
     const [modelsPredictions, setModelsPredictions] = useState([]);
-    const [predictionState, predictionDispatch] = useReducer(predictionReducer, {currentMonth: 0, maxMonth: 1});
-    const [currentPredictionMonth, setCurrentPredictionMonth] = useState(months[0]);
-    const [predictionData, setPredictionData] = useState(data);
-    const [predictionErrorData, setPredictionErrorData] = useState(data);
-    const [predictionMonths, setPredictionMonths] = useState([]);
-    const [predictionSpecies, setPredictionSpecies] = useState("");
-    const [isPredictionGenerated, setIsPredictionGenerated] = useState(false);
-    const [isErrorGenerated, setIsErrorGenerated] = useState(true);
-    const [isAnimationPlaying, setIsAnimationPlaying] = useState(false);
-    const [isShowingErrors, setIsShowingErrors] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const [mapOptions, setMapOptions] = useState({
-        region: "PL",
-        displayMode: "regions",
-        resolution: "provinces",
-        colorAxis: {minValue: 0, maxValue: 0, colors: ["#ffffff", "#ff0000"]}
-    });
-    const [mapErrorOptions, setMapErrorOptions] = useState({
-        region: "PL",
-        displayMode: "regions",
-        resolution: "provinces",
-        colorAxis: {minValue: 0, maxValue: 0, colors: ["#ffffff", "#ff0000"]}
-    });
-    useEffect(() => {
-
-        let predictionMonthNumber = 0;
-
-        const interval = setInterval(() => {
-            if (isAnimationPlaying) {
-                predictionDispatch({type: 'month_increment'});
-            }
-        }, 2000);
-
-        return () => clearInterval(interval);
-    }, [isAnimationPlaying, isPredictionGenerated, predictionState.currentMonth]);
 
     // Fetching available bird species 
     useEffect(() => {
@@ -489,8 +386,6 @@ function AnalysisPage() {
                 legend: { position: "bottom" },
                 colors: colorsArr
             };
-            console.log("opts");
-            console.log(options);
             setChartOptions(options);
         }
     }, [isLoading, analysisModels, appliedDateFrom, changedVisibility, chartFinalDataFiltered]);
@@ -564,7 +459,6 @@ function AnalysisPage() {
             let columnsToRemove = [];
 
             chartFinalData[0].forEach((header, index) => {
-                console.log(header.substring(0, header.length-2));
                 if(header.indexOf("#") !== -1) {
                     let id = header.substring(header.indexOf("#") + 1);
                     let isThisModelFiltered = false;
@@ -589,12 +483,6 @@ function AnalysisPage() {
                 filteredData.push(filteredRow);
             });
             setChartFinalDataFiltered(filteredData);
-            console.log("=========");
-            //console.log(chartOptions);
-            //console.log(analysisModels);
-            console.log(chartFinalData);
-            //console.log(filteredData);
-            console.log("=========");
         }
     }, [chosenRegion, analysisModels, chartFinalData, changedVisibility]);
 
@@ -655,12 +543,17 @@ function AnalysisPage() {
                             </div>
                         </div>
                         </div>
-                            {(!isLoading && chartFinalDataFiltered.length > 0 && chartFinalDataFiltered[0].length > 1) ? <Chart
+                            {(!isLoading && chartFinalDataFiltered.length > 0 && chartFinalDataFiltered[0].length > 1 && predictedRegions.includes(chosenRegion))
+                                ? <Chart
                                 chartType="LineChart"
                                 className="chart"
                                 data={chartFinalDataFiltered}
                                 options={chartOptions}
                             />
+                                :<div></div>
+                            }
+                            {(!isLoading && chartFinalDataFiltered.length > 0 && chartFinalDataFiltered[0].length > 1 && !predictedRegions.includes(chosenRegion))
+                                ? <div><span className={"form-error"}>Brak danych</span></div>
                                 :<div></div>
                             }
                     </div>
@@ -669,8 +562,7 @@ function AnalysisPage() {
                     <div className="column-l-50">
                         <div className="column-content analysis-options prediction-column border-r">
                             <div className="prediction-menu-container analysis-menu-container">
-                                <a id="prediction-models-menu"></a>
-                                <span
+                                <span id="prediction-models-menu"
                                     className={(chosenModelsError || anyError) ? "form-error-label map-header" : "map-header"}>Modele predykcji:</span>
                                 <form onSubmit={handleModelSubmit}>
                                     <ul className="prediction-menu model-menu">
@@ -711,7 +603,7 @@ function AnalysisPage() {
                                                                         <span className="range-value">{chosenCustomOptions[predictionOption["option_type"]]}</span>
                                                                         <div className="pg-custom-mui-input">
                                                                             <Slider name={predictionOption["option_type"]} min={predictionOption["option_min"]} max={predictionOption["option_max"]} defaultValue={predictionOption["option_default"]}
-                                                                                    onChange={e => handleRangeChange(e, 1)}
+                                                                                    onChange={e => handleRangeChange(e)}
                                                                                     slotProps={{
                                                                                         input:{
                                                                                             id:predictionOption["option_type"]
@@ -753,8 +645,7 @@ function AnalysisPage() {
                     <div className="column-r-50">
                         <div className="column-content analysis-options prediction-column">
                             <div className="prediction-menu-container analysis-menu-container">
-                                <a id="prediction-properties-menu"></a>
-                                <span
+                                <span id="prediction-properties-menu"
                                     className={anyError ? "form-error-label map-header" : "map-header"}>Opcje predykcji:</span>
                                 <form onSubmit={handleSubmit}>
                                     <ul className="prediction-menu">

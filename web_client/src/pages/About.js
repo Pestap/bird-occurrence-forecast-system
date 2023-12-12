@@ -1,4 +1,3 @@
-import Footer from "../components/Footer";
 import TopNav from "../components/TopNav";
 import aboutImg from '../assets/about_img_1.jpg'
 import {Link, useLocation} from "react-router-dom";
